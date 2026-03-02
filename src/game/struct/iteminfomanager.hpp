@@ -14,7 +14,11 @@ struct ItemInfo
     int unknown;
     std::string filePath;
     int visualType;
-    uint8_t pad2[140];
+    int cookTime;
+    uint8_t frameX;
+    uint8_t frameY;
+    int m_storageType;
+    uint8_t pad2[128];
     // 232
     std::string altPath;
     uint8_t pad3[4];
@@ -33,6 +37,16 @@ class ItemInfoManager
         if (ID < 0 || ID >= m_items.size())
             return nullptr;
         return &m_items[ID];
+    }
+
+    ItemInfo* GetItemByName(std::string Name)
+    {
+        for (auto& item : m_items)
+        {
+            if (item.name == Name)
+                return &item;
+        }
+        return &m_items[0];
     }
 };
 static_assert(sizeof(ItemInfoManager) == 48, "ItemInfoManager class size mismatch.");

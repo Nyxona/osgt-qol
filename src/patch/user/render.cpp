@@ -12,6 +12,7 @@
 #include "game/struct/components/mapbg.hpp"
 #include "game/struct/entity.hpp"
 #include "game/struct/entityutils.hpp"
+#include "game/struct/miscutils.hpp"
 #include "game/struct/playeritems.hpp"
 #include "game/struct/renderutils.hpp"
 #include "game/struct/rtrect.hpp"
@@ -21,6 +22,9 @@
 #include "game/struct/world/worldcamera.hpp"
 #include "game/struct/world/worldrenderer.hpp"
 #include <version.h>
+
+#include <fstream>
+#include <iostream>
 
 // MainMenuCreate
 REGISTER_GAME_FUNCTION(
@@ -909,7 +913,6 @@ class LightSourceOptimizer : public patch::BasePatch
         int w = real::GetApp()->GetGameLogic()->GetTileWidth();
         int h = real::GetApp()->GetGameLogic()->GetTileHeight();
         WorldTileMap* tilemap = (WorldTileMap*)real::GetApp()->GetGameLogic()->GetTileMap();
-        Tile* m_tiles = tilemap->m_tiles;
         size_t max = tiles->size();
 
         int r = g_fLightSourceOptimizeLevel;
@@ -949,7 +952,7 @@ class LightSourceOptimizer : public patch::BasePatch
                 {
                     for (y = minY; y < maxY; y++)
                     {
-                        target = &m_tiles[x + (y * w)];
+                        target = &tilemap->m_tiles[x + (y * w)];
                         vis = items[target->m_itemBGID].visualType;
                         // Only do light calculations if we're on a darkened tile.
                         if (vis == 33 || vis == 41)
@@ -1835,7 +1838,8 @@ class HotbarExpanded : public patch::BasePatch
             // Set right/jump button bottom paddings to none to prevent input leakage on hotbar,
             // also get rid of the annoyinging large right padding on arrows. This also makes
             // paddings equal between buttons.
-            if (doTouchButtonsNeedPaddings(pTouchRight)) {
+            if (doTouchButtonsNeedPaddings(pTouchRight))
+            {
                 float fPaddingRef = vJumpButtonSize.x / 4;
                 Rectf rPaddingRect;
                 rPaddingRect.left = 30.0f;
@@ -1983,3 +1987,318 @@ short HotbarExpanded::m_extendedSlots[6] = {0, 0, 0, 0, 0, 0};
 short HotbarExpanded::m_extraSlots = 0;
 std::vector<std::string> HotbarExpanded::m_optionNames;
 REGISTER_USER_GAME_PATCH(HotbarExpanded, hotbar_expanded);
+
+REGISTER_GAME_FUNCTION(WorldRendererDrawWorldBackground,
+                       "40 57 48 83 EC 40 48 8B F9 48 8B 89 C8 00 00 00 48 85 C9 74 79", __fastcall,
+                       void, WorldRenderer*);
+REGISTER_GAME_FUNCTION(WorldTileMapChooseVisual,
+                       "48 85 D2 0F 84 ? ? ? ? 48 89 74 24 20 57 48 83 EC 20 48 8B F1", __fastcall,
+                       void, WorldTileMap*, Tile*);
+REGISTER_GAME_FUNCTION(DrawTile,
+                       "40 55 53 56 57 41 54 41 55 41 56 41 57 48 8D AC 24 98 EE FF FF B8 68 12 00 "
+                       "00 E8 ? ? ? ? 48 2B E0 48 C7 85 C0 0C 00 00 FE FF FF FF",
+                       __fastcall, void, WorldRenderer* param_1, unsigned short param_2,
+                       int param_3, CL_Vec2f* param_4, unsigned int param_5, Tile* param_6,
+                       uint8_t param_7, char param_8);
+REGISTER_GAME_FUNCTION(WorldToScreen,
+                       "F3 41 0F 10 00 F3 0F 5C 41 10 F3 41 0F 10 48 04 F3 0F 5C 49 14 F3 0F 58 41 "
+                       "28 F3 0F 58 49 2C F3 0F 59 41 20",
+                       __fastcall, CL_Vec2f*, WorldCamera*, CL_Vec2f*, CL_Vec2f*);
+class Buildomatica : public patch::BasePatch
+{
+    void apply() const override
+    {
+        // Buildomatica is a building schematic overlay mod for Growtopia heavily inspired by the
+        // Minecraft mods Schematica and Litematica.
+        // To use - create a "schematics" folder and paste your .gtworld worlds in it. Next time you
+        // enter a world, the schematic will be overlayed.
+
+        // FIXME:
+        // - Cling storagetype blocks do not.. cling. They seem to cling to actual tilemap instead.
+        // - Portals just vanish entirely right now.
+        // - Maybe add another destination in render pipeline right after backgrounds have been
+        // drawn, right now placing a background obscures the overlayed foreground item.
+        // - Culling is missing entirely for the overlayed tilemap.
+
+        // TODO before release:
+        // - GPMAP format support (tommy's planner), requires lz-string dependency. Cernodile's
+        // World Planner format is a bit archaic.
+        // - Options & hotkey to toggle/reload
+
+        // Nice-to-have/not a priority:
+        // - Look into possibility of using shaders in bgfx to highlight the "hologram" blocks.
+
+        auto& game = game::GameHarness::get();
+        // Hooks
+        game.hookFunctionPatternDirect<WorldRendererDrawWorldBackground_t>(
+            pattern::WorldRendererDrawWorldBackground, WorldRendererDrawWorldBackground,
+            &real::WorldRendererDrawWorldBackground);
+        real::WorldTileMapChooseVisual =
+            game.findMemoryPattern<WorldTileMapChooseVisual_t>(pattern::WorldTileMapChooseVisual);
+
+        real::DrawTile = game.findMemoryPattern<DrawTile_t>(pattern::DrawTile);
+        real::WorldToScreen = game.findMemoryPattern<WorldToScreen_t>(pattern::WorldToScreen);
+
+        // We will reset our fake tilemap on map load
+        auto& events = game::EventsAPI::get();
+        events.m_sig_onMapLoaded.connect(&OnMapLoaded);
+    };
+
+    static void __fastcall OnMapLoaded(void* this_, __int64, __int64, __int64)
+    {
+        // Reset our fake tilemap details
+        m_fakeTilemap.m_width = ((WorldRenderer*)this_)->m_pWorld->m_tilemap.m_width;
+        m_fakeTilemap.m_height = ((WorldRenderer*)this_)->m_pWorld->m_tilemap.m_height;
+        m_fakeTilemap.m_pWorldParent = ((WorldRenderer*)this_)->m_pWorld;
+
+        m_fakeTilemap.m_tiles.clear();
+        m_cameraTiles.clear();
+
+        // Load our schematic based on world name.. and also check for any nasty surprises before we
+        // open anything.
+        std::string& m_name = ((WorldRenderer*)this_)->m_pWorld->m_name;
+        if (m_name.find("..") == std::string::npos && m_name.find("/") == std::string::npos &&
+            m_name.find("%") == std::string::npos)
+        {
+            int Code = LoadFromPlannerFile("schematics/" + m_name + ".gtworld");
+            if (Code > 0)
+                real::LogToConsole(
+                    std::string("`![Buildomatica]`` Failed to load schematic - error code: " +
+                                std::to_string(Code))
+                        .c_str());
+            else
+                real::LogToConsole("`![Buildomatica]`` Loaded in schematic overlay.");
+        }
+
+        // TODO: Cull camera tiles, right now we kinda render the entire world.
+        for (auto& t : m_fakeTilemap.m_tiles)
+        {
+            real::WorldTileMapChooseVisual(&m_fakeTilemap, &t);
+            m_cameraTiles.push_back(&t);
+        }
+    }
+
+    static void CullTilemap()
+    {
+        // WIP
+    }
+
+    static void __fastcall WorldRendererDrawWorldBackground(WorldRenderer* this_)
+    {
+        real::WorldRendererDrawWorldBackground(this_);
+
+        // Draw our "hologram" from fake tilemap after world background has been drawn.
+        CL_Vec2f camera;
+        WorldTileMap& m_origTilemap = this_->m_pWorld->m_tilemap;
+        for (auto& t : m_cameraTiles)
+        {
+            if (t->x >= m_origTilemap.m_width || t->y >= m_origTilemap.m_height)
+                continue;
+            if (t->m_itemBGID == 0 && t->m_itemID == 0)
+                continue;
+            Tile* m_pRef = &m_origTilemap.m_tiles[t->x + (t->y * m_origTilemap.m_width)];
+            if (m_pRef->m_itemID != 0 && t->m_itemBGID == 0)
+                continue;
+            if (m_pRef->m_itemBGID != 0 && t->m_itemID == 0)
+                continue;
+            CL_Vec2f tilePos(t->x * 32.f, t->y * 32.f);
+            real::WorldToScreen(&this_->m_worldCamera, &camera, &tilePos);
+            if (t->m_itemBGID != 0)
+                real::DrawTile(this_, t->m_itemBGID, t->m_tileBGVisual, &camera, t->m_currentColor,
+                               t, 1, 0);
+            if (t->m_itemID != 0)
+                real::DrawTile(this_, t->m_itemID, t->m_tileVisual, &camera, t->m_currentColor, t,
+                               0, 0);
+        }
+    }
+
+    static int LoadFromPlannerFile(std::string Path)
+    {
+        // Cernodile's World Planner format. Kinda horrible, bunch of string parsing.
+        if (m_fakeTilemap.m_height != 60 && m_fakeTilemap.m_width != 100)
+            return 1;
+        std::ifstream world(Path);
+        if (!world)
+            return 2;
+        std::string m_saveData{std::istreambuf_iterator<char>(world),
+                               std::istreambuf_iterator<char>()};
+        world.close();
+        if (m_saveData.substr(0, 18) != "%cernworldplanner;")
+            return 3;
+
+        m_fakeTilemap.m_tiles.clear();
+        m_fakeTilemap.m_tiles.reserve(m_fakeTilemap.m_height * m_fakeTilemap.m_width);
+        for (int y = 0; y < m_fakeTilemap.m_height; y++)
+        {
+            for (int x = 0; x < m_fakeTilemap.m_width; x++)
+            {
+                m_fakeTilemap.m_tiles.push_back(Tile());
+                m_fakeTilemap.m_tiles.back().x = x;
+                m_fakeTilemap.m_tiles.back().y = y;
+                // RGB #b0e8ff
+                m_fakeTilemap.m_tiles.back().m_currentColor = 0xe8ffb0aa;
+            }
+        }
+
+        // Cernodile's World Planner packs layers into 4 comma-separated arrays
+        std::vector<std::string> foreground;
+        std::vector<std::string> background;
+        std::vector<int> water;
+        std::vector<int> glue;
+        // Sections are walled off by "section=", so we can use them as guiderails for how much to
+        // scan.
+        if (m_saveData.find("fg=") != std::string::npos &&
+            m_saveData.find("bg=") != std::string::npos)
+        {
+            std::vector<std::string> m_layers = StringTokenize(
+                m_saveData
+                    .substr(m_saveData.find("fg="), m_saveData.find("bg=") - m_saveData.find("fg="))
+                    .substr(3),
+                "\n");
+            for (int i = 0; i != m_layers.size(); i++)
+            {
+                std::string layer = m_layers[i];
+                std::vector<std::string> tiles = StringTokenize(layer, ",");
+                for (int j = 0; j < tiles.size(); j++)
+                    foreground.emplace_back(tiles[j]);
+            }
+        }
+        if (m_saveData.find("bg=") != std::string::npos &&
+            m_saveData.find("water=") != std::string::npos)
+        {
+            std::vector<std::string> m_layers =
+                StringTokenize(m_saveData
+                                   .substr(m_saveData.find("bg="),
+                                           m_saveData.find("water=") - m_saveData.find("bg="))
+                                   .substr(3),
+                               "\n");
+            for (int i = 0; i != m_layers.size(); i++)
+            {
+                std::string layer = m_layers[i];
+                std::vector<std::string> tiles = StringTokenize(layer, ",");
+                for (int j = 0; j < tiles.size(); j++)
+                    background.emplace_back(tiles[j]);
+            }
+        }
+        if (m_saveData.find("water=") != std::string::npos &&
+            m_saveData.find("glue=") != std::string::npos)
+        {
+            std::vector<std::string> m_layers =
+                StringTokenize(m_saveData
+                                   .substr(m_saveData.find("water="),
+                                           m_saveData.find("glue=") - m_saveData.find("water="))
+                                   .substr(6),
+                               "\n");
+            for (int i = 0; i != m_layers.size(); i++)
+            {
+                std::string layer = m_layers[i];
+                std::vector<std::string> tiles = StringTokenize(layer, ",");
+                for (int j = 0; j < tiles.size(); j++)
+                    water.emplace_back(tiles[j] == "Water" ? 1 : 0);
+            }
+        }
+        if (m_saveData.find("water=") != std::string::npos &&
+            m_saveData.find("glue=") != std::string::npos)
+        {
+            std::vector<std::string> m_layers =
+                StringTokenize(m_saveData.substr(m_saveData.find("glue=")).substr(5), "\n");
+            for (int i = 0; i != m_layers.size(); i++)
+            {
+                std::string layer = m_layers[i];
+                std::vector<std::string> tiles = StringTokenize(layer, ",");
+                for (int j = 0; j < tiles.size(); j++)
+                    glue.emplace_back(tiles[j] == "Block Glue" ? 1 : 0);
+            }
+        }
+
+        // Planner and tilemap sizes don't match, lets not do any OOB writes here, bail out.
+        if (foreground.size() > (m_fakeTilemap.m_width * m_fakeTilemap.m_height))
+            return 4;
+        for (int i = 0; i < foreground.size(); i++)
+        {
+            std::string name = foreground[i];
+            if (name.length() == 0)
+                continue;
+            std::vector<std::string> props = StringTokenize(name, "_");
+            if (props.size() > 1)
+            {
+                if (name[2] == '_')
+                {
+                    char Paint = name[1];
+                    int r = 0xb0;
+                    int g = 0xff;
+                    int b = 0xe8;
+                    switch (Paint)
+                    {
+                    case 'R':
+                        g /= 0x3C;
+                        b /= 0x3C;
+                        break;
+                    case 'G':
+                        r /= 0x3C;
+                        b /= 0x3C;
+                        break;
+                    case 'B':
+                        g /= 0x3C;
+                        r /= 0x3C;
+                        break;
+                    case 'P':
+                        g /= 0x3C;
+                        break;
+                    case 'Y':
+                        r /= 0x3C;
+                        b /= 0x3C;
+                        break;
+                    case 'A':
+                        r /= 0x3C;
+                        g /= 0x3C;
+                        break;
+                    case 'C':
+                        r /= 0x3C;
+                        g /= 0x3C;
+                        b /= 0x3C;
+                        break;
+                    }
+                    m_fakeTilemap.m_tiles[i].m_currentColor =
+                        0xaa + (r << 8) + (g << 16) + (b << 24);
+                    name = name.substr(3);
+                }
+                if (StringFromEndMatches(name, "_FL"))
+                {
+                    m_fakeTilemap.m_tiles[i].m_tileProperties |= TILE_PROPERTY_FACING_LEFT;
+                    name = name.substr(0, name.length() - 3);
+                }
+            }
+            ItemInfo* info = real::GetApp()->GetItemInfoManager()->GetItemByName(name);
+            if (info->ID != 0)
+                (&m_fakeTilemap.m_tiles[i])->m_itemID = info->ID;
+        }
+        for (int i = 0; i < background.size(); i++)
+        {
+            std::string name = background[i];
+            if (name.length() == 0)
+                continue;
+            ItemInfo* info = real::GetApp()->GetItemInfoManager()->GetItemByName(name);
+            if (info->ID != 0)
+                (&m_fakeTilemap.m_tiles[i])->m_itemBGID = info->ID;
+        }
+        for (int i = 0; i < water.size(); i++)
+        {
+            if (water[i] != 0)
+                (&m_fakeTilemap.m_tiles[i])->m_tileProperties |= TILE_PROPERTY_WATER;
+        }
+        for (int i = 0; i < glue.size(); i++)
+        {
+            if (glue[i] != 0)
+                (&m_fakeTilemap.m_tiles[i])->m_tileProperties |= TILE_PROPERTY_GLUE;
+        }
+        return 0;
+    }
+
+  private:
+    static WorldTileMap m_fakeTilemap;
+    static std::vector<Tile*> m_cameraTiles;
+};
+WorldTileMap Buildomatica::m_fakeTilemap = WorldTileMap();
+std::vector<Tile*> Buildomatica::m_cameraTiles = std::vector<Tile*>();
+REGISTER_USER_GAME_PATCH(Buildomatica, buildomatica);

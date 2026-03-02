@@ -55,13 +55,6 @@ REGISTER_GAME_FUNCTION(CreateInputTextEntity, "48 8B C4 55 41 54 41 55 41 56 41 
 REGISTER_GAME_FUNCTION(GetAppCachePath, "40 53 48 83 EC 30 33 C0 48 C7 41 18 0F 00 00 00 48",
                        __fastcall, std::string);
 
-// LogToConsole
-// Params: Text to log
-REGISTER_GAME_FUNCTION(LogToConsole,
-                       "48 89 4C 24 08 48 89 54 24 10 4C 89 44 24 18 4C 89 4C 24 20 53 57 B8 88 10 "
-                       "00 00 ? ? ? ? ? 48 2B E0 48 8B 05 86 E4 2D",
-                       __fastcall, void, const char*);
-
 REGISTER_GAME_FUNCTION(
     GameLogicComponentOnLogonAccepted,
     "48 8B C4 55 56 57 41 54 41 55 41 56 41 57 48 8D 68 A8 48 81 EC 20 01 00 00 48 C7 44 24 38 FE",
@@ -86,9 +79,6 @@ class ServerSwitcher : public patch::BasePatch
         // Resolve UI functions - we will need these to properly construct our UI in OnlineMenu
         real::CreateInputTextEntity =
             game.findMemoryPattern<CreateInputTextEntity_t>(pattern::CreateInputTextEntity);
-
-        // We want to also inform the user which server they are using.
-        real::LogToConsole = game.findMemoryPattern<LogToConsole_t>(pattern::LogToConsole);
 
         // Nop the original slide-screen so the original function does not start sliding our scene
         // too early. We will call it ourselves later in the hook when we have injected our own

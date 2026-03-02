@@ -71,6 +71,7 @@ DEFINE_GAME_FUNCTION(EntitySetScaleBySize, __fastcall, void, Entity*, CL_Vec2f&,
 DEFINE_GAME_FUNCTION(SendPacket, __fastcall, void, int, std::string, void*);
 DEFINE_GAME_FUNCTION(GetAudioManager, __fastcall, AudioManagerFMOD*);
 DEFINE_GAME_FUNCTION(GetDevicePixelsPerInchDiagonal, __fastcall, int);
+DEFINE_GAME_FUNCTION(LogToConsole, __fastcall, void, const char*);
 // Declared in events.cpp
 DEFINE_GAME_FUNCTION(GetArcadeComponent, __fastcall, EntityComponent*);
 DEFINE_GAME_FUNCTION(AddKeyBinding, __fastcall, void, EntityComponent* pComp, std::string name,
