@@ -71,6 +71,7 @@ target_compile_options(${PROJECT_NAME} PRIVATE /W3)
 target_link_libraries(${PROJECT_NAME} PRIVATE
     minhook
     boost_signals
+    lzstring
 )
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE

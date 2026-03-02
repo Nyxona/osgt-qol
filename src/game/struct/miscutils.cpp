@@ -136,6 +136,31 @@ std::vector<std::string> StringTokenize(const std::string& theString,
 
     return theStringVector;
 }
+std::vector<std::wstring> StringTokenize(const std::wstring& theString,
+                                        const std::wstring& theDelimiter)
+{
+    std::vector<std::wstring> theStringVector;
+
+    if (!theString.empty())
+    {
+        size_t start = 0, end = 0;
+
+        while (end != std::wstring::npos)
+        {
+            end = theString.find(theDelimiter, start);
+
+            // If at end, use length=maxLength.  Else use length=end-start.
+            theStringVector.push_back(theString.substr(
+                start, (end == std::wstring::npos) ? std::wstring::npos : end - start));
+
+            // If at end, use start=maxSize.  Else use start=end+delimiter.
+            start = ((end > (std::wstring::npos - theDelimiter.size())) ? std::wstring::npos
+                                                                       : end + theDelimiter.size());
+        }
+    }
+
+    return theStringVector;
+}
 bool StringFromStartMatches(const std::string& line, const std::string textToMatch)
 {
     for (uint32_t i = 0; i < textToMatch.size(); i++)

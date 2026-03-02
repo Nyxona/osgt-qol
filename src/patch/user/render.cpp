@@ -26,6 +26,8 @@
 #include <fstream>
 #include <iostream>
 
+#include <lz-string.hpp>
+
 // MainMenuCreate
 REGISTER_GAME_FUNCTION(
     MainMenuCreate,
@@ -2064,14 +2066,28 @@ class Buildomatica : public patch::BasePatch
         if (m_name.find("..") == std::string::npos && m_name.find("/") == std::string::npos &&
             m_name.find("%") == std::string::npos)
         {
-            int Code = LoadFromPlannerFile("schematics/" + m_name + ".gtworld");
-            if (Code > 0)
-                real::LogToConsole(
-                    std::string("`![Buildomatica]`` Failed to load schematic - error code: " +
-                                std::to_string(Code))
-                        .c_str());
-            else
-                real::LogToConsole("`![Buildomatica]`` Loaded in schematic overlay.");
+            // Prioritize GPMAP, if it exists.
+            int Code = LoadFromGPMAP("schematics/" + m_name + ".dat");
+            if (Code != 0)
+            {
+                if (Code != 1)
+                {
+                    real::LogToConsole(
+                        std::string("`![Buildomatica]`` Failed to load schematic - error code: 0-" +
+                                    std::to_string(Code))
+                            .c_str());
+                    return;
+                }
+                Code = LoadFromCernPlannerFile("schematics/" + m_name + ".gtworld");
+                if (Code > 2)
+                    real::LogToConsole(
+                        std::string("`![Buildomatica]`` Failed to load schematic - error code: 1-" +
+                                    std::to_string(Code))
+                            .c_str());
+                if (Code != 0)
+                    return;
+            }
+            real::LogToConsole("`![Buildomatica]`` Loaded in schematic overlay.");
         }
 
         // TODO: Cull camera tiles, right now we kinda render the entire world.
@@ -2137,7 +2153,128 @@ class Buildomatica : public patch::BasePatch
         }
     }
 
-    static int LoadFromPlannerFile(std::string Path)
+    static int LoadFromGPMAP(std::string Path)
+    {
+        std::ifstream world(Path);
+        if (!world)
+            return 1;
+        // Load the file in as a wstring, we need to decompress it using lzstring library and it
+        // requires a wstring.
+        std::wstring m_saveData{std::istreambuf_iterator<char>(world),
+                                std::istreambuf_iterator<char>()};
+        world.close();
+
+        m_saveData = lzstring::decompressFromBase64(m_saveData);
+
+        // Not a valid GPMAP2 file.
+        size_t headerpos = m_saveData.find(L"GPMAP2");
+        if (headerpos == std::wstring::npos)
+            return 2;
+
+        // Get position of the '|' delimiter after Width/Height/Weather data.
+        size_t delim = m_saveData.find(L"|", headerpos + 7);
+        if (delim == std::wstring::npos)
+            return 3;
+
+        std::wstring header = m_saveData.substr(7, delim);
+        std::vector<std::wstring> tokens = StringTokenize(header, L",");
+
+        // We need at least width/height available. Don't really care about weather.
+        if (tokens.size() < 2)
+            return 4;
+
+        int Width = _wtoi(tokens[0].c_str());
+        int Height = _wtoi(tokens[1].c_str());
+
+        // Reject loading if sizes do not match.
+        if (Width != m_fakeTilemap.m_width || Height != m_fakeTilemap.m_height)
+            return 5;
+
+        // Fill in the tilemap and set the tile tint in place.
+        m_fakeTilemap.m_tiles.clear();
+        m_fakeTilemap.m_tiles.reserve(m_fakeTilemap.m_height * m_fakeTilemap.m_width);
+        for (int y = 0; y < m_fakeTilemap.m_height; y++)
+        {
+            for (int x = 0; x < m_fakeTilemap.m_width; x++)
+            {
+                m_fakeTilemap.m_tiles.push_back(Tile());
+                m_fakeTilemap.m_tiles.back().x = x;
+                m_fakeTilemap.m_tiles.back().y = y;
+                // RGB #b0e8ff
+                m_fakeTilemap.m_tiles.back().m_currentColor = 0xe8ffb0aa;
+            }
+        }
+
+        // Parse the chunks. GPMAP2 works not too differently from .gtworld, it's just using Item
+        // IDs rather than names and sections layers off the same way.
+        size_t ChunkSize = Width * Height * 4;
+
+        // Narrow down UTF-16 to UTF-8. codecvt doesn't help here, loses too much info.
+        std::wstring data = m_saveData.substr(delim + 1, ChunkSize * 4);
+        uint8_t* pMem = new uint8_t[ChunkSize * 4];
+        size_t ptr = 0;
+        for (wchar_t c : data)
+            pMem[ptr++] = (char)c;
+
+        // "fg" layer
+        ptr = 0;
+        for (int i = 0; i < (Width * Height); i++)
+        {
+            int itemID = *((int*)(pMem + ptr));
+            ItemInfo* pItem = real::GetApp()->GetItemInfoManager()->GetItemByIDSafe(itemID);
+            if (pItem->ID != 0)
+                m_fakeTilemap.m_tiles[i].m_itemID = itemID;
+            ptr += 4;
+        }
+        // "bg" layer
+        for (int i = 0; i < (Width * Height); i++)
+        {
+            int itemID = *((int*)(pMem + ptr));
+            ItemInfo* pItem = real::GetApp()->GetItemInfoManager()->GetItemByIDSafe(itemID);
+            if (pItem->ID != 0)
+                m_fakeTilemap.m_tiles[i].m_itemBGID = itemID;
+            ptr += 4;
+        }
+        // skip "ex" for now.
+        ptr += ChunkSize;
+        // "meta"
+        for (int i = 0; i < (Width * Height); i++)
+        {
+            int Flag = *((int*)(pMem + ptr));
+            ptr += 4;
+            if (Flag & GPMAP_PROPERTY_GLUE)
+                m_fakeTilemap.m_tiles[i].m_tileProperties |= TILE_PROPERTY_GLUE;
+            if (Flag & GPMAP_PROPERTY_FLIP)
+                m_fakeTilemap.m_tiles[i].m_tileProperties |= TILE_PROPERTY_FACING_LEFT;
+            if (Flag & GPMAP_PROPERTY_TOGGLED)
+                m_fakeTilemap.m_tiles[i].m_tileProperties |=
+                    TILE_PROPERTY_TOGGLED | TILE_PROPERTY_SILENCED;
+            if ((Flag & GPMAP_PROPERTY_PAINT_CHARCOAL) == GPMAP_PROPERTY_PAINT_CHARCOAL)
+                m_fakeTilemap.m_tiles[i].m_tileProperties |= TILE_PROPERTY_PAINT_BLACK;
+            else if ((Flag & GPMAP_PROPERTY_PAINT_RED) == GPMAP_PROPERTY_PAINT_RED)
+                m_fakeTilemap.m_tiles[i].m_tileProperties |= TILE_PROPERTY_PAINT_RED;
+            else if ((Flag & GPMAP_PROPERTY_PAINT_GREEN) == GPMAP_PROPERTY_PAINT_GREEN)
+                m_fakeTilemap.m_tiles[i].m_tileProperties |= TILE_PROPERTY_PAINT_GREEN;
+            else if ((Flag & GPMAP_PROPERTY_PAINT_BLUE) == GPMAP_PROPERTY_PAINT_BLUE)
+                m_fakeTilemap.m_tiles[i].m_tileProperties |= TILE_PROPERTY_PAINT_BLUE;
+            else if (Flag & GPMAP_PROPERTY_PAINT_YELLOW)
+                m_fakeTilemap.m_tiles[i].m_tileProperties |= TILE_PROPERTY_PAINT_YELLOW;
+            else if (Flag & GPMAP_PROPERTY_PAINT_PURPLE)
+                m_fakeTilemap.m_tiles[i].m_tileProperties |= TILE_PROPERTY_PAINT_PURPLE;
+            else if (Flag & GPMAP_PROPERTY_PAINT_AQUA)
+                m_fakeTilemap.m_tiles[i].m_tileProperties |= TILE_PROPERTY_PAINT_AQUA;
+            if (m_fakeTilemap.m_tiles[i].m_tileProperties & TILE_PROPERTY_PAINT_BLACK)
+            {
+                if (m_fakeTilemap.m_tiles[i].m_itemID == 0 &&
+                    m_fakeTilemap.m_tiles[i].m_itemBGID == 0)
+                    m_fakeTilemap.m_tiles[i].m_tileProperties &= ~TILE_PROPERTY_PAINT_BLACK;
+            }
+        }
+        delete[] pMem;
+        return 0;
+    }
+
+    static int LoadFromCernPlannerFile(std::string Path)
     {
         // Cernodile's World Planner format. Kinda horrible, bunch of string parsing.
         if (m_fakeTilemap.m_height != 60 && m_fakeTilemap.m_width != 100)
@@ -2323,6 +2460,22 @@ class Buildomatica : public patch::BasePatch
   private:
     static WorldTileMap m_fakeTilemap;
     static std::vector<Tile*> m_cameraTiles;
+
+    enum GPMAPTileProperties : unsigned int
+    {
+        GPMAP_PROPERTY_FLIP = 1,
+        GPMAP_PROPERTY_GLUE = 2 << 0,
+        GPMAP_PROPERTY_TOGGLED = 2 << 1,
+        GPMAP_PROPERTY_UNK2 = 2 << 2,
+        GPMAP_PROPERTY_PAINT_AQUA = 2 << 3,
+        GPMAP_PROPERTY_PAINT_PURPLE = 2 << 4,
+        GPMAP_PROPERTY_PAINT_YELLOW = 2 << 5,
+        GPMAP_PROPERTY_PAINT_BLUE = GPMAP_PROPERTY_PAINT_AQUA | GPMAP_PROPERTY_PAINT_PURPLE,
+        GPMAP_PROPERTY_PAINT_GREEN = GPMAP_PROPERTY_PAINT_AQUA | GPMAP_PROPERTY_PAINT_YELLOW,
+        GPMAP_PROPERTY_PAINT_RED = GPMAP_PROPERTY_PAINT_PURPLE | GPMAP_PROPERTY_PAINT_YELLOW,
+        GPMAP_PROPERTY_PAINT_CHARCOAL =
+            GPMAP_PROPERTY_PAINT_AQUA | GPMAP_PROPERTY_PAINT_PURPLE | GPMAP_PROPERTY_PAINT_YELLOW,
+    };
 };
 WorldTileMap Buildomatica::m_fakeTilemap = WorldTileMap();
 std::vector<Tile*> Buildomatica::m_cameraTiles = std::vector<Tile*>();
