@@ -1991,6 +1991,9 @@ REGISTER_USER_GAME_PATCH(HotbarExpanded, hotbar_expanded);
 REGISTER_GAME_FUNCTION(WorldRendererDrawWorldBackground,
                        "40 57 48 83 EC 40 48 8B F9 48 8B 89 C8 00 00 00 48 85 C9 74 79", __fastcall,
                        void, WorldRenderer*);
+REGISTER_GAME_FUNCTION(WorldRendererDrawBackgroundTiles,
+                       "48 89 54 24 10 53 55 56 41 54 41 55 41 56 41 57 48 81 EC C0 00 00 00",
+                       __fastcall, void, WorldRenderer*, std::vector<Tile*>*);
 REGISTER_GAME_FUNCTION(WorldTileMapChooseVisual,
                        "48 85 D2 0F 84 ? ? ? ? 48 89 74 24 20 57 48 83 EC 20 48 8B F1", __fastcall,
                        void, WorldTileMap*, Tile*);
@@ -2016,8 +2019,6 @@ class Buildomatica : public patch::BasePatch
         // FIXME:
         // - Cling storagetype blocks do not.. cling. They seem to cling to actual tilemap instead.
         // - Portals just vanish entirely right now.
-        // - Maybe add another destination in render pipeline right after backgrounds have been
-        // drawn, right now placing a background obscures the overlayed foreground item.
         // - Culling is missing entirely for the overlayed tilemap.
 
         // TODO before release:
@@ -2033,6 +2034,9 @@ class Buildomatica : public patch::BasePatch
         game.hookFunctionPatternDirect<WorldRendererDrawWorldBackground_t>(
             pattern::WorldRendererDrawWorldBackground, WorldRendererDrawWorldBackground,
             &real::WorldRendererDrawWorldBackground);
+        game.hookFunctionPatternDirect<WorldRendererDrawBackgroundTiles_t>(
+            pattern::WorldRendererDrawBackgroundTiles, WorldRendererDrawBackgroundTiles,
+            &real::WorldRendererDrawBackgroundTiles);
         real::WorldTileMapChooseVisual =
             game.findMemoryPattern<WorldTileMapChooseVisual_t>(pattern::WorldTileMapChooseVisual);
 
@@ -2094,18 +2098,39 @@ class Buildomatica : public patch::BasePatch
         {
             if (t->x >= m_origTilemap.m_width || t->y >= m_origTilemap.m_height)
                 continue;
-            if (t->m_itemBGID == 0 && t->m_itemID == 0)
+            if (t->m_itemBGID == 0)
                 continue;
             Tile* m_pRef = &m_origTilemap.m_tiles[t->x + (t->y * m_origTilemap.m_width)];
             if (m_pRef->m_itemID != 0 && t->m_itemBGID == 0)
                 continue;
-            if (m_pRef->m_itemBGID != 0 && t->m_itemID == 0)
+            if (m_pRef->m_itemBGID != 0)
                 continue;
             CL_Vec2f tilePos(t->x * 32.f, t->y * 32.f);
             real::WorldToScreen(&this_->m_worldCamera, &camera, &tilePos);
             if (t->m_itemBGID != 0)
                 real::DrawTile(this_, t->m_itemBGID, t->m_tileBGVisual, &camera, t->m_currentColor,
                                t, 1, 0);
+        }
+    }
+
+    static void __fastcall WorldRendererDrawBackgroundTiles(WorldRenderer* this_,
+                                                            std::vector<Tile*>* tiles)
+    {
+        real::WorldRendererDrawBackgroundTiles(this_, tiles);
+        // Draw our "hologram" from fake tilemap after world background has been drawn.
+        CL_Vec2f camera;
+        WorldTileMap& m_origTilemap = this_->m_pWorld->m_tilemap;
+        for (auto& t : m_cameraTiles)
+        {
+            if (t->x >= m_origTilemap.m_width || t->y >= m_origTilemap.m_height)
+                continue;
+            if (t->m_itemID == 0)
+                continue;
+            Tile* m_pRef = &m_origTilemap.m_tiles[t->x + (t->y * m_origTilemap.m_width)];
+            if (m_pRef->m_itemBGID != 0 && t->m_itemID == 0)
+                continue;
+            CL_Vec2f tilePos(t->x * 32.f, t->y * 32.f);
+            real::WorldToScreen(&this_->m_worldCamera, &camera, &tilePos);
             if (t->m_itemID != 0)
                 real::DrawTile(this_, t->m_itemID, t->m_tileVisual, &camera, t->m_currentColor, t,
                                0, 0);
