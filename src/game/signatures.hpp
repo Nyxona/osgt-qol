@@ -78,6 +78,7 @@ DEFINE_GAME_FUNCTION(AddKeyBinding, __fastcall, void, EntityComponent* pComp, st
                      uint32_t inputcode, uint32_t outputcode, bool bAlsoSendAsNormalRawKey,
                      uint32_t modifiersRequired);
 DEFINE_GAME_FUNCTION(GetGamepadManager, __fastcall, GamepadManager*);
+DEFINE_GAME_FUNCTION(WorldRendererOnRender, __fastcall, void, void*, CL_Vec2f*);
 
 // Declared in weathermanager.cpp
 DEFINE_GAME_FUNCTION(WorldRendererForceBackground, __thiscall, void, uint8_t*, int, void*, void*);

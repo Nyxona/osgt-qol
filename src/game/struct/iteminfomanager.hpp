@@ -18,15 +18,17 @@ struct ItemInfo
     uint8_t frameX;
     uint8_t frameY;
     int m_storageType;
-    uint8_t pad2[92];
+    uint8_t pad2[10];
+    short m_properties;
+    uint8_t pad3[78];
     int m_baseColor;
     int m_overColor;
-    uint8_t pad3[28];
+    uint8_t pad4[28];
     // 232
     std::string altPath;
-    uint8_t pad4[4];
+    uint8_t pad5[4];
     int animationMS;
-    uint8_t pad5[616];
+    uint8_t pad6[610];
 };
 class ItemInfoManager
 {
@@ -38,7 +40,7 @@ class ItemInfoManager
     ItemInfo* GetItemByIDSafe(int ID)
     {
         if (ID < 0 || ID >= m_items.size())
-            return nullptr;
+            return &m_items[0];
         return &m_items[ID];
     }
 

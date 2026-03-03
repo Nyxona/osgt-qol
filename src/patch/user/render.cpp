@@ -156,10 +156,6 @@ REGISTER_GAME_FUNCTION(WorldCameraOnUpdate,
                        __fastcall, void, WorldCamera*, CL_Vec2f*, CL_Vec2f*);
 REGISTER_GAME_FUNCTION(WorldCameraGetCamWorldPos, "8B 41 10 89 02 8B 41 14 89 42 04 48 8B C2 C3",
                        __fastcall, CL_Vec2f*, WorldCamera*, CL_Vec2f*);
-REGISTER_GAME_FUNCTION(
-    WorldRendererOnRender,
-    "48 8B C4 55 41 54 41 55 41 56 41 57 48 8D 68 88 48 81 EC 50 01 00 00 48 C7 45 A8 FE FF FF FF",
-    __fastcall, void, WorldRenderer*, CL_Vec2f*);
 REGISTER_GAME_FUNCTION(WorldRendererAdvanceSong,
                        "48 8B C4 55 41 54 41 55 41 56 41 57 48 8D 68 A1 48 81 EC F0 00 00 00 48 C7 "
                        "45 8F FE FF FF FF 48 89 58 10",
@@ -1236,10 +1232,6 @@ class AnchorCameraToPlayerPatch : public patch::BasePatch
         game.hookFunctionPatternDirect<WorldCameraGetCamWorldPos_t>(
             pattern::WorldCameraGetCamWorldPos, WorldCameraGetCamWorldPos,
             &real::WorldCameraGetCamWorldPos);
-        // WorldRenderer::OnRender for rendering out-of-bounds greyed out area, otherwise it's not
-        // really obvious where the world ends.
-        game.hookFunctionPatternDirect<WorldRendererOnRender_t>(
-            pattern::WorldRendererOnRender, WorldRendererOnRender, &real::WorldRendererOnRender);
 
         // These will default to 0 on new vars.
         m_centerCameraOnPlayer = real::GetApp()->GetVar("osgt_qol_camera_clamp")->GetUINT32();
@@ -1255,11 +1247,15 @@ class AnchorCameraToPlayerPatch : public patch::BasePatch
                                      "Toggle centered camera with Ctrl+C hotkey",
                                      &OnHotkeyCallback);
 
-        // Subscribe to events for hotkeys
+        // Subscribe to events for hotkeys and renderer access
         auto& events = game::EventsAPI::get();
         events.m_sig_onArcadeInput.connect(&OnArcadeInput);
         events.m_sig_addWasdKeys.connect(&AddCustomKeybinds);
         m_toggleKey = events.acquireKeycode();
+
+        // WorldRenderer::OnRender for rendering out-of-bounds greyed out area, otherwise it's not
+        // really obvious where the world ends.
+        events.m_sig_worldRendererOnRender.connect(&WorldRendererOnRender);
     }
 
     // Option callbacks
@@ -1297,10 +1293,9 @@ class AnchorCameraToPlayerPatch : public patch::BasePatch
     }
 
     // Camera & render tweaks
-    static void WorldRendererOnRender(WorldRenderer* this_, CL_Vec2f* p2)
+    static void WorldRendererOnRender(void* this__, CL_Vec2f* p2)
     {
-        real::WorldRendererOnRender(this_, p2);
-
+        WorldRenderer* this_ = (WorldRenderer*)this__;
         if (m_centerCameraOnPlayer)
         {
             // We will shadow out the out of bounds areas to prevent confusion with centered camera.
@@ -2014,6 +2009,8 @@ static int gmsfNoteIDs[34] = {0,    420,   422,   424,   414,   416,   418,  426
                               4634, 4636,  4638,  4640,  4642,  4192,  5726, 5728, 5730,
                               5370, 6030,  6032,  6034,  6808,  6810,  6812, 7218, 7220,
                               7222, 10528, 10530, 10532, 10828, 10830, 10832};
+static std::vector<std::string> g_overlayAggressivenessNames = {
+    "Least obtrusive", "Overlay paint/spatula icons", "Overlay properties & what to break"};
 class Buildomatica : public patch::BasePatch
 {
     void apply() const override
@@ -2053,15 +2050,27 @@ class Buildomatica : public patch::BasePatch
         m_toggleKey = events.acquireKeycode();
         m_reloadKey = events.acquireKeycode();
 
+        // We'll want to overlay ontop of everything if there's anything amiss.
+        events.m_sig_worldRendererOnRender.connect(&WorldRendererOnRender);
+
         Variant* pVariant = real::GetApp()->GetVar("osgt_qol_buildomatica_toggle");
         if (pVariant->GetType() == Variant::TYPE_UNUSED)
             pVariant->Set(1U);
         m_bModEnabled = pVariant->GetUINT32();
 
+        pVariant = real::GetApp()->GetVar("osgt_qol_buildomatica_overlay_obtrusiveness");
+        if (pVariant->GetType() == Variant::TYPE_UNUSED)
+            pVariant->Set(1U); // Good middle-ground, overlay paint/flip ontop.
+        m_overlayObtrusiveness = pVariant->GetUINT32();
+
         auto& optionsMgr = game::OptionsManager::get();
         optionsMgr.addCheckboxOption("qol", "Buildomatica", "osgt_qol_buildomatica_toggle",
                                      "Render schematic if one exists for this world",
                                      &OnBuildomaticaToggle);
+        optionsMgr.addMultiChoiceOption("qol", "Buildomatica",
+                                        "osgt_qol_buildomatica_overlay_obtrusiveness",
+                                        "Overlay Obtrusiveness", g_overlayAggressivenessNames,
+                                        &OnBuildomaticaOverlayObtrusivity, 80.0f);
     }
 
     static void OnBuildomaticaToggle(VariantList* pVariant)
@@ -2079,6 +2088,32 @@ class Buildomatica : public patch::BasePatch
             m_fakeTilemap.m_tiles.clear();
             m_cameraTiles.clear();
         }
+    }
+
+    static void OnBuildomaticaOverlayObtrusivity(VariantList* pVariant)
+    {
+        Entity* pClickedEnt = pVariant->Get(1).GetEntity();
+        Variant* pOptVar = real::GetApp()->GetVar("osgt_qol_buildomatica_overlay_obtrusiveness");
+        uint32_t idx = pOptVar->GetUINT32();
+        if (pClickedEnt->GetName() == "back")
+        {
+            if (idx == 0)
+                idx = (uint32_t)g_overlayAggressivenessNames.size() - 1;
+            else
+                idx--;
+        }
+        else if (pClickedEnt->GetName() == "next")
+        {
+            if (idx >= g_overlayAggressivenessNames.size() - 1)
+                idx = 0;
+            else
+                idx++;
+        }
+        pOptVar->Set(idx);
+        m_overlayObtrusiveness = idx;
+        // Update the option label
+        Entity* pTextLabel = pClickedEnt->GetParent()->GetEntityByName("txt");
+        real::SetTextEntity(pTextLabel, g_overlayAggressivenessNames[idx]);
     }
 
     static void __fastcall OnMapLoaded(void* this_, __int64, __int64, __int64)
@@ -2221,7 +2256,7 @@ class Buildomatica : public patch::BasePatch
             if (t->m_itemID == 0)
                 continue;
             Tile* m_pRef = &m_origTilemap.m_tiles[t->x + (t->y * m_origTilemap.m_width)];
-            if (m_pRef->m_itemBGID != 0 && t->m_itemID == 0)
+            if ((m_pRef->m_itemBGID != 0 && t->m_itemID == 0) || t->m_itemID == m_pRef->m_itemID)
                 continue;
             CL_Vec2f tilePos(t->x * 32.f, t->y * 32.f);
             real::WorldToScreen(&this_->m_worldCamera, &camera, &tilePos);
@@ -2229,6 +2264,82 @@ class Buildomatica : public patch::BasePatch
             {
                 real::DrawTile(this_, t->m_itemID, t->m_tileVisual, &camera,
                                GetMuxedColorForTile(this_, t, true), t, 0, 0);
+            }
+        }
+    }
+
+    static void __fastcall WorldRendererOnRender(void* this__, CL_Vec2f*)
+    {
+        // TODO: highlight for backgrounds as well on mismatch.
+        WorldRenderer* this_ = (WorldRenderer*)this__;
+        if (!m_bModEnabled)
+            return;
+        if (m_overlayObtrusiveness == 0)
+            return;
+        // Overlay stuff ontop after everythings drawn.
+        CL_Vec2f camera;
+        WorldTileMap& m_origTilemap = this_->m_pWorld->m_tilemap;
+        for (auto& t : m_cameraTiles)
+        {
+            if (t->x >= m_origTilemap.m_width || t->y >= m_origTilemap.m_height)
+                continue;
+            Tile* m_pRef = &m_origTilemap.m_tiles[t->x + (t->y * m_origTilemap.m_width)];
+            bool bMatchingItem = m_pRef->m_itemID == t->m_itemID;
+            int overlayIcon = -1;
+            if (bMatchingItem)
+            {
+                ItemInfo* pItemInfo =
+                    real::GetApp()->GetItemInfoManager()->GetItemByIDSafe(t->m_itemID);
+                if ((pItemInfo->m_properties & 1) &&
+                    (t->m_tileProperties & TILE_PROPERTY_FACING_LEFT) !=
+                        (m_pRef->m_tileProperties & TILE_PROPERTY_FACING_LEFT))
+                    overlayIcon = 2966; // Enchanted Spatula
+                else if ((t->m_tileProperties & TILE_PROPERTY_PAINT_BLACK) !=
+                         (m_pRef->m_tileProperties & TILE_PROPERTY_PAINT_BLACK))
+                {
+                    // Overlay a paint bucket icon if we're mismatching a paint.
+                    int Flags = t->m_tileProperties & TILE_PROPERTY_PAINT_BLACK;
+                    if (Flags == 0)
+                        overlayIcon = 3492;
+                    else if (Flags == TILE_PROPERTY_PAINT_BLACK)
+                        overlayIcon = 3490;
+                    else if (Flags == TILE_PROPERTY_PAINT_AQUA)
+                        overlayIcon = 3484;
+                    else if (Flags == TILE_PROPERTY_PAINT_PURPLE)
+                        overlayIcon = 3488;
+                    else if (Flags == TILE_PROPERTY_PAINT_YELLOW)
+                        overlayIcon = 3480;
+                    else if (Flags == TILE_PROPERTY_PAINT_BLUE)
+                        overlayIcon = 3486;
+                    else if (Flags == TILE_PROPERTY_PAINT_GREEN)
+                        overlayIcon = 3482;
+                    else if (Flags == TILE_PROPERTY_PAINT_RED)
+                        overlayIcon = 3478;
+                }
+            }
+            if (m_pRef->m_itemID == 0)
+                continue;
+            CL_Vec2f tilePos(t->x * 32.f, t->y * 32.f);
+            real::WorldToScreen(&this_->m_worldCamera, &camera, &tilePos);
+            if (m_overlayObtrusiveness >= 2 && !bMatchingItem)
+            {
+                real::DrawTile(this_, m_pRef->m_itemID, m_pRef->m_tileVisual, &camera, 0xFF40,
+                               m_pRef, 0, 0);
+                if (t->m_itemID != 0)
+                {
+                    real::DrawTile(this_, t->m_itemID, t->m_tileVisual, &camera, 0xFF80, t, 0, 0);
+                }
+            }
+            else if (m_overlayObtrusiveness >= 1 && overlayIcon != -1)
+            {
+                int origItem = t->m_itemID;
+                int origVis = t->m_tileVisual;
+
+                t->m_itemID = overlayIcon;
+                t->m_tileVisual = 0;
+                real::DrawTile(this_, t->m_itemID, t->m_tileVisual, &camera, 0xFFFFFFAA, t, 0, 0);
+                t->m_itemID = origItem;
+                t->m_tileVisual = origVis;
             }
         }
     }
@@ -2476,30 +2587,37 @@ class Buildomatica : public patch::BasePatch
                     case 'R':
                         g /= 0x3C;
                         b /= 0x3C;
+                        m_fakeTilemap.m_tiles[i].m_tileProperties |= TILE_PROPERTY_PAINT_RED;
                         break;
                     case 'G':
                         r /= 0x3C;
                         b /= 0x3C;
+                        m_fakeTilemap.m_tiles[i].m_tileProperties |= TILE_PROPERTY_PAINT_GREEN;
                         break;
                     case 'B':
                         g /= 0x3C;
                         r /= 0x3C;
+                        m_fakeTilemap.m_tiles[i].m_tileProperties |= TILE_PROPERTY_PAINT_BLUE;
                         break;
                     case 'P':
                         g /= 0x3C;
+                        m_fakeTilemap.m_tiles[i].m_tileProperties |= TILE_PROPERTY_PAINT_PURPLE;
                         break;
                     case 'Y':
                         r /= 0x3C;
                         b /= 0x3C;
+                        m_fakeTilemap.m_tiles[i].m_tileProperties |= TILE_PROPERTY_PAINT_YELLOW;
                         break;
                     case 'A':
                         r /= 0x3C;
                         g /= 0x3C;
+                        m_fakeTilemap.m_tiles[i].m_tileProperties |= TILE_PROPERTY_PAINT_AQUA;
                         break;
                     case 'C':
                         r /= 0x3C;
                         g /= 0x3C;
                         b /= 0x3C;
+                        m_fakeTilemap.m_tiles[i].m_tileProperties |= TILE_PROPERTY_PAINT_BLACK;
                         break;
                     }
                     m_fakeTilemap.m_tiles[i].m_currentColor =
@@ -2665,6 +2783,7 @@ class Buildomatica : public patch::BasePatch
     static WorldTileMap m_fakeTilemap;
     static std::vector<Tile*> m_cameraTiles;
     static bool m_bModEnabled;
+    static int m_overlayObtrusiveness;
     static int m_toggleKey;
     static int m_reloadKey;
 
@@ -2689,4 +2808,5 @@ std::vector<Tile*> Buildomatica::m_cameraTiles = std::vector<Tile*>();
 bool Buildomatica::m_bModEnabled = true;
 int Buildomatica::m_toggleKey;
 int Buildomatica::m_reloadKey;
+int Buildomatica::m_overlayObtrusiveness;
 REGISTER_USER_GAME_PATCH(Buildomatica, buildomatica);

@@ -40,6 +40,11 @@ REGISTER_GAME_FUNCTION(
 REGISTER_GAME_FUNCTION(OnMapLoaded,
                        "40 53 48 83 EC 20 F3 0F 10 ? ? ? ? ? 48 8B D9 C6 81 D4 00 00 00 00",
                        __fastcall, void, void*, __int64, __int64, __int64);
+REGISTER_GAME_FUNCTION(
+    WorldRendererOnRender,
+    "48 8B C4 55 41 54 41 55 41 56 41 57 48 8D 68 88 48 81 EC 50 01 00 00 48 C7 45 A8 FE FF FF FF",
+    __fastcall, void, void*, CL_Vec2f*);
+
 namespace game
 {
 
@@ -73,14 +78,13 @@ void game::EventsAPI::initialize()
         &real::ItemInfoManagerLoadFromMem);
     game.hookFunctionPatternDirect<OnMapLoaded_t>(pattern::OnMapLoaded, OnMapLoaded,
                                                   &real::OnMapLoaded);
+    game.hookFunctionPatternDirect<WorldRendererOnRender_t>(
+        pattern::WorldRendererOnRender, WorldRendererOnRender, &real::WorldRendererOnRender);
 
     m_lastKeycode = 600000;
 }
 
-int game::EventsAPI::acquireKeycode()
-{
-    return m_lastKeycode++;
-}
+int game::EventsAPI::acquireKeycode() { return m_lastKeycode++; }
 
 void game::EventsAPI::ItemInfoManagerLoadFromMem(void* this_, char* pBytes, bool arg3)
 {
@@ -111,6 +115,12 @@ void game::EventsAPI::OnMapLoaded(void* this_, __int64 p1, __int64 p2, __int64 p
     real::OnMapLoaded(this_, p1, p2, p3);
     auto& EventsAPI = game::EventsAPI::get();
     (EventsAPI.m_sig_onMapLoaded)(this_, p1, p2, p3);
+}
+void game::EventsAPI::WorldRendererOnRender(void* this_, CL_Vec2f* p2)
+{
+    real::WorldRendererOnRender(this_, p2);
+    auto& EventsAPI = game::EventsAPI::get();
+    (EventsAPI.m_sig_worldRendererOnRender)(this_, p2);
 }
 
 }; // namespace game
