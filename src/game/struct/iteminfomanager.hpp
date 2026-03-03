@@ -18,12 +18,15 @@ struct ItemInfo
     uint8_t frameX;
     uint8_t frameY;
     int m_storageType;
-    uint8_t pad2[128];
+    uint8_t pad2[92];
+    int m_baseColor;
+    int m_overColor;
+    uint8_t pad3[28];
     // 232
     std::string altPath;
-    uint8_t pad3[4];
+    uint8_t pad4[4];
     int animationMS;
-    uint8_t pad4[616];
+    uint8_t pad5[616];
 };
 class ItemInfoManager
 {

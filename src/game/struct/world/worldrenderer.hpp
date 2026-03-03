@@ -1,6 +1,7 @@
 #pragma once
 
 #include "game/struct/graphics/background.hpp"
+#include "game/struct/netavatar/avatarrenderdata.hpp"
 #include "worldcamera.hpp"
 // Incomplete
 class World;
@@ -20,4 +21,8 @@ class WorldRenderer
     int pad3;
     int m_musicStart;
     int m_musicEnd;
+    uint8_t pad4[8];
+    int m_musicTempo;
+    uint8_t pad5[40];
+    AvatarRenderData m_avatarRenderData;
 };

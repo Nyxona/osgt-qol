@@ -2023,11 +2023,6 @@ class Buildomatica : public patch::BasePatch
         // - Portals just vanish entirely right now.
         // - Culling is missing entirely for the overlayed tilemap.
 
-        // TODO before release:
-        // - GPMAP format support (tommy's planner), requires lz-string dependency. Cernodile's
-        // World Planner format is a bit archaic.
-        // - Options & hotkey to toggle/reload
-
         // Nice-to-have/not a priority:
         // - Look into possibility of using shaders in bgfx to highlight the "hologram" blocks.
 
@@ -2048,10 +2043,43 @@ class Buildomatica : public patch::BasePatch
         // We will reset our fake tilemap on map load
         auto& events = game::EventsAPI::get();
         events.m_sig_onMapLoaded.connect(&OnMapLoaded);
-    };
+        events.m_sig_onArcadeInput.connect(&OnArcadeInput);
+        events.m_sig_addWasdKeys.connect(&AddCustomKeybinds);
+        m_toggleKey = events.acquireKeycode();
+        m_reloadKey = events.acquireKeycode();
+
+        Variant* pVariant = real::GetApp()->GetVar("osgt_qol_buildomatica_toggle");
+        if (pVariant->GetType() == Variant::TYPE_UNUSED)
+            pVariant->Set(1U);
+        m_bModEnabled = pVariant->GetUINT32();
+
+        auto& optionsMgr = game::OptionsManager::get();
+        optionsMgr.addCheckboxOption("qol", "Buildomatica", "osgt_qol_buildomatica_toggle",
+                                     "Render schematic if one exists for this world",
+                                     &OnBuildomaticaToggle);
+    }
+
+    static void OnBuildomaticaToggle(VariantList* pVariant)
+    {
+        Entity* pCheckbox = pVariant->Get(1).GetEntity();
+        m_bModEnabled = pCheckbox->GetVar("checked")->GetUINT32() != 0;
+        real::GetApp()->GetVar("osgt_qol_buildomatica_toggle")->Set(uint32_t(m_bModEnabled));
+
+        if (m_bModEnabled && real::GetApp()->GetGameLogic()->m_pWorld != nullptr)
+            OnMapLoaded(real::GetApp()->GetGameLogic()->m_pWorldRenderer, 0, 0, 0);
+        else
+        {
+            if (m_fakeTilemap.m_tiles.size() != 0)
+                real::LogToConsole("`![Buildomatica]`` Unloaded schematic.");
+            m_fakeTilemap.m_tiles.clear();
+            m_cameraTiles.clear();
+        }
+    }
 
     static void __fastcall OnMapLoaded(void* this_, __int64, __int64, __int64)
     {
+        if (!m_bModEnabled)
+            return;
         // Reset our fake tilemap details
         m_fakeTilemap.m_width = ((WorldRenderer*)this_)->m_pWorld->m_tilemap.m_width;
         m_fakeTilemap.m_height = ((WorldRenderer*)this_)->m_pWorld->m_tilemap.m_height;
@@ -2103,11 +2131,43 @@ class Buildomatica : public patch::BasePatch
         // WIP
     }
 
+    static int GetMuxedColorForTile(WorldRenderer* pRenderer, Tile* pTile, bool bFG)
+    {
+        ItemInfo* pItemInfo = real::GetApp()->GetItemInfoManager()->GetItemByIDSafe(
+            bFG ? pTile->m_itemID : pTile->m_itemBGID);
+        bool bPainted = pTile->m_currentColor != 0xe8ffb0aa;
+        if (pItemInfo->visualType == 25)
+        {
+            // VISUAL_EFFECT_RAINBOW_SHIFT
+            // (Shifty Blocks)
+            int r, g, b = 0;
+            float Hue = (float)(pTile->x + (pTile->x * 4) + pRenderer->m_avatarRenderData.m_hue +
+                                (pTile->y << 3));
+            while (360.f <= Hue)
+                Hue -= 360.f;
+            HSVToRGB(Hue, 1.0, 1.0, &r, &g, &b);
+            return ColorCombine(0xff + (r << 8) + (g << 16) + (b << 24), 0xe8ffb0aa, 0.66f);
+        }
+        else if (pItemInfo->visualType == 36 && !bPainted)
+        {
+            // VISUAL_EFFECT_DISCOLOR
+            // (Copper Plumbing)
+            if (!(pItemInfo->ID & 1))
+                pItemInfo =
+                    real::GetApp()->GetItemInfoManager()->GetItemByIDSafe(pItemInfo->ID + 1);
+            return ColorCombine(pItemInfo->m_overColor, 0xe8ffb0aa, 0.66f);
+        }
+        return pTile->m_currentColor;
+    }
+
+    // Rendering
     static void __fastcall WorldRendererDrawWorldBackground(WorldRenderer* this_)
     {
         real::WorldRendererDrawWorldBackground(this_);
+        if (!m_bModEnabled)
+            return;
 
-        // Draw our "hologram" from fake tilemap after world background has been drawn.
+        // Draw our background "hologram" from fake tilemap after world background has been drawn.
         CL_Vec2f camera;
         WorldTileMap& m_origTilemap = this_->m_pWorld->m_tilemap;
         for (auto& t : m_cameraTiles)
@@ -2124,8 +2184,8 @@ class Buildomatica : public patch::BasePatch
             CL_Vec2f tilePos(t->x * 32.f, t->y * 32.f);
             real::WorldToScreen(&this_->m_worldCamera, &camera, &tilePos);
             if (t->m_itemBGID != 0)
-                real::DrawTile(this_, t->m_itemBGID, t->m_tileBGVisual, &camera, t->m_currentColor,
-                               t, 1, 0);
+                real::DrawTile(this_, t->m_itemBGID, t->m_tileBGVisual, &camera,
+                               GetMuxedColorForTile(this_, t, false), t, 1, 0);
         }
     }
 
@@ -2133,7 +2193,9 @@ class Buildomatica : public patch::BasePatch
                                                             std::vector<Tile*>* tiles)
     {
         real::WorldRendererDrawBackgroundTiles(this_, tiles);
-        // Draw our "hologram" from fake tilemap after world background has been drawn.
+        if (!m_bModEnabled)
+            return;
+        // Draw our foreground "hologram" from fake tilemap after world bgs has been drawn.
         CL_Vec2f camera;
         WorldTileMap& m_origTilemap = this_->m_pWorld->m_tilemap;
         for (auto& t : m_cameraTiles)
@@ -2148,11 +2210,14 @@ class Buildomatica : public patch::BasePatch
             CL_Vec2f tilePos(t->x * 32.f, t->y * 32.f);
             real::WorldToScreen(&this_->m_worldCamera, &camera, &tilePos);
             if (t->m_itemID != 0)
-                real::DrawTile(this_, t->m_itemID, t->m_tileVisual, &camera, t->m_currentColor, t,
-                               0, 0);
+            {
+                real::DrawTile(this_, t->m_itemID, t->m_tileVisual, &camera,
+                               GetMuxedColorForTile(this_, t, true), t, 0, 0);
+            }
         }
     }
 
+    // World planner conversions
     static int LoadFromGPMAP(std::string Path)
     {
         std::ifstream world(Path);
@@ -2222,7 +2287,7 @@ class Buildomatica : public patch::BasePatch
         {
             int itemID = *((int*)(pMem + ptr));
             ItemInfo* pItem = real::GetApp()->GetItemInfoManager()->GetItemByIDSafe(itemID);
-            if (pItem->ID != 0)
+            if (pItem->ID != 0 && !(pItem->ID & 1))
                 m_fakeTilemap.m_tiles[i].m_itemID = itemID;
             ptr += 4;
         }
@@ -2457,9 +2522,56 @@ class Buildomatica : public patch::BasePatch
         return 0;
     }
 
+    // Hotkeys
+    static void __fastcall OnArcadeInput(VariantList* pVL)
+    {
+        if (pVL->Get(0).GetUINT32() == m_toggleKey)
+        {
+            Entity* pGUI = real::GetApp()->m_entityRoot->GetEntityByName("GUI");
+            if (pGUI->GetEntityByName("OptionsMenu") || pGUI->GetEntityByName("ResolutionMenu") ||
+                pGUI->GetEntityByName("OptionsPage"))
+                return;
+            m_bModEnabled = !m_bModEnabled;
+            real::GetApp()->GetVar("osgt_qol_buildomatica_toggle")->Set(uint32_t(m_bModEnabled));
+            if (m_bModEnabled && real::GetApp()->GetGameLogic()->m_pWorld != nullptr)
+                OnMapLoaded(real::GetApp()->GetGameLogic()->m_pWorldRenderer, 0, 0, 0);
+            else
+            {
+                if (m_fakeTilemap.m_tiles.size() != 0)
+                    real::LogToConsole("`![Buildomatica]`` Unloaded schematic.");
+                m_fakeTilemap.m_tiles.clear();
+                m_cameraTiles.clear();
+            }
+        }
+        else if (m_bModEnabled && pVL->Get(0).GetUINT32() == m_reloadKey)
+        {
+            Entity* pGUI = real::GetApp()->m_entityRoot->GetEntityByName("GUI");
+            if (pGUI->GetEntityByName("OptionsMenu") || pGUI->GetEntityByName("ResolutionMenu") ||
+                pGUI->GetEntityByName("OptionsPage"))
+                return;
+            if (real::GetApp()->GetGameLogic()->m_pWorld != nullptr)
+            {
+                real::LogToConsole("`![Buildomatica]`` Attempting to reload schematic.");
+                OnMapLoaded(real::GetApp()->GetGameLogic()->m_pWorldRenderer, 0, 0, 0);
+            }
+        }
+    }
+    static void AddCustomKeybinds()
+    {
+        // CTRL+B
+        real::AddKeyBinding(real::GetArcadeComponent(), "chatkey_buildomatic_toggle", 66,
+                            m_toggleKey, 1, 1);
+        // CTRL+R
+        real::AddKeyBinding(real::GetArcadeComponent(), "chatkey_buildomatic_reload", 82,
+                            m_reloadKey, 1, 1);
+    }
+
   private:
     static WorldTileMap m_fakeTilemap;
     static std::vector<Tile*> m_cameraTiles;
+    static bool m_bModEnabled;
+    static int m_toggleKey;
+    static int m_reloadKey;
 
     enum GPMAPTileProperties : unsigned int
     {
@@ -2479,4 +2591,7 @@ class Buildomatica : public patch::BasePatch
 };
 WorldTileMap Buildomatica::m_fakeTilemap = WorldTileMap();
 std::vector<Tile*> Buildomatica::m_cameraTiles = std::vector<Tile*>();
+bool Buildomatica::m_bModEnabled = true;
+int Buildomatica::m_toggleKey;
+int Buildomatica::m_reloadKey;
 REGISTER_USER_GAME_PATCH(Buildomatica, buildomatica);
