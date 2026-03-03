@@ -2009,6 +2009,11 @@ REGISTER_GAME_FUNCTION(WorldToScreen,
                        "F3 41 0F 10 00 F3 0F 5C 41 10 F3 41 0F 10 48 04 F3 0F 5C 49 14 F3 0F 58 41 "
                        "28 F3 0F 58 49 2C F3 0F 59 41 20",
                        __fastcall, CL_Vec2f*, WorldCamera*, CL_Vec2f*, CL_Vec2f*);
+
+static int gmsfNoteIDs[34] = {0,    420,   422,   424,   414,   416,   418,  426,  412,
+                              4634, 4636,  4638,  4640,  4642,  4192,  5726, 5728, 5730,
+                              5370, 6030,  6032,  6034,  6808,  6810,  6812, 7218, 7220,
+                              7222, 10528, 10530, 10532, 10828, 10830, 10832};
 class Buildomatica : public patch::BasePatch
 {
     void apply() const override
@@ -2112,10 +2117,21 @@ class Buildomatica : public patch::BasePatch
                         std::string("`![Buildomatica]`` Failed to load schematic - error code: 1-" +
                                     std::to_string(Code))
                             .c_str());
-                if (Code != 0)
-                    return;
             }
-            real::LogToConsole("`![Buildomatica]`` Loaded in schematic overlay.");
+            if (Code == 0)
+                real::LogToConsole("`![Buildomatica]`` Loaded in schematic overlay.");
+
+            int MusicCode = LoadFromGMSF("schematics/" + m_name + ".GMSF");
+            if (MusicCode == 0)
+                real::LogToConsole("`![Buildomatica]`` Loaded in schematic overlay for music.");
+            else if (MusicCode != 1)
+                real::LogToConsole(
+                    std::string("`![Buildomatica]`` Failed to load music schematic - error code: " +
+                                std::to_string(MusicCode))
+                        .c_str());
+
+            if (Code != 0 && MusicCode != 0)
+                return;
         }
 
         // TODO: Cull camera tiles, right now we kinda render the entire world.
@@ -2518,6 +2534,85 @@ class Buildomatica : public patch::BasePatch
         {
             if (glue[i] != 0)
                 (&m_fakeTilemap.m_tiles[i])->m_tileProperties |= TILE_PROPERTY_GLUE;
+        }
+        return 0;
+    }
+
+    static int LoadFromGMSF(std::string Path)
+    {
+        std::ifstream world(Path, std::ios_base::binary);
+        if (!world)
+            return 1;
+        world.seekg(0, std::ios_base::end);
+        size_t length = world.tellg();
+        world.seekg(0, std::ios_base::beg);
+
+        if (length < 11)
+        {
+            world.close();
+            return 2;
+        }
+
+        uint8_t* pMem = new uint8_t[length];
+        world.read((char*)pMem, length);
+        world.close();
+
+        if (pMem[0] != 'G' || pMem[1] != 'M' || pMem[2] != 'S' || pMem[3] != 'F')
+            return 3;
+
+        int8_t m_ver = *((int8_t*)(pMem + 4));
+        if (m_ver > 1)
+            return 4;
+        short m_rows = *((short*)(pMem + 8));
+
+        short m_maxRows =
+            (short)(m_fakeTilemap.m_width * floor((float)m_fakeTilemap.m_height / 14.0f));
+
+        if (m_maxRows < m_rows)
+            return 5;
+
+        // Verify if we even have a valid tilemap right now..
+        if (m_fakeTilemap.m_tiles.size() != m_fakeTilemap.m_height * m_fakeTilemap.m_width)
+        {
+            m_fakeTilemap.m_tiles.clear();
+            m_fakeTilemap.m_tiles.reserve(m_fakeTilemap.m_height * m_fakeTilemap.m_width);
+            for (int y = 0; y < m_fakeTilemap.m_height; y++)
+            {
+                for (int x = 0; x < m_fakeTilemap.m_width; x++)
+                {
+                    m_fakeTilemap.m_tiles.push_back(Tile());
+                    m_fakeTilemap.m_tiles.back().x = x;
+                    m_fakeTilemap.m_tiles.back().y = y;
+                    // RGB #b0e8ff
+                    m_fakeTilemap.m_tiles.back().m_currentColor = 0xe8ffb0aa;
+                }
+            }
+        }
+
+        int ptr = 12;
+        for (int y = 0; y < 14; y++)
+        {
+            for (int i = 0; i < m_rows; i++)
+            {
+                int baseY = (int)floor(i / m_fakeTilemap.m_width) * 14;
+                int noteID = *((int8_t*)(pMem + ptr++));
+                Tile* pTarget = &m_fakeTilemap.m_tiles[(i % m_fakeTilemap.m_width) +
+                                                       ((baseY + y) * m_fakeTilemap.m_width)];
+                if (noteID == 15)
+                {
+                    // Audio Rack, skip parsing it, since we don't playback or show its data.
+                    // Otherwise the format is: fixed array of 5 - first byte notetype, second byte
+                    // playing position
+                    // Final byte after the note array is volume.
+                    pTarget->m_itemID = 4632;
+                    ptr += 11;
+                }
+                else
+                {
+                    if (noteID >= 0 && noteID <= 33)
+                        pTarget->m_itemBGID = gmsfNoteIDs[noteID];
+                }
+            }
         }
         return 0;
     }
