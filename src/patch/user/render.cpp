@@ -2010,7 +2010,8 @@ static int gmsfNoteIDs[34] = {0,    420,   422,   424,   414,   416,   418,  426
                               5370, 6030,  6032,  6034,  6808,  6810,  6812, 7218, 7220,
                               7222, 10528, 10530, 10532, 10828, 10830, 10832};
 static std::vector<std::string> g_overlayAggressivenessNames = {
-    "Least obtrusive", "Overlay paint/spatula icons", "Overlay properties & what to break"};
+    "Least obtrusive", "Overlay paint/spatula icons", "Overlay icons & what to break",
+    "Overlay icons & mismatched tiles"};
 class Buildomatica : public patch::BasePatch
 {
     void apply() const override
@@ -2365,7 +2366,8 @@ class Buildomatica : public patch::BasePatch
                 (m_pRef->m_itemBGID != 0 || m_pRef->m_itemID != 0))
             {
                 // Draw a vaporizer ray if we've placed a matching FG tile, but BG is wrong.
-                if (t->m_itemBGID == 0 && bMatchingItem && m_pRef->m_itemID != 0)
+                if (m_overlayObtrusiveness >= 3 && t->m_itemBGID == 0 && bMatchingItem &&
+                    m_pRef->m_itemID != 0)
                 {
                     overlayIcon = 3156;
                     iconTint = 0x3C3CFFAA;
@@ -2376,13 +2378,17 @@ class Buildomatica : public patch::BasePatch
                     // intended fg. Or highlight existing if you're supposed to get rid of it.
                     if (t->m_itemBGID != 0 && (bMatchingItem || m_pRef->m_itemID == 0))
                     {
-                        int col = 0xFF80;
-                        // If we just missed one, make it a more neutral yellow tone, less
-                        // confusing.
-                        if (m_pRef->m_itemBGID == 0)
-                            col = 0xFFFF80;
-                        real::DrawTile(this_, t->m_itemBGID, t->m_tileBGVisual, &camera, col, t, 1,
-                                       0);
+                        // We want this to draw at vislevel 2 if there's no foreground tiles placed.
+                        if (m_overlayObtrusiveness >= 3 || m_pRef->m_itemID == 0)
+                        {
+                            int col = 0xFF80;
+                            // If we just missed one, make it a more neutral yellow tone, less
+                            // confusing.
+                            if (m_pRef->m_itemBGID == 0)
+                                col = 0xFFFF80;
+                            real::DrawTile(this_, t->m_itemBGID, t->m_tileBGVisual, &camera, col, t,
+                                           1, 0);
+                        }
                     }
                     else if (t->m_itemBGID == 0 && m_pRef->m_itemID == 0)
                         real::DrawTile(this_, m_pRef->m_itemBGID, m_pRef->m_tileBGVisual, &camera,
