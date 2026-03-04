@@ -2375,8 +2375,15 @@ class Buildomatica : public patch::BasePatch
                     // Draw a ghost of intended background if wrong one is used and we're on the
                     // intended fg. Or highlight existing if you're supposed to get rid of it.
                     if (t->m_itemBGID != 0 && (bMatchingItem || m_pRef->m_itemID == 0))
-                        real::DrawTile(this_, t->m_itemBGID, t->m_tileBGVisual, &camera, 0xFF80, t,
-                                       1, 0);
+                    {
+                        int col = 0xFF80;
+                        // If we just missed one, make it a more neutral yellow tone, less
+                        // confusing.
+                        if (m_pRef->m_itemBGID == 0)
+                            col = 0xFFFF80;
+                        real::DrawTile(this_, t->m_itemBGID, t->m_tileBGVisual, &camera, col, t, 1,
+                                       0);
+                    }
                     else if (t->m_itemBGID == 0 && m_pRef->m_itemID == 0)
                         real::DrawTile(this_, m_pRef->m_itemBGID, m_pRef->m_tileBGVisual, &camera,
                                        0xFF80, m_pRef, 1, 0);
