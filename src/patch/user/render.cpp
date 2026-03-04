@@ -2023,7 +2023,6 @@ class Buildomatica : public patch::BasePatch
         // FIXME:
         // - Cling storagetype blocks do not.. cling. They seem to cling to actual tilemap instead.
         // - Portals just vanish entirely right now.
-        // - Culling is missing entirely for the overlayed tilemap.
 
         // Nice-to-have/not a priority:
         // - Look into possibility of using shaders in bgfx to highlight the "hologram" blocks.
@@ -2169,17 +2168,54 @@ class Buildomatica : public patch::BasePatch
                 return;
         }
 
-        // TODO: Cull camera tiles, right now we kinda render the entire world.
+        RebuildIndexes(&m_fakeTilemap);
         for (auto& t : m_fakeTilemap.m_tiles)
-        {
             real::WorldTileMapChooseVisual(&m_fakeTilemap, &t);
-            m_cameraTiles.push_back(&t);
+        CullTilemap(&m_fakeTilemap);
+    }
+
+    static void RebuildIndexes(WorldTileMap* pTilemap)
+    {
+        // Replicate what client does with actual tilemap, it sets a rect for culling purposes and
+        // indexes tiles by their order.
+        for (int x = 0; x < pTilemap->m_width; x++)
+        {
+            for (int y = 0; y < pTilemap->m_height; y++)
+            {
+                int m_index = x + (y * pTilemap->m_width);
+                Tile& t = pTilemap->m_tiles[m_index];
+                t.x = x;
+                t.y = y;
+                t.m_rect.left = t.x * 32.0f;
+                t.m_rect.right = t.m_rect.left + 32.0f;
+                t.m_rect.top = t.y * 32.0f;
+                t.m_rect.bottom = t.m_rect.top + 32.0f;
+                t.m_index = m_index;
+            }
         }
     }
 
-    static void CullTilemap()
+    static void CullTilemap(WorldTileMap* pTilemap)
     {
-        // WIP
+        m_cameraTiles.clear();
+        WorldRenderer* pRender = (WorldRenderer*)real::GetApp()->GetGameLogic()->m_pWorldRenderer;
+        Rectf m_viewableRect = {pRender->m_worldCamera.m_position.x - 32.f,
+                                pRender->m_worldCamera.m_position.y - 32.f,
+                                pRender->m_worldCamera.m_zoomedScreenSize.x +
+                                    pRender->m_worldCamera.m_position.x + 32.f,
+                                pRender->m_worldCamera.m_zoomedScreenSize.y +
+                                    pRender->m_worldCamera.m_position.y + 32.f};
+
+        // This will reserve either the exact amount or slightly higher amount for vec.
+        int x = (int)((m_viewableRect.right - m_viewableRect.left) / 32.0f);
+        int y = (int)((m_viewableRect.bottom - m_viewableRect.top) / 32.0f);
+        m_cameraTiles.reserve(x * y);
+        for (auto& t : m_fakeTilemap.m_tiles)
+        {
+            if (t.m_rect.left >= m_viewableRect.left && t.m_rect.right <= m_viewableRect.right &&
+                t.m_rect.top >= m_viewableRect.top && t.m_rect.bottom <= m_viewableRect.bottom)
+                m_cameraTiles.push_back(&t);
+        }
     }
 
     static int GetMuxedColorForTile(WorldRenderer* pRenderer, Tile* pTile, bool bFG)
@@ -2217,6 +2253,8 @@ class Buildomatica : public patch::BasePatch
         real::WorldRendererDrawWorldBackground(this_);
         if (!m_bModEnabled)
             return;
+
+        CullTilemap(&m_fakeTilemap);
 
         // Draw our background "hologram" from fake tilemap after world background has been drawn.
         CL_Vec2f camera;
@@ -2286,6 +2324,7 @@ class Buildomatica : public patch::BasePatch
             Tile* m_pRef = &m_origTilemap.m_tiles[t->x + (t->y * m_origTilemap.m_width)];
             bool bMatchingItem = m_pRef->m_itemID == t->m_itemID;
             int overlayIcon = -1;
+            int iconTint = 0xFFFFFFAA;
             if (bMatchingItem)
             {
                 ItemInfo* pItemInfo =
@@ -2317,31 +2356,90 @@ class Buildomatica : public patch::BasePatch
                         overlayIcon = 3478;
                 }
             }
-            if (m_pRef->m_itemID == 0)
+            bool bMatchingBG = m_pRef->m_itemBGID == t->m_itemBGID;
+            if (m_pRef->m_itemID == 0 && m_pRef->m_itemBGID == 0)
                 continue;
             CL_Vec2f tilePos(t->x * 32.f, t->y * 32.f);
             real::WorldToScreen(&this_->m_worldCamera, &camera, &tilePos);
-            if (m_overlayObtrusiveness >= 2 && !bMatchingItem)
+            if (m_overlayObtrusiveness >= 2 && !bMatchingBG &&
+                (m_pRef->m_itemBGID != 0 || m_pRef->m_itemID != 0))
             {
+                // Draw a vaporizer ray if we've placed a matching FG tile, but BG is wrong.
+                if (t->m_itemBGID == 0 && bMatchingItem && m_pRef->m_itemID != 0)
+                {
+                    overlayIcon = 3156;
+                    iconTint = 0x3C3CFFAA;
+                }
+                else
+                {
+                    // Draw a ghost of intended background if wrong one is used and we're on the
+                    // intended fg. Or highlight existing if you're supposed to get rid of it.
+                    if (t->m_itemBGID != 0 && (bMatchingItem || m_pRef->m_itemID == 0))
+                        real::DrawTile(this_, t->m_itemBGID, t->m_tileBGVisual, &camera, 0xFF80, t,
+                                       1, 0);
+                    else if (t->m_itemBGID == 0 && m_pRef->m_itemID == 0)
+                        real::DrawTile(this_, m_pRef->m_itemBGID, m_pRef->m_tileBGVisual, &camera,
+                                       0xFF80, m_pRef, 1, 0);
+                }
+            }
+            if (m_overlayObtrusiveness >= 2 && !bMatchingItem && m_pRef->m_itemID != 0)
+            {
+                // Draw a red overlay on tiles we need to break and overlay intended tile ontop if
+                // there is one.
                 real::DrawTile(this_, m_pRef->m_itemID, m_pRef->m_tileVisual, &camera, 0xFF40,
                                m_pRef, 0, 0);
                 if (t->m_itemID != 0)
-                {
                     real::DrawTile(this_, t->m_itemID, t->m_tileVisual, &camera, 0xFF80, t, 0, 0);
-                }
             }
-            else if (m_overlayObtrusiveness >= 1 && overlayIcon != -1)
+            if (m_overlayObtrusiveness >= 1 && overlayIcon != -1)
             {
+                // If we have any icon to draw, we'll need to masquerade tile's tilevisual and item
+                // ID, otherwise it'll render garbage.
                 int origItem = t->m_itemID;
                 int origVis = t->m_tileVisual;
 
                 t->m_itemID = overlayIcon;
                 t->m_tileVisual = 0;
-                real::DrawTile(this_, t->m_itemID, t->m_tileVisual, &camera, 0xFFFFFFAA, t, 0, 0);
+                real::DrawTile(this_, t->m_itemID, t->m_tileVisual, &camera, iconTint, t, 0, 0);
                 t->m_itemID = origItem;
                 t->m_tileVisual = origVis;
             }
         }
+    }
+
+    static int CalculatePaintColor(Tile* t)
+    {
+        int Flags = t->m_tileProperties & TILE_PROPERTY_PAINT_BLACK;
+        int r = 0xff;
+        int g = 0xff;
+        int b = 0xff;
+        if (Flags == TILE_PROPERTY_PAINT_BLACK)
+        {
+            // Do not mux this one and also use slightly higher opacity for visibility.
+            return 0x3C3C3CCC;
+        }
+        if (Flags == TILE_PROPERTY_PAINT_AQUA)
+            r = 0x3C;
+        else if (Flags == TILE_PROPERTY_PAINT_PURPLE)
+            g = 0x3C;
+        else if (Flags == TILE_PROPERTY_PAINT_YELLOW)
+            b = 0x3C;
+        else if (Flags == TILE_PROPERTY_PAINT_BLUE)
+        {
+            g = 0x3C;
+            r = 0x3C;
+        }
+        else if (Flags == TILE_PROPERTY_PAINT_GREEN)
+        {
+            r = 0x3C;
+            b = 0x3C;
+        }
+        else if (Flags == TILE_PROPERTY_PAINT_RED)
+        {
+            g = 0x3C;
+            b = 0x3C;
+        }
+        return ColorCombine(0xff + (r << 8) + (g << 16) + (b << 24), 0xe8ffb0aa, 0.66f);
     }
 
     // World planner conversions
@@ -2390,8 +2488,6 @@ class Buildomatica : public patch::BasePatch
             for (int x = 0; x < m_fakeTilemap.m_width; x++)
             {
                 m_fakeTilemap.m_tiles.push_back(Tile());
-                m_fakeTilemap.m_tiles.back().x = x;
-                m_fakeTilemap.m_tiles.back().y = y;
                 // RGB #b0e8ff
                 m_fakeTilemap.m_tiles.back().m_currentColor = 0xe8ffb0aa;
             }
@@ -2460,6 +2556,9 @@ class Buildomatica : public patch::BasePatch
                 if (m_fakeTilemap.m_tiles[i].m_itemID == 0 &&
                     m_fakeTilemap.m_tiles[i].m_itemBGID == 0)
                     m_fakeTilemap.m_tiles[i].m_tileProperties &= ~TILE_PROPERTY_PAINT_BLACK;
+                else
+                    m_fakeTilemap.m_tiles[i].m_currentColor =
+                        CalculatePaintColor(&m_fakeTilemap.m_tiles[i]);
             }
         }
         delete[] pMem;
@@ -2579,49 +2678,32 @@ class Buildomatica : public patch::BasePatch
                 if (name[2] == '_')
                 {
                     char Paint = name[1];
-                    int r = 0xb0;
-                    int g = 0xff;
-                    int b = 0xe8;
                     switch (Paint)
                     {
                     case 'R':
-                        g /= 0x3C;
-                        b /= 0x3C;
                         m_fakeTilemap.m_tiles[i].m_tileProperties |= TILE_PROPERTY_PAINT_RED;
                         break;
                     case 'G':
-                        r /= 0x3C;
-                        b /= 0x3C;
                         m_fakeTilemap.m_tiles[i].m_tileProperties |= TILE_PROPERTY_PAINT_GREEN;
                         break;
                     case 'B':
-                        g /= 0x3C;
-                        r /= 0x3C;
                         m_fakeTilemap.m_tiles[i].m_tileProperties |= TILE_PROPERTY_PAINT_BLUE;
                         break;
                     case 'P':
-                        g /= 0x3C;
                         m_fakeTilemap.m_tiles[i].m_tileProperties |= TILE_PROPERTY_PAINT_PURPLE;
                         break;
                     case 'Y':
-                        r /= 0x3C;
-                        b /= 0x3C;
                         m_fakeTilemap.m_tiles[i].m_tileProperties |= TILE_PROPERTY_PAINT_YELLOW;
                         break;
                     case 'A':
-                        r /= 0x3C;
-                        g /= 0x3C;
                         m_fakeTilemap.m_tiles[i].m_tileProperties |= TILE_PROPERTY_PAINT_AQUA;
                         break;
                     case 'C':
-                        r /= 0x3C;
-                        g /= 0x3C;
-                        b /= 0x3C;
                         m_fakeTilemap.m_tiles[i].m_tileProperties |= TILE_PROPERTY_PAINT_BLACK;
                         break;
                     }
                     m_fakeTilemap.m_tiles[i].m_currentColor =
-                        0xaa + (r << 8) + (g << 16) + (b << 24);
+                        CalculatePaintColor(&m_fakeTilemap.m_tiles[i]);
                     name = name.substr(3);
                 }
                 if (StringFromEndMatches(name, "_FL"))
@@ -2699,8 +2781,6 @@ class Buildomatica : public patch::BasePatch
                 for (int x = 0; x < m_fakeTilemap.m_width; x++)
                 {
                     m_fakeTilemap.m_tiles.push_back(Tile());
-                    m_fakeTilemap.m_tiles.back().x = x;
-                    m_fakeTilemap.m_tiles.back().y = y;
                     // RGB #b0e8ff
                     m_fakeTilemap.m_tiles.back().m_currentColor = 0xe8ffb0aa;
                 }

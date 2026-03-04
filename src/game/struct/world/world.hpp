@@ -1,3 +1,4 @@
+#include "game/struct/vec.hpp"
 #include <cstdint>
 #include <string>
 #include <vector>
@@ -37,7 +38,9 @@ struct Tile
     short m_index;
     short m_tileVisual;
     short m_tileBGVisual;
-    uint8_t pad3[22];
+    bool m_bCollidable;
+    int m_collisionType;
+    Rectf m_rect;
     void* m_pTileExtra;
     uint8_t pad4[20];
     float m_lightLevel;
