@@ -2351,7 +2351,7 @@ class Buildomatica : public patch::BasePatch
                 int visual = real::WorldTileMapChooseVisual_Flag(&m_fakeTilemap, t->x, t->y, 0x400);
                 this_->m_pSurfWater->BlitScaledAnim(tilePos.x, tilePos.y, visual % 8, visual >> 3,
                                                     &this_->m_worldCamera.m_zoomLevel, 0,
-                                                    0xE8FFB090, 0, rotation, false, false,
+                                                    0xE8FFB050, 0, rotation, false, false,
                                                     real::g_globalBatcher);
             }
             else if (m_pRef->m_tileProperties & TILE_PROPERTY_WATER)
