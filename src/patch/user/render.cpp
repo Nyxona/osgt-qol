@@ -2356,12 +2356,13 @@ class Buildomatica : public patch::BasePatch
             }
             else if (m_pRef->m_tileProperties & TILE_PROPERTY_WATER)
             {
-                // Tint it red (realistically it's dark muddy water to signify wrong placement)
+                // Tint it purplish red by using green water as base surface and tinting it red.
                 int visual = real::WorldTileMapChooseVisual_Flag(&this_->m_pWorld->m_tilemap, t->x,
                                                                  t->y, 0x400);
-                this_->m_pSurfWater->BlitScaledAnim(tilePos.x, tilePos.y, visual % 8, visual >> 3,
-                                                    &this_->m_worldCamera.m_zoomLevel, 0, 0xFF90, 0,
-                                                    rotation, false, false, real::g_globalBatcher);
+                this_->m_pSurfGreenWater->BlitScaledAnim(
+                    tilePos.x, tilePos.y, visual % 8, visual >> 3,
+                    &this_->m_worldCamera.m_zoomLevel, 0, 0xFF90, 0, rotation, false, false,
+                    real::g_globalBatcher);
             }
             else if (t->m_tileProperties & TILE_PROPERTY_FIRE)
             {
