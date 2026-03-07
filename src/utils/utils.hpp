@@ -36,6 +36,7 @@ void nopMemory(void* address, size_t size);
 // function call instruction. Throws std::invalid_argument on failure.
 template <typename F> inline F resolveRelativeCall(const void* address);
 template <typename T> inline T resolveMovCall(void* address);
+template <typename T> inline T resolveLeaCall(void* address);
 
 } // namespace utils
 
@@ -67,4 +68,17 @@ template <typename T> inline T utils::resolveMovCall(void* address)
     std::memcpy(&offset, ptr + 2, sizeof(offset));
     // Add 6 because the call address is relative to the next instruction.
     return reinterpret_cast<T>(ptr + 6 + offset);
+}
+
+template <typename T> inline T utils::resolveLeaCall(void* address)
+{
+    // lea rel32
+    static_assert(std::is_pointer_v<T>, "T must be a pointer type.");
+    uint8_t* ptr = reinterpret_cast<uint8_t*>(address);
+    if (ptr == NULL || *(ptr + 1) != 0x8D)
+        throw std::invalid_argument("Address does not point to a valid LEA instruction.");
+    int32_t offset;
+    std::memcpy(&offset, ptr + 3, sizeof(offset));
+    // Add 7 because the call address is relative to the next instruction.
+    return reinterpret_cast<T>(ptr + 7 + offset);
 }

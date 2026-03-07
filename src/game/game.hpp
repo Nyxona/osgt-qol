@@ -20,9 +20,14 @@
     {                                                                                              \
     name##_t name = nullptr;                                                                       \
     }                                                                                              \
-    namespace patched                                                                              \
+    namespace pattern                                                                              \
     {                                                                                              \
-    name##_t name = nullptr;                                                                       \
+    std::string name = patt;                                                                       \
+    }
+#define REGISTER_GAME_GLOBAL_VAR(name, patt, ret)                                                  \
+    namespace real                                                                                 \
+    {                                                                                              \
+    ret name = nullptr;                                                                            \
     }                                                                                              \
     namespace pattern                                                                              \
     {                                                                                              \

@@ -9,7 +9,11 @@
     {                                                                                              \
     extern name##_t name;                                                                          \
     }
-
+#define DEFINE_GAME_GLOBAL_VAR(name, ret)                                                          \
+    namespace real                                                                                 \
+    {                                                                                              \
+    extern ret name;                                                                               \
+    }
 // Declared in options.cpp
 DEFINE_GAME_FUNCTION(CreateSlider, __fastcall, EntityComponent*, Entity* pBG, float x, float y,
                      float sizeX, std::string buttonFileName, std::string left, std::string middle,
@@ -72,6 +76,8 @@ DEFINE_GAME_FUNCTION(SendPacket, __fastcall, void, int, std::string, void*);
 DEFINE_GAME_FUNCTION(GetAudioManager, __fastcall, AudioManagerFMOD*);
 DEFINE_GAME_FUNCTION(GetDevicePixelsPerInchDiagonal, __fastcall, int);
 DEFINE_GAME_FUNCTION(LogToConsole, __fastcall, void, const char*);
+DEFINE_GAME_FUNCTION(RenderBatcherFlush, __fastcall, void, void*, unsigned int, int64_t);
+DEFINE_GAME_GLOBAL_VAR(g_globalBatcher, void*);
 // Declared in events.cpp
 DEFINE_GAME_FUNCTION(GetArcadeComponent, __fastcall, EntityComponent*);
 DEFINE_GAME_FUNCTION(AddKeyBinding, __fastcall, void, EntityComponent* pComp, std::string name,

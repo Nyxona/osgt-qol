@@ -141,6 +141,11 @@ REGISTER_GAME_FUNCTION(LogToConsole,
                        "48 89 4C 24 08 48 89 54 24 10 4C 89 44 24 18 4C 89 4C 24 20 53 57 B8 88 10 "
                        "00 00 ? ? ? ? ? 48 2B E0 48 8B 05 86 E4 2D",
                        __fastcall, void, const char*);
+REGISTER_GAME_GLOBAL_VAR(
+    g_globalBatcher,
+    "48 8D ? ? ? ? ? E8 ? ? ? ? 90 4C 8D ? ? ? ? ? BA 48 00 00 00 44 8D 42 BE 48 8D 4D C0", void*);
+REGISTER_GAME_FUNCTION(RenderBatcherFlush, "40 53 56 41 56 41 57 48 81 EC D8 00 00 00", __fastcall,
+                       void, void*, unsigned int, int64_t);
 namespace game
 {
 void GameHarness::resolveSharedSigs()
@@ -181,6 +186,9 @@ void GameHarness::resolveSharedSigs()
     real::GetDevicePixelsPerInchDiagonal = findMemoryPattern<GetDevicePixelsPerInchDiagonal_t>(
         pattern::GetDevicePixelsPerInchDiagonal);
     real::LogToConsole = findMemoryPattern<LogToConsole_t>(pattern::LogToConsole);
+    real::g_globalBatcher =
+        utils::resolveLeaCall<void*>(findMemoryPattern<uint8_t*>(pattern::g_globalBatcher));
+    real::RenderBatcherFlush = findMemoryPattern<RenderBatcherFlush_t>(pattern::RenderBatcherFlush);
 }
 
 // /!\ Out of Order!

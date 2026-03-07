@@ -1991,9 +1991,16 @@ REGISTER_GAME_FUNCTION(WorldRendererDrawWorldBackground,
 REGISTER_GAME_FUNCTION(WorldRendererDrawBackgroundTiles,
                        "48 89 54 24 10 53 55 56 41 54 41 55 41 56 41 57 48 81 EC C0 00 00 00",
                        __fastcall, void, WorldRenderer*, std::vector<Tile*>*);
+REGISTER_GAME_FUNCTION(
+    WorldRendererDrawWater,
+    "48 8B C4 55 53 56 57 41 54 41 56 41 57 48 8D A8 18 FF FF FF 48 81 EC B0 01 00 00", __fastcall,
+    void, WorldRenderer*, std::vector<Tile*>*);
 REGISTER_GAME_FUNCTION(WorldTileMapChooseVisual,
                        "48 85 D2 0F 84 ? ? ? ? 48 89 74 24 20 57 48 83 EC 20 48 8B F1", __fastcall,
                        void, WorldTileMap*, Tile*);
+REGISTER_GAME_FUNCTION(WorldTileMapChooseVisual_Flag,
+                       "40 57 41 57 F3 0F 10 ? ? ? ? ? 8B ? ? ? ? ? F3 0F 58", __fastcall, int,
+                       WorldTileMap*, int, int, int);
 REGISTER_GAME_FUNCTION(DrawTile,
                        "40 55 53 56 57 41 54 41 55 41 56 41 57 48 8D AC 24 98 EE FF FF B8 68 12 00 "
                        "00 E8 ? ? ? ? 48 2B E0 48 C7 85 C0 0C 00 00 FE FF FF FF",
@@ -2004,6 +2011,7 @@ REGISTER_GAME_FUNCTION(WorldToScreen,
                        "F3 41 0F 10 00 F3 0F 5C 41 10 F3 41 0F 10 48 04 F3 0F 5C 49 14 F3 0F 58 41 "
                        "28 F3 0F 58 49 2C F3 0F 59 41 20",
                        __fastcall, CL_Vec2f*, WorldCamera*, CL_Vec2f*, CL_Vec2f*);
+REGISTER_GAME_GLOBAL_VAR(g_fireBatcher, "48 8D ? ? ? ? ? 33 D2 E8 ? ? ? ? EB 07 4C 8D", void*);
 
 static int gmsfNoteIDs[34] = {0,    420,   422,   424,   414,   416,   418,  426,  412,
                               4634, 4636,  4638,  4640,  4642,  4192,  5726, 5728, 5730,
@@ -2023,7 +2031,7 @@ class Buildomatica : public patch::BasePatch
 
         // FIXME:
         // - Cling storagetype blocks do not.. cling. They seem to cling to actual tilemap instead.
-        // - Portals just vanish entirely right now.
+        // - Portals, rocket thrusters and signs just vanish entirely right now.
 
         // Nice-to-have/not a priority:
         // - Look into possibility of using shaders in bgfx to highlight the "hologram" blocks.
@@ -2036,11 +2044,19 @@ class Buildomatica : public patch::BasePatch
         game.hookFunctionPatternDirect<WorldRendererDrawBackgroundTiles_t>(
             pattern::WorldRendererDrawBackgroundTiles, WorldRendererDrawBackgroundTiles,
             &real::WorldRendererDrawBackgroundTiles);
+        game.hookFunctionPatternDirect<WorldRendererDrawWater_t>(
+            pattern::WorldRendererDrawWater, WorldRendererDrawWater, &real::WorldRendererDrawWater);
         real::WorldTileMapChooseVisual =
             game.findMemoryPattern<WorldTileMapChooseVisual_t>(pattern::WorldTileMapChooseVisual);
+        real::WorldTileMapChooseVisual_Flag =
+            game.findMemoryPattern<WorldTileMapChooseVisual_Flag_t>(
+                pattern::WorldTileMapChooseVisual_Flag);
 
         real::DrawTile = game.findMemoryPattern<DrawTile_t>(pattern::DrawTile);
         real::WorldToScreen = game.findMemoryPattern<WorldToScreen_t>(pattern::WorldToScreen);
+
+        real::g_fireBatcher =
+            utils::resolveLeaCall<void*>(game.findMemoryPattern<uint8_t*>(pattern::g_fireBatcher));
 
         // We will reset our fake tilemap on map load
         auto& events = game::EventsAPI::get();
@@ -2135,38 +2151,39 @@ class Buildomatica : public patch::BasePatch
             m_name.find("%") == std::string::npos)
         {
             // Prioritize GPMAP, if it exists.
-            int Code = LoadFromGPMAP("schematics/" + m_name + ".dat");
-            if (Code != 0)
+            int StatusCode = LoadFromGPMAP("schematics/" + m_name + ".dat");
+            if (StatusCode != 0)
             {
-                if (Code != 1)
+                if (StatusCode != 1)
                 {
                     real::LogToConsole(
                         std::string("`![Buildomatica]`` Failed to load schematic - error code: 0-" +
-                                    std::to_string(Code))
+                                    std::to_string(StatusCode))
                             .c_str());
                     return;
                 }
-                Code = LoadFromCernPlannerFile("schematics/" + m_name + ".gtworld");
-                if (Code > 2)
+                StatusCode = LoadFromCernPlannerFile("schematics/" + m_name + ".gtworld");
+                if (StatusCode > 2)
                     real::LogToConsole(
                         std::string("`![Buildomatica]`` Failed to load schematic - error code: 1-" +
-                                    std::to_string(Code))
+                                    std::to_string(StatusCode))
                             .c_str());
             }
-            if (Code == 0)
+            if (StatusCode == 0)
                 real::LogToConsole("`![Buildomatica]`` Loaded in schematic overlay.");
 
-            int MusicCode = LoadFromGMSF("schematics/" + m_name + ".GMSF");
-            if (MusicCode == 0)
+            int MusicStatusCode = LoadFromGMSF("schematics/" + m_name + ".GMSF");
+            if (MusicStatusCode == 0)
                 real::LogToConsole("`![Buildomatica]`` Loaded in schematic overlay for music.");
-            else if (MusicCode != 1)
+            else if (MusicStatusCode != 1)
                 real::LogToConsole(
                     std::string("`![Buildomatica]`` Failed to load music schematic - error code: " +
-                                std::to_string(MusicCode))
+                                std::to_string(MusicStatusCode))
                         .c_str());
 
-            if (Code != 0 && MusicCode != 0)
+            if (StatusCode != 0 && MusicStatusCode != 0)
                 return;
+            m_bDrawNotesOnly = StatusCode != 0 && MusicStatusCode == 0;
         }
 
         RebuildIndexes(&m_fakeTilemap);
@@ -2283,7 +2300,7 @@ class Buildomatica : public patch::BasePatch
                                                             std::vector<Tile*>* tiles)
     {
         real::WorldRendererDrawBackgroundTiles(this_, tiles);
-        if (!m_bModEnabled)
+        if (!m_bModEnabled || m_bDrawNotesOnly)
             return;
         // Draw our foreground "hologram" from fake tilemap after world bgs has been drawn.
         CL_Vec2f camera;
@@ -2307,6 +2324,66 @@ class Buildomatica : public patch::BasePatch
         }
     }
 
+    static void __fastcall WorldRendererDrawWater(WorldRenderer* this_, std::vector<Tile*>* tiles)
+    {
+        real::WorldRendererDrawWater(this_, tiles);
+        if (!m_bModEnabled || m_bDrawNotesOnly)
+            return;
+        // Draw our water "hologram" from fake tilemap after rest of world has been drawn.
+        // TODO: Fire skewing/animation
+        CL_Vec2f camera;
+        CL_Vec2f rotation(0, 0);
+        WorldTileMap& m_origTilemap = this_->m_pWorld->m_tilemap;
+        for (auto& t : m_cameraTiles)
+        {
+            if (t->x >= m_origTilemap.m_width || t->y >= m_origTilemap.m_height)
+                continue;
+            Tile* m_pRef = &m_origTilemap.m_tiles[t->x + (t->y * m_origTilemap.m_width)];
+            if ((t->m_tileProperties & TILE_PROPERTY_WATER) ==
+                    (m_pRef->m_tileProperties & TILE_PROPERTY_WATER) &&
+                (t->m_tileProperties & TILE_PROPERTY_FIRE) ==
+                    (m_pRef->m_tileProperties & TILE_PROPERTY_FIRE))
+                continue;
+            CL_Vec2f tilePos(t->x * 32.f, t->y * 32.f);
+            tilePos = *real::WorldToScreen(&this_->m_worldCamera, &camera, &tilePos);
+            if (t->m_tileProperties & TILE_PROPERTY_WATER)
+            {
+                int visual = real::WorldTileMapChooseVisual_Flag(&m_fakeTilemap, t->x, t->y, 0x400);
+                this_->m_pSurfWater->BlitScaledAnim(tilePos.x, tilePos.y, visual % 8, visual >> 3,
+                                                    &this_->m_worldCamera.m_zoomLevel, 0,
+                                                    0xE8FFB090, 0, rotation, false, false,
+                                                    real::g_globalBatcher);
+            }
+            else if (m_pRef->m_tileProperties & TILE_PROPERTY_WATER)
+            {
+                // Tint it red (realistically it's dark muddy water to signify wrong placement)
+                int visual = real::WorldTileMapChooseVisual_Flag(&this_->m_pWorld->m_tilemap, t->x,
+                                                                 t->y, 0x400);
+                this_->m_pSurfWater->BlitScaledAnim(tilePos.x, tilePos.y, visual % 8, visual >> 3,
+                                                    &this_->m_worldCamera.m_zoomLevel, 0, 0xFF90, 0,
+                                                    rotation, false, false, real::g_globalBatcher);
+            }
+            else if (t->m_tileProperties & TILE_PROPERTY_FIRE)
+            {
+                int visual =
+                    real::WorldTileMapChooseVisual_Flag(&m_fakeTilemap, t->x, t->y, 0x1000);
+                this_->m_pSurfFire->BlitScaledAnim(tilePos.x, tilePos.y, visual % 8, visual >> 3,
+                                                   &this_->m_worldCamera.m_zoomLevel, 0, 0xE8FFB0A0,
+                                                   0, rotation, false, false, real::g_fireBatcher);
+            }
+            else if (m_pRef->m_tileProperties & TILE_PROPERTY_FIRE)
+            {
+                int visual = real::WorldTileMapChooseVisual_Flag(&this_->m_pWorld->m_tilemap, t->x,
+                                                                 t->y, 0x1000);
+                this_->m_pSurfFire->BlitScaledAnim(tilePos.x, tilePos.y, visual % 8, visual >> 3,
+                                                   &this_->m_worldCamera.m_zoomLevel, 0, 0xFFA0, 0,
+                                                   rotation, false, false, real::g_fireBatcher);
+            }
+        }
+        real::RenderBatcherFlush(real::g_globalBatcher, 0, -1);
+        real::RenderBatcherFlush(real::g_fireBatcher, 0, -1);
+    }
+
     static void __fastcall WorldRendererOnRender(void* this__, CL_Vec2f*)
     {
         // TODO: highlight for backgrounds as well on mismatch.
@@ -2326,7 +2403,8 @@ class Buildomatica : public patch::BasePatch
             bool bMatchingItem = m_pRef->m_itemID == t->m_itemID;
             int overlayIcon = -1;
             int iconTint = 0xFFFFFFAA;
-            if (bMatchingItem)
+            // Blit an icon if some of the properties mismatch.
+            if (bMatchingItem && !m_bDrawNotesOnly)
             {
                 ItemInfo* pItemInfo =
                     real::GetApp()->GetItemInfoManager()->GetItemByIDSafe(t->m_itemID);
@@ -2367,7 +2445,7 @@ class Buildomatica : public patch::BasePatch
             {
                 // Draw a vaporizer ray if we've placed a matching FG tile, but BG is wrong.
                 if (m_overlayObtrusiveness >= 3 && t->m_itemBGID == 0 && bMatchingItem &&
-                    m_pRef->m_itemID != 0)
+                    m_pRef->m_itemID != 0 && !m_bDrawNotesOnly)
                 {
                     overlayIcon = 3156;
                     iconTint = 0x3C3CFFAA;
@@ -2390,7 +2468,7 @@ class Buildomatica : public patch::BasePatch
                                            1, 0);
                         }
                     }
-                    else if (t->m_itemBGID == 0 && m_pRef->m_itemID == 0)
+                    else if (t->m_itemBGID == 0 && m_pRef->m_itemID == 0 && !m_bDrawNotesOnly)
                         real::DrawTile(this_, m_pRef->m_itemBGID, m_pRef->m_tileBGVisual, &camera,
                                        0xFF80, m_pRef, 1, 0);
                 }
@@ -2399,10 +2477,14 @@ class Buildomatica : public patch::BasePatch
             {
                 // Draw a red overlay on tiles we need to break and overlay intended tile ontop if
                 // there is one.
-                real::DrawTile(this_, m_pRef->m_itemID, m_pRef->m_tileVisual, &camera, 0xFF40,
-                               m_pRef, 0, 0);
-                if (t->m_itemID != 0)
-                    real::DrawTile(this_, t->m_itemID, t->m_tileVisual, &camera, 0xFF80, t, 0, 0);
+                if (!m_bDrawNotesOnly || (m_bDrawNotesOnly && t->m_itemBGID != 0))
+                {
+                    real::DrawTile(this_, m_pRef->m_itemID, m_pRef->m_tileVisual, &camera, 0xFF40,
+                                   m_pRef, 0, 0);
+                    if (t->m_itemID != 0)
+                        real::DrawTile(this_, t->m_itemID, t->m_tileVisual, &camera, 0xFF80, t, 0,
+                                       0);
+                }
             }
             if (m_overlayObtrusiveness >= 1 && overlayIcon != -1)
             {
@@ -2536,8 +2618,16 @@ class Buildomatica : public patch::BasePatch
                 m_fakeTilemap.m_tiles[i].m_itemBGID = itemID;
             ptr += 4;
         }
-        // skip "ex" for now.
-        ptr += ChunkSize;
+        // "ex" layer
+        for (int i = 0; i < (Width * Height); i++)
+        {
+            int flags = *((int*)(pMem + ptr));
+            if (flags == 10001)
+                m_fakeTilemap.m_tiles[i].m_tileProperties |= TILE_PROPERTY_WATER;
+            else if (flags == 10002)
+                m_fakeTilemap.m_tiles[i].m_tileProperties |= TILE_PROPERTY_FIRE;
+            ptr += 4;
+        }
         // "meta"
         for (int i = 0; i < (Width * Height); i++)
         {
@@ -2660,7 +2750,7 @@ class Buildomatica : public patch::BasePatch
                 std::string layer = m_layers[i];
                 std::vector<std::string> tiles = StringTokenize(layer, ",");
                 for (int j = 0; j < tiles.size(); j++)
-                    water.emplace_back(tiles[j] == "Water" ? 1 : 0);
+                    water.emplace_back(tiles[j] == "Water" ? 1 : tiles[j] == "Fire" ? 2 : 0);
             }
         }
         if (m_saveData.find("water=") != std::string::npos &&
@@ -2740,8 +2830,10 @@ class Buildomatica : public patch::BasePatch
         }
         for (int i = 0; i < water.size(); i++)
         {
-            if (water[i] != 0)
+            if (water[i] == 1)
                 (&m_fakeTilemap.m_tiles[i])->m_tileProperties |= TILE_PROPERTY_WATER;
+            else if (water[i] == 2)
+                (&m_fakeTilemap.m_tiles[i])->m_tileProperties |= TILE_PROPERTY_FIRE;
         }
         for (int i = 0; i < glue.size(); i++)
         {
@@ -2876,6 +2968,7 @@ class Buildomatica : public patch::BasePatch
     static WorldTileMap m_fakeTilemap;
     static std::vector<Tile*> m_cameraTiles;
     static bool m_bModEnabled;
+    static bool m_bDrawNotesOnly;
     static int m_overlayObtrusiveness;
     static int m_toggleKey;
     static int m_reloadKey;
@@ -2899,6 +2992,7 @@ class Buildomatica : public patch::BasePatch
 WorldTileMap Buildomatica::m_fakeTilemap = WorldTileMap();
 std::vector<Tile*> Buildomatica::m_cameraTiles = std::vector<Tile*>();
 bool Buildomatica::m_bModEnabled = true;
+bool Buildomatica::m_bDrawNotesOnly;
 int Buildomatica::m_toggleKey;
 int Buildomatica::m_reloadKey;
 int Buildomatica::m_overlayObtrusiveness;
