@@ -2316,7 +2316,9 @@ class Buildomatica : public patch::BasePatch
                 continue;
             CL_Vec2f tilePos(t->x * 32.f, t->y * 32.f);
             real::WorldToScreen(&this_->m_worldCamera, &camera, &tilePos);
-            if (t->m_itemID != 0)
+            // Ignore seeds if they are somehow present in our data. Neither planner format supports
+            // it, but converter tools may leave residue.
+            if (t->m_itemID != 0 && !(t->m_itemID & 1))
             {
                 real::DrawTile(this_, t->m_itemID, t->m_tileVisual, &camera,
                                GetMuxedColorForTile(this_, t, true), t, 0, 0);
@@ -2474,7 +2476,8 @@ class Buildomatica : public patch::BasePatch
                                        0xFF80, m_pRef, 1, 0);
                 }
             }
-            if (m_overlayObtrusiveness >= 2 && !bMatchingItem && m_pRef->m_itemID != 0)
+            if (m_overlayObtrusiveness >= 2 && !bMatchingItem && m_pRef->m_itemID != 0 &&
+                !(m_pRef->m_itemID & 1))
             {
                 // Draw a red overlay on tiles we need to break and overlay intended tile ontop if
                 // there is one.
