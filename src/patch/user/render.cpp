@@ -2031,7 +2031,6 @@ class Buildomatica : public patch::BasePatch
 
         // FIXME:
         // - Cling storagetype blocks do not.. cling. They seem to cling to actual tilemap instead.
-        // - Portals, rocket thrusters and signs just vanish entirely right now.
 
         // Nice-to-have/not a priority:
         // - Look into possibility of using shaders in bgfx to highlight the "hologram" blocks.
@@ -2320,8 +2319,23 @@ class Buildomatica : public patch::BasePatch
             // it, but converter tools may leave residue.
             if (t->m_itemID != 0 && !(t->m_itemID & 1))
             {
-                real::DrawTile(this_, t->m_itemID, t->m_tileVisual, &camera,
-                               GetMuxedColorForTile(this_, t, true), t, 0, 0);
+                ItemInfo* pInfo =
+                    real::GetApp()->GetItemInfoManager()->GetItemByIDSafe(t->m_itemID);
+                if (pInfo->m_properties & 0x40)
+                {
+                    // Hack in workaround for NOSHADOW. They expect alpha 0xFF, but that kinda ruins
+                    // the overlay. One could nop out DrawTile+0x368 to avoid doing this, but it has
+                    // unknown consequences.
+                    pInfo->m_properties &= ~0x40;
+                    real::DrawTile(this_, t->m_itemID, t->m_tileVisual, &camera,
+                                   GetMuxedColorForTile(this_, t, true), t, 0, 0);
+                    pInfo->m_properties |= 0x40;
+                }
+                else
+                {
+                    real::DrawTile(this_, t->m_itemID, t->m_tileVisual, &camera,
+                                   GetMuxedColorForTile(this_, t, true), t, 0, 0);
+                }
             }
         }
     }
