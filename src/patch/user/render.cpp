@@ -2001,6 +2001,9 @@ REGISTER_GAME_FUNCTION(WorldTileMapChooseVisual,
 REGISTER_GAME_FUNCTION(WorldTileMapChooseVisual_Flag,
                        "40 57 41 57 F3 0F 10 ? ? ? ? ? 8B ? ? ? ? ? F3 0F 58", __fastcall, int,
                        WorldTileMap*, int, int, int);
+REGISTER_GAME_FUNCTION(WorldTileMapChooseVisual_SmartEdge,
+                       "48 8B C4 48 89 50 10 55 57 41 54 41 55 41 56 48 83 EC 50", __fastcall, int,
+                       WorldTileMap*, Tile*, int);
 REGISTER_GAME_FUNCTION(DrawTile,
                        "40 55 53 56 57 41 54 41 55 41 56 41 57 48 8D AC 24 98 EE FF FF B8 68 12 00 "
                        "00 E8 ? ? ? ? 48 2B E0 48 C7 85 C0 0C 00 00 FE FF FF FF",
@@ -2045,6 +2048,9 @@ class Buildomatica : public patch::BasePatch
             &real::WorldRendererDrawBackgroundTiles);
         game.hookFunctionPatternDirect<WorldRendererDrawWater_t>(
             pattern::WorldRendererDrawWater, WorldRendererDrawWater, &real::WorldRendererDrawWater);
+        game.hookFunctionPatternDirect<WorldTileMapChooseVisual_SmartEdge_t>(
+            pattern::WorldTileMapChooseVisual_SmartEdge, WorldTileMapChooseVisual_SmartEdge,
+            &real::WorldTileMapChooseVisual_SmartEdge);
         real::WorldTileMapChooseVisual =
             game.findMemoryPattern<WorldTileMapChooseVisual_t>(pattern::WorldTileMapChooseVisual);
         real::WorldTileMapChooseVisual_Flag =
@@ -2264,6 +2270,12 @@ class Buildomatica : public patch::BasePatch
         return pTile->m_currentColor;
     }
 
+    static int WorldTileMapChooseVisual_SmartEdge(WorldTileMap* pTilemap, Tile* p2, int p3)
+    {
+        return real::WorldTileMapChooseVisual_SmartEdge(
+            m_bDrawingHologram ? &m_fakeTilemap : pTilemap, p2, p3);
+    }
+
     // Rendering
     static void __fastcall WorldRendererDrawWorldBackground(WorldRenderer* this_)
     {
@@ -2304,6 +2316,7 @@ class Buildomatica : public patch::BasePatch
         // Draw our foreground "hologram" from fake tilemap after world bgs has been drawn.
         CL_Vec2f camera;
         WorldTileMap& m_origTilemap = this_->m_pWorld->m_tilemap;
+        m_bDrawingHologram = true;
         for (auto& t : m_cameraTiles)
         {
             if (t->x >= m_origTilemap.m_width || t->y >= m_origTilemap.m_height)
@@ -2338,6 +2351,7 @@ class Buildomatica : public patch::BasePatch
                 }
             }
         }
+        m_bDrawingHologram = false;
     }
 
     static void __fastcall WorldRendererDrawWater(WorldRenderer* this_, std::vector<Tile*>* tiles)
@@ -2500,8 +2514,12 @@ class Buildomatica : public patch::BasePatch
                     real::DrawTile(this_, m_pRef->m_itemID, m_pRef->m_tileVisual, &camera, 0xFF40,
                                    m_pRef, 0, 0);
                     if (t->m_itemID != 0)
+                    {
+                        m_bDrawingHologram = true;
                         real::DrawTile(this_, t->m_itemID, t->m_tileVisual, &camera, 0xFF80, t, 0,
                                        0);
+                        m_bDrawingHologram = false;
+                    }
                 }
             }
             if (m_overlayObtrusiveness >= 1 && overlayIcon != -1)
@@ -2624,7 +2642,10 @@ class Buildomatica : public patch::BasePatch
             int itemID = *((int*)(pMem + ptr));
             ItemInfo* pItem = real::GetApp()->GetItemInfoManager()->GetItemByIDSafe(itemID);
             if (pItem->ID != 0 && !(pItem->ID & 1))
+            {
                 m_fakeTilemap.m_tiles[i].m_itemID = itemID;
+                m_fakeTilemap.m_tiles[i].m_collisionType = pItem->m_collision;
+            }
             ptr += 4;
         }
         // "bg" layer
@@ -2835,7 +2856,10 @@ class Buildomatica : public patch::BasePatch
             }
             ItemInfo* info = real::GetApp()->GetItemInfoManager()->GetItemByName(name);
             if (info->ID != 0)
+            {
                 (&m_fakeTilemap.m_tiles[i])->m_itemID = info->ID;
+                (&m_fakeTilemap.m_tiles[i])->m_collisionType = info->m_collision;
+            }
         }
         for (int i = 0; i < background.size(); i++)
         {
@@ -2986,6 +3010,7 @@ class Buildomatica : public patch::BasePatch
     static WorldTileMap m_fakeTilemap;
     static std::vector<Tile*> m_cameraTiles;
     static bool m_bModEnabled;
+    static bool m_bDrawingHologram;
     static bool m_bDrawNotesOnly;
     static int m_overlayObtrusiveness;
     static int m_toggleKey;
@@ -3010,6 +3035,7 @@ class Buildomatica : public patch::BasePatch
 WorldTileMap Buildomatica::m_fakeTilemap = WorldTileMap();
 std::vector<Tile*> Buildomatica::m_cameraTiles = std::vector<Tile*>();
 bool Buildomatica::m_bModEnabled = true;
+bool Buildomatica::m_bDrawingHologram = false;
 bool Buildomatica::m_bDrawNotesOnly;
 int Buildomatica::m_toggleKey;
 int Buildomatica::m_reloadKey;
