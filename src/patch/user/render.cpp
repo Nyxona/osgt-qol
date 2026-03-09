@@ -2516,8 +2516,21 @@ class Buildomatica : public patch::BasePatch
                     if (t->m_itemID != 0)
                     {
                         m_bDrawingHologram = true;
-                        real::DrawTile(this_, t->m_itemID, t->m_tileVisual, &camera, 0xFF80, t, 0,
-                                       0);
+                        ItemInfo* pInfo =
+                            real::GetApp()->GetItemInfoManager()->GetItemByIDSafe(t->m_itemID);
+                        if (pInfo->m_properties & 0x40)
+                        {
+                            // Hack in workaround for NOSHADOW here as well.
+                            pInfo->m_properties &= ~0x40;
+                            real::DrawTile(this_, t->m_itemID, t->m_tileVisual, &camera, 0xFF80, t,
+                                           0, 0);
+                            pInfo->m_properties |= 0x40;
+                        }
+                        else
+                        {
+                            real::DrawTile(this_, t->m_itemID, t->m_tileVisual, &camera, 0xFF80, t,
+                                           0, 0);
+                        }
                         m_bDrawingHologram = false;
                     }
                 }
