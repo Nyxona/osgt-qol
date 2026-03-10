@@ -195,6 +195,39 @@ REGISTER_GAME_FUNCTION(
     PlayerItemsFillBlankQuickToolSlotsWithStuff,
     "48 89 5C 24 08 48 89 6C 24 10 48 89 74 24 18 57 41 56 41 57 48 83 EC 30 48 8B 41 20",
     __fastcall, void, PlayerItems*);
+REGISTER_GAME_FUNCTION(WorldRendererDrawWorldBackground,
+                       "40 57 48 83 EC 40 48 8B F9 48 8B 89 C8 00 00 00 48 85 C9 74 79", __fastcall,
+                       void, WorldRenderer*);
+REGISTER_GAME_FUNCTION(WorldRendererDrawBackgroundTiles,
+                       "48 89 54 24 10 53 55 56 41 54 41 55 41 56 41 57 48 81 EC C0 00 00 00",
+                       __fastcall, void, WorldRenderer*, std::vector<Tile*>*);
+REGISTER_GAME_FUNCTION(
+    WorldRendererDrawWater,
+    "48 8B C4 55 53 56 57 41 54 41 56 41 57 48 8D A8 18 FF FF FF 48 81 EC B0 01 00 00", __fastcall,
+    void, WorldRenderer*, std::vector<Tile*>*);
+REGISTER_GAME_FUNCTION(WorldTileMapGetTileSafe, "85 D2 78 23 45 85 C0 78 1E 8B 41 08 3B D0 7D 17",
+                       __fastcall, Tile*, WorldTileMap*, int, int);
+REGISTER_GAME_FUNCTION(WorldTileMapChooseVisual,
+                       "48 85 D2 0F 84 ? ? ? ? 48 89 74 24 20 57 48 83 EC 20 48 8B F1", __fastcall,
+                       void, WorldTileMap*, Tile*);
+REGISTER_GAME_FUNCTION(WorldTileMapChooseVisual_Flag,
+                       "40 57 41 57 F3 0F 10 ? ? ? ? ? 8B ? ? ? ? ? F3 0F 58", __fastcall, int,
+                       WorldTileMap*, int, int, int);
+REGISTER_GAME_FUNCTION(WorldTileMapChooseVisual_SmartEdge,
+                       "48 8B C4 48 89 50 10 55 57 41 54 41 55 41 56 48 83 EC 50", __fastcall, int,
+                       WorldTileMap*, Tile*, int);
+REGISTER_GAME_FUNCTION(DrawTile,
+                       "40 55 53 56 57 41 54 41 55 41 56 41 57 48 8D AC 24 98 EE FF FF B8 68 12 00 "
+                       "00 E8 ? ? ? ? 48 2B E0 48 C7 85 C0 0C 00 00 FE FF FF FF",
+                       __fastcall, void, WorldRenderer* param_1, unsigned short param_2,
+                       int param_3, CL_Vec2f* param_4, unsigned int param_5, Tile* param_6,
+                       uint8_t param_7, char param_8);
+REGISTER_GAME_FUNCTION(WorldToScreen,
+                       "F3 41 0F 10 00 F3 0F 5C 41 10 F3 41 0F 10 48 04 F3 0F 5C 49 14 F3 0F 58 41 "
+                       "28 F3 0F 58 49 2C F3 0F 59 41 20",
+                       __fastcall, CL_Vec2f*, WorldCamera*, CL_Vec2f*, CL_Vec2f*);
+REGISTER_GAME_GLOBAL_VAR(g_fireBatcher, "48 8D ? ? ? ? ? 33 D2 E8 ? ? ? ? EB 07 4C 8D", void*);
+
 static std::vector<std::string> displayNames;
 static uint32_t vanillaWeatherBound = 16;
 class CustomizedTitleScreen : public patch::BasePatch
@@ -1985,37 +2018,6 @@ short HotbarExpanded::m_extraSlots = 0;
 std::vector<std::string> HotbarExpanded::m_optionNames;
 REGISTER_USER_GAME_PATCH(HotbarExpanded, hotbar_expanded);
 
-REGISTER_GAME_FUNCTION(WorldRendererDrawWorldBackground,
-                       "40 57 48 83 EC 40 48 8B F9 48 8B 89 C8 00 00 00 48 85 C9 74 79", __fastcall,
-                       void, WorldRenderer*);
-REGISTER_GAME_FUNCTION(WorldRendererDrawBackgroundTiles,
-                       "48 89 54 24 10 53 55 56 41 54 41 55 41 56 41 57 48 81 EC C0 00 00 00",
-                       __fastcall, void, WorldRenderer*, std::vector<Tile*>*);
-REGISTER_GAME_FUNCTION(
-    WorldRendererDrawWater,
-    "48 8B C4 55 53 56 57 41 54 41 56 41 57 48 8D A8 18 FF FF FF 48 81 EC B0 01 00 00", __fastcall,
-    void, WorldRenderer*, std::vector<Tile*>*);
-REGISTER_GAME_FUNCTION(WorldTileMapChooseVisual,
-                       "48 85 D2 0F 84 ? ? ? ? 48 89 74 24 20 57 48 83 EC 20 48 8B F1", __fastcall,
-                       void, WorldTileMap*, Tile*);
-REGISTER_GAME_FUNCTION(WorldTileMapChooseVisual_Flag,
-                       "40 57 41 57 F3 0F 10 ? ? ? ? ? 8B ? ? ? ? ? F3 0F 58", __fastcall, int,
-                       WorldTileMap*, int, int, int);
-REGISTER_GAME_FUNCTION(WorldTileMapChooseVisual_SmartEdge,
-                       "48 8B C4 48 89 50 10 55 57 41 54 41 55 41 56 48 83 EC 50", __fastcall, int,
-                       WorldTileMap*, Tile*, int);
-REGISTER_GAME_FUNCTION(DrawTile,
-                       "40 55 53 56 57 41 54 41 55 41 56 41 57 48 8D AC 24 98 EE FF FF B8 68 12 00 "
-                       "00 E8 ? ? ? ? 48 2B E0 48 C7 85 C0 0C 00 00 FE FF FF FF",
-                       __fastcall, void, WorldRenderer* param_1, unsigned short param_2,
-                       int param_3, CL_Vec2f* param_4, unsigned int param_5, Tile* param_6,
-                       uint8_t param_7, char param_8);
-REGISTER_GAME_FUNCTION(WorldToScreen,
-                       "F3 41 0F 10 00 F3 0F 5C 41 10 F3 41 0F 10 48 04 F3 0F 5C 49 14 F3 0F 58 41 "
-                       "28 F3 0F 58 49 2C F3 0F 59 41 20",
-                       __fastcall, CL_Vec2f*, WorldCamera*, CL_Vec2f*, CL_Vec2f*);
-REGISTER_GAME_GLOBAL_VAR(g_fireBatcher, "48 8D ? ? ? ? ? 33 D2 E8 ? ? ? ? EB 07 4C 8D", void*);
-
 static int gmsfNoteIDs[34] = {0,    420,   422,   424,   414,   416,   418,  426,  412,
                               4634, 4636,  4638,  4640,  4642,  4192,  5726, 5728, 5730,
                               5370, 6030,  6032,  6034,  6808,  6810,  6812, 7218, 7220,
@@ -2029,11 +2031,11 @@ class Buildomatica : public patch::BasePatch
     {
         // Buildomatica is a building schematic overlay mod for Growtopia heavily inspired by the
         // Minecraft mods Schematica and Litematica.
-        // To use - create a "schematics" folder and paste your .gtworld worlds in it. Next time you
-        // enter a world, the schematic will be overlayed.
+        // To use - create a "schematics" folder and paste your .gtworld, .dat and/or .GMSF worlds
+        // in it. Next time you enter a world, the schematic will be overlayed.
 
         // FIXME:
-        // - Cling storagetype blocks do not.. cling. They seem to cling to actual tilemap instead.
+        // - Steam Pistons, Revolvers, etc having missing components on holograms
 
         // Nice-to-have/not a priority:
         // - Look into possibility of using shaders in bgfx to highlight the "hologram" blocks.
@@ -2051,6 +2053,9 @@ class Buildomatica : public patch::BasePatch
         game.hookFunctionPatternDirect<WorldTileMapChooseVisual_SmartEdge_t>(
             pattern::WorldTileMapChooseVisual_SmartEdge, WorldTileMapChooseVisual_SmartEdge,
             &real::WorldTileMapChooseVisual_SmartEdge);
+        game.hookFunctionPatternDirect<WorldTileMapGetTileSafe_t>(pattern::WorldTileMapGetTileSafe,
+                                                                  WorldTileMapGetTileSafe,
+                                                                  &real::WorldTileMapGetTileSafe);
         real::WorldTileMapChooseVisual =
             game.findMemoryPattern<WorldTileMapChooseVisual_t>(pattern::WorldTileMapChooseVisual);
         real::WorldTileMapChooseVisual_Flag =
@@ -2094,6 +2099,7 @@ class Buildomatica : public patch::BasePatch
                                         &OnBuildomaticaOverlayObtrusivity, 80.0f);
     }
 
+    // Options
     static void OnBuildomaticaToggle(VariantList* pVariant)
     {
         Entity* pCheckbox = pVariant->Get(1).GetEntity();
@@ -2137,6 +2143,7 @@ class Buildomatica : public patch::BasePatch
         real::SetTextEntity(pTextLabel, g_overlayAggressivenessNames[idx]);
     }
 
+    // Entry point for initializing the mod
     static void __fastcall OnMapLoaded(void* this_, __int64, __int64, __int64)
     {
         if (!m_bModEnabled)
@@ -2197,6 +2204,7 @@ class Buildomatica : public patch::BasePatch
         CullTilemap(&m_fakeTilemap);
     }
 
+    // Helpers
     static void RebuildIndexes(WorldTileMap* pTilemap)
     {
         // Replicate what client does with actual tilemap, it sets a rect for culling purposes and
@@ -2241,6 +2249,41 @@ class Buildomatica : public patch::BasePatch
         }
     }
 
+    static int CalculatePaintColor(Tile* t)
+    {
+        int Flags = t->m_tileProperties & TILE_PROPERTY_PAINT_BLACK;
+        int r = 0xff;
+        int g = 0xff;
+        int b = 0xff;
+        if (Flags == TILE_PROPERTY_PAINT_BLACK)
+        {
+            // Do not mux this one and also use slightly higher opacity for visibility.
+            return 0x3C3C3CCC;
+        }
+        if (Flags == TILE_PROPERTY_PAINT_AQUA)
+            r = 0x3C;
+        else if (Flags == TILE_PROPERTY_PAINT_PURPLE)
+            g = 0x3C;
+        else if (Flags == TILE_PROPERTY_PAINT_YELLOW)
+            b = 0x3C;
+        else if (Flags == TILE_PROPERTY_PAINT_BLUE)
+        {
+            g = 0x3C;
+            r = 0x3C;
+        }
+        else if (Flags == TILE_PROPERTY_PAINT_GREEN)
+        {
+            r = 0x3C;
+            b = 0x3C;
+        }
+        else if (Flags == TILE_PROPERTY_PAINT_RED)
+        {
+            g = 0x3C;
+            b = 0x3C;
+        }
+        return ColorCombine(0xff + (r << 8) + (g << 16) + (b << 24), 0xe8ffb0aa, 0.66f);
+    }
+
     static int GetMuxedColorForTile(WorldRenderer* pRenderer, Tile* pTile, bool bFG)
     {
         ItemInfo* pItemInfo = real::GetApp()->GetItemInfoManager()->GetItemByIDSafe(
@@ -2270,10 +2313,19 @@ class Buildomatica : public patch::BasePatch
         return pTile->m_currentColor;
     }
 
+    // Hacks to make client prefer our tilemap inside DrawTile.
     static int WorldTileMapChooseVisual_SmartEdge(WorldTileMap* pTilemap, Tile* p2, int p3)
     {
+        // Used for steam block borders
         return real::WorldTileMapChooseVisual_SmartEdge(
             m_bDrawingHologram ? &m_fakeTilemap : pTilemap, p2, p3);
+    }
+
+    static Tile* WorldTileMapGetTileSafe(WorldTileMap* pTilemap, int x, int y)
+    {
+        // Used in various places in DrawTile and WorldRenderer/Tilemap subfunctions such as
+        // PickVisualOnTheFly which determines spike locations.
+        return real::WorldTileMapGetTileSafe(m_bDrawingHologram ? &m_fakeTilemap : pTilemap, x, y);
     }
 
     // Rendering
@@ -2295,9 +2347,7 @@ class Buildomatica : public patch::BasePatch
             if (t->m_itemBGID == 0)
                 continue;
             Tile* m_pRef = &m_origTilemap.m_tiles[t->x + (t->y * m_origTilemap.m_width)];
-            if (m_pRef->m_itemID != 0 && t->m_itemBGID == 0)
-                continue;
-            if (m_pRef->m_itemBGID != 0)
+            if (m_pRef->m_itemID != 0 || m_pRef->m_itemBGID != 0)
                 continue;
             CL_Vec2f tilePos(t->x * 32.f, t->y * 32.f);
             real::WorldToScreen(&this_->m_worldCamera, &camera, &tilePos);
@@ -2336,9 +2386,9 @@ class Buildomatica : public patch::BasePatch
                     real::GetApp()->GetItemInfoManager()->GetItemByIDSafe(t->m_itemID);
                 if (pInfo->m_properties & 0x40)
                 {
-                    // Hack in workaround for NOSHADOW. They expect alpha 0xFF, but that kinda ruins
-                    // the overlay. One could nop out DrawTile+0x368 to avoid doing this, but it has
-                    // unknown consequences.
+                    // Hack in workaround for NOSHADOW. Game expects alpha 0xFF, but that kinda
+                    // ruins the overlay. One could nop out DrawTile+0x368 to avoid doing this, but
+                    // it has unknown consequences.
                     pInfo->m_properties &= ~0x40;
                     real::DrawTile(this_, t->m_itemID, t->m_tileVisual, &camera,
                                    GetMuxedColorForTile(this_, t, true), t, 0, 0);
@@ -2443,6 +2493,9 @@ class Buildomatica : public patch::BasePatch
                     (t->m_tileProperties & TILE_PROPERTY_FACING_LEFT) !=
                         (m_pRef->m_tileProperties & TILE_PROPERTY_FACING_LEFT))
                     overlayIcon = 2966; // Enchanted Spatula
+                else if ((t->m_tileProperties & TILE_PROPERTY_GLUE) !=
+                         (m_pRef->m_tileProperties & TILE_PROPERTY_GLUE))
+                    overlayIcon = 1866; // Block Glue
                 else if ((t->m_tileProperties & TILE_PROPERTY_PAINT_BLACK) !=
                          (m_pRef->m_tileProperties & TILE_PROPERTY_PAINT_BLACK))
                 {
@@ -2551,41 +2604,6 @@ class Buildomatica : public patch::BasePatch
         }
     }
 
-    static int CalculatePaintColor(Tile* t)
-    {
-        int Flags = t->m_tileProperties & TILE_PROPERTY_PAINT_BLACK;
-        int r = 0xff;
-        int g = 0xff;
-        int b = 0xff;
-        if (Flags == TILE_PROPERTY_PAINT_BLACK)
-        {
-            // Do not mux this one and also use slightly higher opacity for visibility.
-            return 0x3C3C3CCC;
-        }
-        if (Flags == TILE_PROPERTY_PAINT_AQUA)
-            r = 0x3C;
-        else if (Flags == TILE_PROPERTY_PAINT_PURPLE)
-            g = 0x3C;
-        else if (Flags == TILE_PROPERTY_PAINT_YELLOW)
-            b = 0x3C;
-        else if (Flags == TILE_PROPERTY_PAINT_BLUE)
-        {
-            g = 0x3C;
-            r = 0x3C;
-        }
-        else if (Flags == TILE_PROPERTY_PAINT_GREEN)
-        {
-            r = 0x3C;
-            b = 0x3C;
-        }
-        else if (Flags == TILE_PROPERTY_PAINT_RED)
-        {
-            g = 0x3C;
-            b = 0x3C;
-        }
-        return ColorCombine(0xff + (r << 8) + (g << 16) + (b << 24), 0xe8ffb0aa, 0.66f);
-    }
-
     // World planner conversions
     static int LoadFromGPMAP(std::string Path)
     {
@@ -2643,6 +2661,8 @@ class Buildomatica : public patch::BasePatch
 
         // Narrow down UTF-16 to UTF-8. codecvt doesn't help here, loses too much info.
         std::wstring data = m_saveData.substr(delim + 1, ChunkSize * 4);
+        if (data.size() != ChunkSize * 4)
+            return 6;
         uint8_t* pMem = new uint8_t[ChunkSize * 4];
         size_t ptr = 0;
         for (wchar_t c : data)
@@ -2658,6 +2678,8 @@ class Buildomatica : public patch::BasePatch
             {
                 m_fakeTilemap.m_tiles[i].m_itemID = itemID;
                 m_fakeTilemap.m_tiles[i].m_collisionType = pItem->m_collision;
+                m_fakeTilemap.m_tiles[i].m_bCollidable =
+                    pItem->m_collision != 0 && pItem->m_collision != 5;
             }
             ptr += 4;
         }
@@ -2741,18 +2763,14 @@ class Buildomatica : public patch::BasePatch
             for (int x = 0; x < m_fakeTilemap.m_width; x++)
             {
                 m_fakeTilemap.m_tiles.push_back(Tile());
-                m_fakeTilemap.m_tiles.back().x = x;
-                m_fakeTilemap.m_tiles.back().y = y;
                 // RGB #b0e8ff
                 m_fakeTilemap.m_tiles.back().m_currentColor = 0xe8ffb0aa;
             }
         }
 
         // Cernodile's World Planner packs layers into 4 comma-separated arrays
-        std::vector<std::string> foreground;
-        std::vector<std::string> background;
-        std::vector<int> water;
-        std::vector<int> glue;
+        std::vector<std::string> foreground, background;
+        std::vector<int> water, glue;
         // Sections are walled off by "section=", so we can use them as guiderails for how much to
         // scan.
         if (m_saveData.find("fg=") != std::string::npos &&
@@ -2765,8 +2783,7 @@ class Buildomatica : public patch::BasePatch
                 "\n");
             for (int i = 0; i != m_layers.size(); i++)
             {
-                std::string layer = m_layers[i];
-                std::vector<std::string> tiles = StringTokenize(layer, ",");
+                std::vector<std::string> tiles = StringTokenize(m_layers[i], ",");
                 for (int j = 0; j < tiles.size(); j++)
                     foreground.emplace_back(tiles[j]);
             }
@@ -2782,8 +2799,7 @@ class Buildomatica : public patch::BasePatch
                                "\n");
             for (int i = 0; i != m_layers.size(); i++)
             {
-                std::string layer = m_layers[i];
-                std::vector<std::string> tiles = StringTokenize(layer, ",");
+                std::vector<std::string> tiles = StringTokenize(m_layers[i], ",");
                 for (int j = 0; j < tiles.size(); j++)
                     background.emplace_back(tiles[j]);
             }
@@ -2799,8 +2815,7 @@ class Buildomatica : public patch::BasePatch
                                "\n");
             for (int i = 0; i != m_layers.size(); i++)
             {
-                std::string layer = m_layers[i];
-                std::vector<std::string> tiles = StringTokenize(layer, ",");
+                std::vector<std::string> tiles = StringTokenize(m_layers[i], ",");
                 for (int j = 0; j < tiles.size(); j++)
                     water.emplace_back(tiles[j] == "Water" ? 1 : tiles[j] == "Fire" ? 2 : 0);
             }
@@ -2812,8 +2827,7 @@ class Buildomatica : public patch::BasePatch
                 StringTokenize(m_saveData.substr(m_saveData.find("glue=")).substr(5), "\n");
             for (int i = 0; i != m_layers.size(); i++)
             {
-                std::string layer = m_layers[i];
-                std::vector<std::string> tiles = StringTokenize(layer, ",");
+                std::vector<std::string> tiles = StringTokenize(m_layers[i], ",");
                 for (int j = 0; j < tiles.size(); j++)
                     glue.emplace_back(tiles[j] == "Block Glue" ? 1 : 0);
             }
@@ -2824,15 +2838,14 @@ class Buildomatica : public patch::BasePatch
             return 4;
         for (int i = 0; i < foreground.size(); i++)
         {
-            std::string name = foreground[i];
-            if (name.length() == 0)
+            if (foreground[i].length() == 0)
                 continue;
-            std::vector<std::string> props = StringTokenize(name, "_");
+            std::vector<std::string> props = StringTokenize(foreground[i], "_");
             if (props.size() > 1)
             {
-                if (name[2] == '_')
+                if (foreground[i][2] == '_')
                 {
-                    char Paint = name[1];
+                    char Paint = foreground[i][1];
                     switch (Paint)
                     {
                     case 'R':
@@ -2859,27 +2872,28 @@ class Buildomatica : public patch::BasePatch
                     }
                     m_fakeTilemap.m_tiles[i].m_currentColor =
                         CalculatePaintColor(&m_fakeTilemap.m_tiles[i]);
-                    name = name.substr(3);
+                    foreground[i] = foreground[i].substr(3);
                 }
-                if (StringFromEndMatches(name, "_FL"))
+                if (StringFromEndMatches(foreground[i], "_FL"))
                 {
                     m_fakeTilemap.m_tiles[i].m_tileProperties |= TILE_PROPERTY_FACING_LEFT;
-                    name = name.substr(0, name.length() - 3);
+                    foreground[i] = foreground[i].substr(0, foreground[i].length() - 3);
                 }
             }
-            ItemInfo* info = real::GetApp()->GetItemInfoManager()->GetItemByName(name);
+            ItemInfo* info = real::GetApp()->GetItemInfoManager()->GetItemByName(foreground[i]);
             if (info->ID != 0)
             {
                 (&m_fakeTilemap.m_tiles[i])->m_itemID = info->ID;
                 (&m_fakeTilemap.m_tiles[i])->m_collisionType = info->m_collision;
+                (&m_fakeTilemap.m_tiles[i])->m_bCollidable =
+                    info->m_collision != 0 && info->m_collision != 5;
             }
         }
         for (int i = 0; i < background.size(); i++)
         {
-            std::string name = background[i];
-            if (name.length() == 0)
+            if (background[i].length() == 0)
                 continue;
-            ItemInfo* info = real::GetApp()->GetItemInfoManager()->GetItemByName(name);
+            ItemInfo* info = real::GetApp()->GetItemInfoManager()->GetItemByName(background[i]);
             if (info->ID != 0)
                 (&m_fakeTilemap.m_tiles[i])->m_itemBGID = info->ID;
         }
@@ -2931,6 +2945,9 @@ class Buildomatica : public patch::BasePatch
         if (m_maxRows < m_rows)
             return 5;
 
+        if (length < 12 + (m_rows * 14))
+            return 6;
+
         // Verify if we even have a valid tilemap right now..
         if (m_fakeTilemap.m_tiles.size() != m_fakeTilemap.m_height * m_fakeTilemap.m_width)
         {
@@ -2952,6 +2969,8 @@ class Buildomatica : public patch::BasePatch
         {
             for (int i = 0; i < m_rows; i++)
             {
+                if (ptr >= length)
+                    return 7;
                 int baseY = (int)floor(i / m_fakeTilemap.m_width) * 14;
                 int noteID = *((int8_t*)(pMem + ptr++));
                 Tile* pTarget = &m_fakeTilemap.m_tiles[(i % m_fakeTilemap.m_width) +

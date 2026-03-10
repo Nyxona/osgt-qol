@@ -65,6 +65,7 @@ User-facing, most notable/impactful patches:
 - Music mute fix - Allows you to mute music volume without game inherting sfx volume instead for it - does come with drawback that unmuting will start the last played track from start, but it's far better than V3.02 default behaviour
 - Dialog Walking - You can move while having a dialog open again
 - Resizeable Hotbar - Allows you to resize the quick tools hotbar to be up to 10 slots instead of the vanilla 4
+- Buildomatica - Allows you to overlay World Planner files in-game as schematics you can follow. To use, create a folder called "schematics" in your game folder and drop your .GMSF, .gtworld and/or .GMSF files there.
 
 User-facing, visible or impactful patches:
 - Legacy Chat patch - Removes the chat update paddings, chat tabs and `[S]` symbols

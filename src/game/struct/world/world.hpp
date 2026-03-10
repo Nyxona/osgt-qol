@@ -42,9 +42,11 @@ struct Tile
     int m_collisionType;
     Rectf m_rect;
     void* m_pTileExtra;
-    uint8_t pad4[20];
-    float m_lightLevel;
-    uint8_t pad5[56];
+    uint8_t pad4[12];
+    unsigned int m_effectMS;
+    unsigned int pad5;
+    float m_lightLevel; // off 68
+    uint8_t pad6[56];
 };
 static_assert(sizeof(Tile) == 128, "Tile size mismatch.");
 
