@@ -3,6 +3,7 @@
 #include "gametimer.hpp"
 #include "rtfont.hpp"
 #include <cstdint>
+#include <mutex>
 #include <string>
 #include <windows.h>
 
@@ -10,14 +11,14 @@ class Console
 {
   public:
     Console();
-    virtual ~Console() {};
+    virtual ~Console(){};
     void SetMaxLines(unsigned int num) { m_maxLines = num; }
 
     boost::signal<void()> m_sig_on_text_added;
 
     unsigned int m_maxLines;
     std::deque<std::string> m_log;
-    uint8_t padding[76];
+    std::mutex m_logLock;
 };
 static_assert(sizeof(Console) == 176, "Console class size mismatch. ");
 
@@ -74,13 +75,20 @@ class BaseApp
     bool m_bIsInBackground;
     std::vector<std::string> m_commandLineParms;
     uint8_t m_projectionMatrix[64];
-    Entity* m_entityRoot;
-    uint8_t padding3[56];
+    Entity* m_pEntityRoot;
+    bool m_bCheatMode;
+    uint8_t padding3[55];
     std::vector<uint8_t> m_touchTracker;
     std::string m_version;
     bool m_bDisableSubPixelBlits;
     uint8_t padding4[7];
-    std::string* m_pVideoMode;
-    uint8_t padding5[56];
+    std::string* savedVideoMode;
+    unsigned int* isBorderlessWindowModeOn;
+    unsigned int* isFullscreenModeOn;
+    unsigned int* savedResolutionX;
+    unsigned int* savedResolutionY;
+    short m_vendorID;
+    void* m_pProfileManager;
+    bool m_isShuttingDown;
 };
 static_assert(sizeof(BaseApp) == 2920, "BaseApp class size mismatch.");

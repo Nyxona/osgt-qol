@@ -135,7 +135,7 @@ class LegacyChatPatch : public patch::BasePatch
         // -> scroll_child -> LogDisplayEntity -> LogDisplay
         // nit: This is technically more performant than original since our Entity funct doesn't do
         // recursive search, but this is ugly at the same time.
-        Entity* pEntityRoot = real::GetApp()->m_entityRoot;
+        Entity* pEntityRoot = real::GetApp()->m_pEntityRoot;
         Entity* pLogParent = pEntityRoot->GetEntityByName("ConsoleLogParent");
         if (pLogParent == nullptr)
             return;
@@ -191,7 +191,7 @@ class NoGuildIconPatch : public patch::BasePatch
         // until GameMenu is recreated, not a problem for OSGT though. You'd probably have to hook
         // GameLogicComponent::OnClashEventIsActiveChanged to do anything about it.
         // Alternate solution: Patch size2d of EVENTS entity to be 0/0 and move GemsBux when needed.
-        if (!real::GetApp()->GetGameLogic()->m_activeGuildEvent)
+        if (!real::GetApp()->GetGameLogic()->m_ClashEventIsActive)
         {
             int originalProtocol = real::GetApp()->m_serverProtocol;
             // The check is `0x23 < GetApp()->m_serverProtocol`, so we'll just spoof to skip it.

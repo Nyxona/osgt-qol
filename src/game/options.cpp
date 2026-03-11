@@ -419,7 +419,7 @@ void OptionPageOnSelect(VariantList* pVL)
         real::SlideScreen(pParentEnt, 0, 500, 0);
         real::MessageManagerCallEntityFunction(real::GetMessageManager(), pParentEnt, 500,
                                                "OnDelete", 0, 1);
-        real::OptionsMenuCreate(real::GetApp()->m_entityRoot->GetEntityByName("GUI"),
+        real::OptionsMenuCreate(real::GetApp()->m_pEntityRoot->GetEntityByName("GUI"),
                                 pParentEnt->GetVar("FromMainMenu")->GetUINT32() == 1);
         return;
     }
@@ -446,7 +446,7 @@ void OptionsManager::HandleOptionPageButton(VariantList* pVL)
     if (optionsMgr.optionPages.find(pClickedEnt->GetName()) == optionsMgr.optionPages.end())
         return;
     Entity* pOverEnt =
-        real::CreateOverlayEntity(real::GetApp()->m_entityRoot->GetEntityByName("GUI"),
+        real::CreateOverlayEntity(real::GetApp()->m_pEntityRoot->GetEntityByName("GUI"),
                                   "OptionsPage", "interface/large/generic_menu.rttex", 0, 0);
     real::AddFocusIfNeeded(pOverEnt, true, 500);
 
@@ -667,8 +667,8 @@ void OptionsManager::OnMenuButtonPressed(VariantList* pVL)
 {
     // Do we care if anyone else needs OnMenuButtonPressed...? I guess they can create a signal for
     // it if they need it.
-    if (real::GetApp()->m_entityRoot->GetEntityByNameRecursively("OptionsMenu") ||
-        real::GetApp()->m_entityRoot->GetEntityByNameRecursively("OptionsPage"))
+    if (real::GetApp()->m_pEntityRoot->GetEntityByNameRecursively("OptionsMenu") ||
+        real::GetApp()->m_pEntityRoot->GetEntityByNameRecursively("OptionsPage"))
         return;
     real::OnMenuButtonPressed(pVL);
 }
@@ -676,8 +676,8 @@ void OptionsManager::OnMenuButtonPressed(VariantList* pVL)
 void OptionsManager::OnGemButtonPressed(VariantList* pVL)
 {
     // Same comment as for MenuButtonPressed.
-    if (real::GetApp()->m_entityRoot->GetEntityByNameRecursively("OptionsMenu") ||
-        real::GetApp()->m_entityRoot->GetEntityByNameRecursively("OptionsPage"))
+    if (real::GetApp()->m_pEntityRoot->GetEntityByNameRecursively("OptionsMenu") ||
+        real::GetApp()->m_pEntityRoot->GetEntityByNameRecursively("OptionsPage"))
         return;
     real::OnGemButtonPressed(pVL);
 }

@@ -3,21 +3,22 @@
 #include "background_clouds.hpp"
 #include "surface.hpp"
 
+// Namings matched.
 class Background_Default : public Background
 {
   public:
     Background_Default();
     virtual ~Background_Default();
 
-    virtual void Render(CL_Vec2f& screenSize, float graphicDetail);
-    virtual void Init(bool);
+    virtual void Render(CL_Vec2f& camPos, float graphicDetailLevel);
+    virtual void Init(bool useMap);
     virtual void Update();
 
-    void DrawHill(int hillLevel, CL_Vec2f bounds);
+    void DrawHill(int n, CL_Vec2f camPos);
 
-    bool m_bIsSpring;
-    Background_Clouds* m_pBGClouds;
-    SurfaceAnim m_surf_sun;
-    Surface* m_surfArray;
+    bool m_springInstead;
+    Background_Clouds* m_pClouds;
+    SurfaceAnim m_sun;
+    Surface* m_pHills;
 };
 static_assert(sizeof(Background_Default) == 416, "BG_default mismatch");

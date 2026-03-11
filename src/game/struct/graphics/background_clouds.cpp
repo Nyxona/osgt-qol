@@ -16,52 +16,53 @@ float RandomRangeFloat(float rangeMin, float rangeMax)
     return rangeMin + r;
 }
 
-void Cloud::Init(Background* pParentBG, int moveType, int tintType)
+void Cloud::Init(Background* parent, eCloudMoveType moveType, eCloudTintType tintType)
 {
     this->distance = RandomRangeFloat(0.1f, 1.0f);
-    this->flipX = RandomRangeFloat(0.0f, 1.0f) < 0.5f;
+    this->flip = RandomRangeFloat(0.0f, 1.0f) < 0.5f;
 
-    this->X = RandomRangeFloat(
-        0.0f, (pParentBG->m_renderRect.right - pParentBG->m_renderRect.left) / this->distance);
-    this->X += pParentBG->m_renderRect.left / this->distance;
-    this->Y = RandomRangeFloat(
-        0.0f,
-        ((pParentBG->m_renderRect.bottom - pParentBG->m_renderRect.top) * 0.5f) / this->distance);
-    this->Y += pParentBG->m_renderRect.top / this->distance;
+    this->x = RandomRangeFloat(0.0f, (parent->m_worldRect.right - parent->m_worldRect.left) /
+                                         this->distance);
+    this->x += parent->m_worldRect.left / this->distance;
+    this->y = RandomRangeFloat(
+        0.0f, ((parent->m_worldRect.bottom - parent->m_worldRect.top) * 0.5f) / this->distance);
+    this->y += parent->m_worldRect.top / this->distance;
 
-    if (moveType == 0)
-        this->xMoveSpeed = RandomRangeFloat(-0.05f, -1.0f);
-    else if (moveType == 1)
-        this->xMoveSpeed = 0; // I don't know either. Maybe something scrapped.
+    if (moveType == CLOUD_MOVE_DRIFT)
+        this->dx = RandomRangeFloat(-0.05f, -1.0f);
+    else if (moveType == CLOUD_MOVE_STAY)
+        this->dx = 0; // I don't know either. Maybe something scrapped.
 
-    int r, g, b = 0;
-    if (tintType == 0)
+    int r = 0;
+    int g = 0;
+    int b = 0;
+    if (tintType == CLOUD_TINT_BLUE)
     {
         b = (int)(this->distance * 13.0f) + 242;
         g = (int)(this->distance * 40.0f) + 215;
         r = (int)(this->distance * 159.0f) + 96;
     }
-    else if (tintType == 1)
+    else if (tintType == CLOUD_TINT_RED)
     {
         r = (int)(this->distance * 55.0f) + 200;
         g = (int)(this->distance * 255.0f);
         b = g;
     }
-    this->color = MAKE_RGBA(r, g, b, 255);
+    this->tint = MAKE_RGBA(r, g, b, 255);
 }
 
-Background_Clouds::Background_Clouds(Background* pParentBG, std::string fileName, int moveType,
-                                     int tintType)
+Background_Clouds::Background_Clouds(Background* parent, std::string cloudImg,
+                                     eCloudMoveType moveType, eCloudTintType tintType)
 {
-    m_cloudMoveType = moveType;
-    m_cloudTintType = tintType;
+    m_moveType = moveType;
+    m_tintType = tintType;
     m_cloudCount = 50;
-    m_pParentRef = pParentBG;
+    m_pParent = parent;
     m_pClouds = 0;
 
-    m_cloudSurf.SetBlendingMode(Surface::BLENDING_PREMULTIPLIED_ALPHA);
-    m_cloudSurf.LoadFile(fileName); // This should use GetSmartFile.
-    m_cloudSurf.SetupAnim(1, 1);
+    m_cloud.SetBlendingMode(Surface::BLENDING_PREMULTIPLIED_ALPHA);
+    m_cloud.LoadFile(cloudImg); // This should use GetSmartFile.
+    m_cloud.SetupAnim(1, 1);
 }
 
 Background_Clouds::~Background_Clouds()
@@ -72,21 +73,21 @@ Background_Clouds::~Background_Clouds()
     }
 }
 
-void Background_Clouds::InitClouds(int cloudCount)
+void Background_Clouds::InitClouds(int clouds)
 {
-    m_cloudCount = cloudCount;
+    m_cloudCount = clouds;
     if (m_pClouds != 0)
     {
         delete[] m_pClouds;
         m_pClouds = 0;
     }
-    m_pClouds = new Cloud[m_cloudCount];
+    m_pClouds = new Cloud[clouds];
     if (m_cloudCount > 0)
     {
         int i = 0;
         while (i < m_cloudCount)
         {
-            m_pClouds[i].Init(m_pParentRef, m_cloudMoveType, m_cloudTintType);
+            m_pClouds[i].Init(m_pParent, m_moveType, m_tintType);
             i++;
         }
     }
@@ -100,58 +101,56 @@ void Background_Clouds::Update()
     while (i < m_cloudCount)
     {
         Cloud* pCloud = &m_pClouds[i];
-        pCloud->X = real::GetApp()->GetDelta() * pCloud->xMoveSpeed + pCloud->X;
+        pCloud->x = (real::GetApp()->GetDelta() * pCloud->dx) + pCloud->x;
         // Define our boundaries
         // For left side, we have to factor in the cloud surface size and the distance its at.
         float boundLeftX =
-            (m_pParentRef->m_renderRect.left -
-             m_pParentRef->m_scale.x * m_cloudSurf.m_originalWidth * pCloud->distance) /
+            (m_pParent->m_worldRect.left - (m_pParent->m_scale.x * 197.0f) * pCloud->distance) /
             pCloud->distance;
         // For right side, even though we never move cloud there, it may get stuck on too far right
         // end or cloud may initialize too far right.
-        float boundRightX =
-            ((m_pParentRef->m_renderRect.right - m_pParentRef->m_renderRect.left) * 1.4f +
-             m_pParentRef->m_renderRect.left) /
-            pCloud->distance;
-        if (pCloud->X < boundLeftX || pCloud->X > boundRightX)
+        float boundRightX = ((m_pParent->m_worldRect.right - m_pParent->m_worldRect.left) * 1.4f +
+                             m_pParent->m_worldRect.left) /
+                            pCloud->distance;
+        if (pCloud->x < boundLeftX || pCloud->x > boundRightX)
         {
             // Reset the cloud and it's X coordinate to right side.
-            pCloud->Init(m_pParentRef, m_cloudMoveType, m_cloudTintType);
-            pCloud->X =
-                ((m_pParentRef->m_renderRect.right - m_pParentRef->m_renderRect.left) * 1.2f +
-                 m_pParentRef->m_renderRect.left) /
-                pCloud->distance;
+            pCloud->Init(m_pParent, m_moveType, m_tintType);
+            // UNMATCHING behaviour - this shouldn't be needed!
+            pCloud->x = ((m_pParent->m_worldRect.right - m_pParent->m_worldRect.left) * 1.2f +
+                         m_pParent->m_worldRect.left) /
+                        pCloud->distance;
         }
         i++;
     }
 }
 
-void Background_Clouds::Render(CL_Vec2f& vCamera, float graphicDetail, float cloudRangeMin,
-                               float cloudRangeMax)
+void Background_Clouds::Render(CL_Vec2f& camPos, float graphicDetailLevel, float minDistance,
+                               float maxDistance)
 {
     // We don't really render clouds if we have none or are using low detail.
-    if (!m_pClouds || m_cloudCount == 0 || graphicDetail < 0.4)
+    if (!m_pClouds || m_cloudCount == 0 || graphicDetailLevel < 0.4)
         return;
     int i = -1;
     while (++i < m_cloudCount)
     {
         Cloud* pCloud = &m_pClouds[i];
-        if (cloudRangeMin <= pCloud->distance)
+        if (minDistance <= pCloud->distance)
         {
             // Game normally does a return; here because it sorts clouds prior.
-            if (cloudRangeMax <= pCloud->distance)
+            if (maxDistance <= pCloud->distance)
                 continue;
             // Scale the cloud relative to their distance.
             CL_Vec2f vScale;
-            vScale.x = pCloud->distance * m_pParentRef->m_scale.x;
-            vScale.y = pCloud->distance * m_pParentRef->m_scale.y;
+            vScale.x = pCloud->distance * m_pParent->m_scale.x;
+            vScale.y = pCloud->distance * m_pParent->m_scale.y;
             // When the game is on high graphic detail, it'll tint the base colour white and apply
             // appropriate opacity.
-            if (0.8 < graphicDetail)
-                pCloud->color = -0x100 - (int)(pCloud->distance * -255.0);
-            m_cloudSurf.BlitScaledAnim((pCloud->distance * pCloud->X) - vCamera.x,
-                                        (pCloud->distance * pCloud->Y) - vCamera.y, 0, 0, &vScale,
-                                        0, pCloud->color, 0, 0, pCloud->flipX);
+            if (0.8 < graphicDetailLevel)
+                pCloud->tint = -0x100 - (int)(pCloud->distance * -255.0);
+            m_cloud.BlitScaledAnim((pCloud->distance * pCloud->x) - camPos.x,
+                                   (pCloud->distance * pCloud->y) - camPos.y, 0, 0, &vScale, 0,
+                                   pCloud->tint, 0, 0, pCloud->flip);
         }
     }
 }

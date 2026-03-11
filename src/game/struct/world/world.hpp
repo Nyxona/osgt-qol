@@ -1,3 +1,4 @@
+#pragma once
 #include "game/struct/vec.hpp"
 #include <cstdint>
 #include <string>
@@ -29,21 +30,22 @@ enum TileProperties : uint16_t
 };
 struct Tile
 {
-    int m_currentColor;
+    int currentColor;
     short m_itemID;
     short m_itemBGID;
-    short m_tileProperties;
+    short m_flags;
     uint8_t x;
     uint8_t y;
-    short m_index;
-    short m_tileVisual;
-    short m_tileBGVisual;
-    bool m_bCollidable;
+    short m_mapIndex;
+    short m_visual;
+    short m_visualBG;
+    bool m_collidable;
     int m_collisionType;
-    Rectf m_rect;
+    Rectf m_worldRect;
     void* m_pTileExtra;
-    uint8_t pad4[12];
-    unsigned int m_effectMS;
+    uint8_t m_damage;
+    unsigned int m_lastDamageTimer;
+    unsigned int m_effectTimer;
     unsigned int pad5;
     float m_lightLevel; // off 68
     uint8_t pad6[56];
@@ -55,11 +57,11 @@ class WorldTileMap
 {
   public:
     void* vftable;
-    int m_width;
-    int m_height;
-    void* m_unk;
+    int m_sizeX;
+    int m_sizeY;
+    short m_firesLit;
     std::vector<Tile> m_tiles;
-    World* m_pWorldParent;
+    World* m_pParent;
 };
 // Incomplete
 class World

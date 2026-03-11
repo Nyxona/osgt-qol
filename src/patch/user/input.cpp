@@ -78,7 +78,7 @@ class QuickbarHotkeys : public patch::BasePatch
     static void __fastcall OnConsoleInput(VariantList* pVL)
     {
         real::OnConsoleInput(pVL);
-        if (real::GetApp()->m_entityRoot->GetEntityByNameRecursively("ConsoleInputBG"))
+        if (real::GetApp()->m_pEntityRoot->GetEntityByNameRecursively("ConsoleInputBG"))
             return;
 
         // TODO: Prevent rapid firing.. if we really care about it? Doesn't seem that big of a deal.
@@ -88,7 +88,7 @@ class QuickbarHotkeys : public patch::BasePatch
             if (real::GetApp()->GetGameLogic()->IsDialogOpened())
                 return;
 
-            Entity* pGUI = real::GetApp()->m_entityRoot->GetEntityByName("GUI");
+            Entity* pGUI = real::GetApp()->m_pEntityRoot->GetEntityByName("GUI");
             // We don't want the key presses to happen when we can't even see our quickbar.
             if (pGUI->GetEntityByName("OptionsMenu") || pGUI->GetEntityByName("ResolutionMenu") ||
                 pGUI->GetEntityByName("OptionsPage"))
@@ -147,7 +147,7 @@ class QuickToggleSpaceToPunch : public patch::BasePatch
             // We only want to act if they key is pressed, not released.
             if (bKeyFired)
             {
-                Entity* pGUI = real::GetApp()->m_entityRoot->GetEntityByName("GUI");
+                Entity* pGUI = real::GetApp()->m_pEntityRoot->GetEntityByName("GUI");
                 // We don't want the key presses to happen when we're still in settings.
                 if (pGUI->GetEntityByName("OptionsMenu") ||
                     pGUI->GetEntityByName("ResolutionMenu") || pGUI->GetEntityByName("OptionsPage"))
@@ -286,7 +286,7 @@ class QuickDropPatch : public patch::BasePatch
 
             if (bKeyFired)
             {
-                Entity* pGUI = real::GetApp()->m_entityRoot->GetEntityByName("GUI");
+                Entity* pGUI = real::GetApp()->m_pEntityRoot->GetEntityByName("GUI");
                 if (pGUI->GetEntityByName("OptionsMenu") ||
                     pGUI->GetEntityByName("ResolutionMenu") || pGUI->GetEntityByName("OptionsPage"))
                 {

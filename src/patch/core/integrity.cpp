@@ -81,17 +81,17 @@ class SecureBattleEvent : public patch::BasePatch
         // point in memory with the team ID due to no safety rails in its packet handling code,
         // allowing a threat actor to arbitrarily write memory wherever they please relative to
         // m_battleStatus in GameLogicComponent.
-        if (packet->m_tileY == 0)
+        if (packet->x == 0)
         {
-            if (packet->m_extendedDataLength != 0)
+            if (packet->extendedDataSize != 0)
             {
                 uint8_t* packetExtraData = ((uint8_t*)(packet)) + 56;
                 short nameLen = *(short*)(packetExtraData);
                 packetExtraData += nameLen + 6; // Skip name and flags
                 uint8_t m_teams = *packetExtraData;
-                // The game only has 5 teams it registers, rest could be an attempt at reading past
-                // bounds.
-                if (m_teams > 5)
+                // The game only has 4 teams it registers memory for, rest could be an attempt at
+                // reading past bounds.
+                if (m_teams > 4)
                 {
                     auto& game = game::GameHarness::get();
                     game.setWindowVisible(false);
@@ -101,7 +101,7 @@ class SecureBattleEvent : public patch::BasePatch
                 }
                 // Calculate packet length
                 int packetLen = nameLen + 6 + 1 + (m_teams * 4);
-                if (packetLen != packet->m_extendedDataLength)
+                if (packetLen != packet->extendedDataSize)
                 {
                     auto& game = game::GameHarness::get();
                     game.setWindowVisible(false);
@@ -111,11 +111,11 @@ class SecureBattleEvent : public patch::BasePatch
                 }
             }
         }
-        if (packet->m_tileY == 3)
+        if (packet->x == 3)
         {
             // Prevent out-of-bounds writes, the game only has space for 5 teams in BattleStatus
             // struct.
-            if (packet->m_itemObjIDOrDelay < 0 || packet->m_itemObjIDOrDelay > 4)
+            if (packet->m_parm1 < 0 || packet->m_parm1 > 3)
             {
                 auto& game = game::GameHarness::get();
                 game.setWindowVisible(false);

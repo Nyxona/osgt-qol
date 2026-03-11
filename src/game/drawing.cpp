@@ -204,7 +204,8 @@ void GameHarness::toggleLoadScreen()
         // Create our loading screen, we'll opt to use an overlay entity with same style as other
         // game menus.
         loadScreenState = 1;
-        Entity* pLoadScreen = real::GetApp()->m_entityRoot->AddEntity(new Entity("LoadScreenMenu"));
+        Entity* pLoadScreen =
+            real::GetApp()->m_pEntityRoot->AddEntity(new Entity("LoadScreenMenu"));
         Entity* pOverEnt = real::CreateOverlayEntity(pLoadScreen, "LoadScreen",
                                                      "interface/large/generic_menu.rttex", 0, 0);
         // We will size it to match our screen.
@@ -235,8 +236,8 @@ void GameHarness::toggleLoadScreen()
         // Delete our loadscreen.
         // bug: may be running OnUpdate on main thread when we do this sometimes, so it causes an
         // access violation.
-        real::GetApp()->m_entityRoot->RemoveEntityByAddress(
-            real::GetApp()->m_entityRoot->GetEntityByName("LoadScreenMenu"));
+        real::GetApp()->m_pEntityRoot->RemoveEntityByAddress(
+            real::GetApp()->m_pEntityRoot->GetEntityByName("LoadScreenMenu"));
     }
     else
     {

@@ -11,30 +11,31 @@
 Background_Blood::Background_Blood()
 {
     // Load surfs and setup them.
-    m_surf_moon.SetBlendingMode(Surface::BLENDING_PREMULTIPLIED_ALPHA);
-    m_surf_moon.LoadFile("game/moon.rttex");
-    m_surf_moon.SetupAnim(1, 1);
+    m_moon.SetBlendingMode(Surface::BLENDING_PREMULTIPLIED_ALPHA);
+    m_moon.LoadFile("game/moon.rttex");
+    m_moon.SetupAnim(1, 1);
 
-    m_surfArray = new Surface[3]();
+    m_pHills = new Surface[3]();
 
-    m_surfArray[0].SetBlendingMode(Surface::BLENDING_PREMULTIPLIED_ALPHA);
-    m_surfArray[1].SetBlendingMode(Surface::BLENDING_PREMULTIPLIED_ALPHA);
-    m_surfArray[2].SetBlendingMode(Surface::BLENDING_PREMULTIPLIED_ALPHA);
+    m_pHills[0].SetBlendingMode(Surface::BLENDING_PREMULTIPLIED_ALPHA);
+    m_pHills[1].SetBlendingMode(Surface::BLENDING_PREMULTIPLIED_ALPHA);
+    m_pHills[2].SetBlendingMode(Surface::BLENDING_PREMULTIPLIED_ALPHA);
 
-    m_surfArray[0].LoadFile("game/hills3.rttex");
-    m_surfArray[1].LoadFile("game/hills2.rttex");
-    m_surfArray[2].LoadFile("game/hills1.rttex");
+    m_pHills[0].LoadFile("game/hills3.rttex");
+    m_pHills[1].LoadFile("game/hills2.rttex");
+    m_pHills[2].LoadFile("game/hills1.rttex");
 
-    m_pBGClouds = new Background_Clouds((Background*)this, "game/cloud.rttex", 0, 0);
+    m_pClouds = new Background_Clouds((Background*)this, "game/cloud.rttex", CLOUD_MOVE_DRIFT,
+                                      CLOUD_TINT_BLUE);
 }
 
 Background_Blood::~Background_Blood()
 {
-    delete m_pBGClouds;
-    delete[] m_surfArray;
+    delete m_pClouds;
+    delete[] m_pHills;
 }
 
-void Background_Blood::Render(CL_Vec2f& vScreenPos, float graphicDetail)
+void Background_Blood::Render(CL_Vec2f& camPos, float graphicDetailLevel)
 {
     // Need to find out what this vec is for. Looks like it's related to some bgfx rotation matrix?
     CL_Vec2f unk4(0.0, 0.0);
@@ -44,81 +45,78 @@ void Background_Blood::Render(CL_Vec2f& vScreenPos, float graphicDetail)
     real::GetScreenRect(screenRect);
     // Draw the backdrop
     real::DrawFilledRect(screenRect, skyColour, 0.0f, &unk4);
-    if (graphicDetail > 0.1)
+    if (graphicDetailLevel > 0.1)
     {
         // Draw all the "high detail" assets, e.g. sun/hills/clouds.
-        CL_Vec2f moonScale = CL_Vec2f((m_screenSize.x / 161.0f) / 6.0f);
-        m_surf_moon.BlitScaledAnim(m_screenSize.x * 0.7f, m_screenSize.y * 0.1f, 0, 0, &moonScale,
-                                   0);
+        CL_Vec2f moonScale = CL_Vec2f((m_areaSize.x / 161.0f) / 6.0f);
+        m_moon.BlitScaledAnim(m_areaSize.x * 0.7f, m_areaSize.y * 0.1f, 0, 0, &moonScale, 0);
         // Draw clouds piecemeal e.g. 0-20%, 20-40% to be between hill layers.
-        m_pBGClouds->Render(vScreenPos, graphicDetail, 0.0f, 0.2f);
-        DrawHill(0, vScreenPos);
-        m_pBGClouds->Render(vScreenPos, graphicDetail, 0.2f, 0.4f);
-        DrawHill(1, vScreenPos);
-        m_pBGClouds->Render(vScreenPos, graphicDetail, 0.4f, 0.6f);
-        DrawHill(2, vScreenPos);
-        m_pBGClouds->Render(vScreenPos, graphicDetail, 0.6f, 1.0f);
+        m_pClouds->Render(camPos, graphicDetailLevel, 0.0f, 0.2f);
+        DrawHill(0, camPos);
+        m_pClouds->Render(camPos, graphicDetailLevel, 0.2f, 0.4f);
+        DrawHill(1, camPos);
+        m_pClouds->Render(camPos, graphicDetailLevel, 0.4f, 0.6f);
+        DrawHill(2, camPos);
+        m_pClouds->Render(camPos, graphicDetailLevel, 0.6f, 1.0f);
         // Draw the weather change fade effect.
-        if (m_fadeProgress > 0.0f)
+        if (m_flashAlpha > 0.0f)
         {
-            real::DrawFilledRect(screenRect, -0x100 - (int)(m_fadeProgress * -255.0), 0.0f, &unk4);
-            m_fadeProgress = m_fadeProgress - (real::GetApp()->GetDeltaTick() / 1000.0f);
+            real::DrawFilledRect(screenRect, -0x100 - (int)(m_flashAlpha * -255.0), 0.0f, &unk4);
+            m_flashAlpha = m_flashAlpha - (real::GetApp()->GetDeltaTick() / 1000.0f);
         }
     }
 }
 
-void Background_Blood::Init(bool bInWorld)
+void Background_Blood::Init(bool useMap)
 {
-    if (!bInWorld)
+    if (!useMap)
     {
-        real::GetScreenRect(m_renderRect);
-        m_pBGClouds->InitClouds(20);
+        real::GetScreenRect(m_worldRect);
+        m_pClouds->InitClouds(20);
     }
     else
     {
-        m_renderRect.left = 0;
-        m_renderRect.top = 0;
-        m_renderRect.bottom = real::GetApp()->GetGameLogic()->GetTileHeight() * 32.0f;
-        m_renderRect.right = real::GetApp()->GetGameLogic()->GetTileWidth() * 32.0f;
-        m_pBGClouds->InitClouds(50);
+        m_worldRect.bottom = real::GetApp()->GetGameLogic()->GetTileHeight() * 32.0f;
+        m_worldRect.right = real::GetApp()->GetGameLogic()->GetTileWidth() * 32.0f;
+        m_pClouds->InitClouds(50);
     }
 }
 
 void Background_Blood::Update()
 {
-    m_pBGClouds->Update();
+    m_pClouds->Update();
     return;
 }
 
-void Background_Blood::DrawHill(int hillLevel, CL_Vec2f bounds)
+void Background_Blood::DrawHill(int n, CL_Vec2f camPos)
 {
     // Scale proportional to the user's screen width
-    float hillScale = m_screenSize.x / 512.0f;
+    float hillScale = m_areaSize.x / 512.0f;
 
     // Use the passed hill level to determine parallax scrolling speed and progress.
-    float parallaxStep = (float)(hillLevel + 1) * -0.2f;
-    float parallaxScroll = floorf((float)(parallaxStep * bounds.x) * m_scale.x);
+    float parallaxStep = (float)(n + 1) * -0.2f;
+    float parallaxScroll = floorf((float)(parallaxStep * camPos.x) * m_scale.x);
 
     // Determine X location after scrolling
     float x = 0.0f;
     do
     {
         x = parallaxScroll;
-        parallaxScroll = x + m_screenSize.x;
+        parallaxScroll = x + m_areaSize.x;
     } while (parallaxScroll < 0.0);
 
     // Fix the hill heights. The game fixes these 2.0f above.
-    float hillHeight = m_screenSize.y + 2.0f;
+    float hillHeight = m_areaSize.y + 2.0f;
     float y = hillHeight;
-    if (hillLevel == 0)
+    if (n == 0)
         y = hillHeight - hillScale * 46.0f;
-    else if (hillLevel == 1)
+    else if (n == 1)
         y = hillScale * 60.0f + hillHeight;
 
     unsigned int RGBA = MAKE_RGBA(255, 40, 40, 255);
-    for (; x <= m_screenSize.x; x = x + hillScale * 512.0f)
+    for (; x <= m_areaSize.x; x = x + hillScale * 512.0f)
     {
         CL_Vec2f vScale(hillScale);
-        m_surfArray[hillLevel].BlitScaled(x, y, vScale, 4, RGBA, 0.0, NULL, false, false);
+        m_pHills[n].BlitScaled(x, y, vScale, 4, RGBA, 0.0, NULL, false, false);
     }
 }

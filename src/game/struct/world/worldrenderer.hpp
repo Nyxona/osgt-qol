@@ -13,35 +13,36 @@ class WorldRenderer
     virtual ~WorldRenderer();
 
     World* m_pWorld;
-    SurfaceAnim* m_pSurfCrack;
-    SurfaceAnim* m_pSurfLockOutline;
-    SurfaceAnim* m_pSurfTilesPage1;
-    SurfaceAnim* m_pSurfRainbow;
-    SurfaceAnim* m_pSurfWater;
-    SurfaceAnim* m_pSurfFire;
-    SurfaceAnim* m_pSurfDarkBlueWater;
-    SurfaceAnim* m_pSurfGreenWater;
-    SurfaceAnim* m_pSurfVendOutline;
-    SurfaceAnim* m_pSurfGch;
+    SurfaceAnim* m_crackImg;
+    SurfaceAnim* m_lockImg;
+    SurfaceAnim* m_treeImg;
+    SurfaceAnim* m_bigRainbowImg;
+    SurfaceAnim* m_waterImg;
+    SurfaceAnim* m_fireImg;
+    SurfaceAnim* m_blueWaterImg;
+    SurfaceAnim* m_greenWaterImg;
+    SurfaceAnim* m_CheckOutCounterImg;
+    SurfaceAnim* m_PlayingCardImg;
     uint8_t m_steamManager[40];
-    WorldCamera m_worldCamera;
-    Background* m_pWeather;
-    int m_activeWeather;
-    int m_weatherID;
-    bool m_bInPetBattle; // If true, ignores ForceBackground and other such calls unless it
+    WorldCamera m_camera;
+    Background* m_pBackground;
+    int m_curWeather;
+    bool m_bWeatherLock; // If true, ignores ForceBackground and other such calls unless it
                          // originates from ClientPetBattle
-    uint8_t m_particleSystem[32]; // Not sure if it should be 32 or 40.
-    uint8_t pad2[8];
-    SurfaceAnim* m_pSurfPickupBox;
-    SurfaceAnim* m_pSurfSelk;
-    uint8_t pad3[28];
-    int m_musicCoord;
-    int pad4;
-    int m_musicStart;
-    int m_musicEnd;
-    uint8_t pad5[8];
-    int m_musicTempo;
-    uint8_t pad6[40];
-    AvatarRenderData m_avatarRenderData;
+    uint8_t pad2[3];
+    uint8_t m_particles[40];
+    SurfaceAnim* m_pickupBox;
+    SurfaceAnim* m_silkwormImg;
+    std::string m_closestMusicFilename;
+    float m_closestMusicDistance;
+    int m_songPosition;
+    int m_prevSongPosition;
+    int m_songStart;
+    int m_songEnd;
+    float m_songTicker;
+    float m_songRecalcTime;
+    float m_songTickTime;
+    uint8_t pad3[40];
+    AvatarRenderData m_tempRenderData;
 };
 // Expected size: 10088 / 0x2768

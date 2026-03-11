@@ -1,32 +1,37 @@
 #pragma once
-#include <string>
 #include <map>
+#include <string>
+
+struct ScreenResolution
+{
+    int screenX;
+    int screenY;
+};
 
 struct VideoMode
 {
   public:
     void* vftable;
-    std::string m_name;
-    int m_platformID;
-    int m_orientation;
-    float m_unkFloat;
-    int m_screenW;
-    int m_screenH;
+    std::string name;
+    int platformID;
+    int forceOrientation;
+    float aspectRatio;
+    ScreenResolution defaultScreenResolution;
 
     void Print()
     {
-        printf("VIDEOMODE: %s - m_platformID=%d m_orientation=%d m_unkFloat=%.2f m_screenW=%d "
-               "m_screenH=%d\n",
-               m_name.c_str(), m_platformID, m_orientation, m_unkFloat, m_screenW, m_screenH);
+        printf("VIDEOMODE: %s - platformID=%d forceOrientation=%d aspectRatio=%.2f "
+               "defaultScreenResolution.screenX=%d defaultScreenResolution.screenY=%d\n",
+               name.c_str(), platformID, forceOrientation, aspectRatio,
+               defaultScreenResolution.screenX, defaultScreenResolution.screenY);
     }
 };
 static_assert(sizeof(VideoMode) == 64, "VideoMode struct size mismatch.");
 class VideoModeManager
 {
   public:
-    int m_screenW;
-    int m_screenH;
-    std::map<std::string, VideoMode*> m_videoModes;
-    VideoMode* m_pActiveVidMode;
+    ScreenResolution actualScreenResolution;
+    std::map<std::string, VideoMode*> videoModes;
+    VideoMode* currentVideoMode;
 };
 static_assert(sizeof(VideoModeManager) == 32, "VideoModeManager class size mismatch.");

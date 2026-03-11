@@ -328,7 +328,7 @@ class CustomizedTitleScreen : public patch::BasePatch
         // Update the option label
         Entity* pTextLabel = pClickedEnt->GetParent()->GetEntityByName("txt");
         real::SetTextEntity(pTextLabel, displayNames[idx]);
-        Entity* pGUIEnt = real::GetApp()->m_entityRoot->GetEntityByName("GUI");
+        Entity* pGUIEnt = real::GetApp()->m_pEntityRoot->GetEntityByName("GUI");
         if (pGUIEnt->GetEntityByName("MainMenu"))
             ChangeMainMenuWeather(pGUIEnt);
     }
@@ -456,7 +456,7 @@ class CustomizedTitleScreen : public patch::BasePatch
             {
                 // Spring
                 pNewBG = new Background_Default();
-                ((Background_Default*)pNewBG)->m_bIsSpring = true;
+                ((Background_Default*)pNewBG)->m_springInstead = true;
                 break;
             }
             case 11:
@@ -604,7 +604,7 @@ class HideMyUI : public patch::BasePatch
         if (!g_lastHideState)
             return;
         Entity* pMenu = real::GetApp()
-                            ->m_entityRoot->GetEntityByName("GUI")
+                            ->m_pEntityRoot->GetEntityByName("GUI")
                             ->GetEntityByName("WorldSpecificGUI")
                             ->GetEntityByName("GameMenu");
         if (pMenu)
@@ -616,7 +616,7 @@ class HideMyUI : public patch::BasePatch
     static void SetSlidersOpacity(float alphaLevel)
     {
         Entity* pMenu = real::GetApp()
-                            ->m_entityRoot->GetEntityByName("GUI")
+                            ->m_pEntityRoot->GetEntityByName("GUI")
                             ->GetEntityByName("WorldSpecificGUI")
                             ->GetEntityByName("GameMenu");
         if (pMenu)
@@ -626,10 +626,10 @@ class HideMyUI : public patch::BasePatch
                 ->GetVar("alpha")
                 ->Set(alphaLevel);
         }
-        if (real::GetApp()->m_entityRoot->GetEntityByName("ConsoleLogParent"))
+        if (real::GetApp()->m_pEntityRoot->GetEntityByName("ConsoleLogParent"))
         {
             Entity* ConsoleGrab = real::GetApp()
-                                      ->m_entityRoot->GetEntityByName("ConsoleLogParent")
+                                      ->m_pEntityRoot->GetEntityByName("ConsoleLogParent")
                                       ->GetEntityByName("ConsoleGrab");
             ConsoleGrab->RemoveComponentByName("Interpolate");
             ConsoleGrab->GetVar("alpha")->Set(alphaLevel);
@@ -694,7 +694,7 @@ class HideMyUI : public patch::BasePatch
         Entity* pCheckbox = pVariant->Get(1).GetEntity();
         bool bChecked = pCheckbox->GetVar("checked")->GetUINT32() != 0;
         real::GetApp()->GetVar("hide_ui_scrollers")->Set(uint32_t(bChecked));
-        Entity* pGUI = real::GetApp()->m_entityRoot->GetEntityByName("GUI");
+        Entity* pGUI = real::GetApp()->m_pEntityRoot->GetEntityByName("GUI");
         Entity* pMenu = pGUI->GetEntityByName("WorldSpecificGUI")->GetEntityByName("GameMenu");
         if (pMenu != nullptr)
         {
@@ -715,7 +715,7 @@ class HideMyUI : public patch::BasePatch
             if (real::GetApp()->GetGameLogic()->IsDialogOpened())
                 return;
 
-            Entity* pGUI = real::GetApp()->m_entityRoot->GetEntityByName("GUI");
+            Entity* pGUI = real::GetApp()->m_pEntityRoot->GetEntityByName("GUI");
             if (pGUI->GetEntityByName("OptionsMenu") || pGUI->GetEntityByName("ResolutionMenu") ||
                 pGUI->GetEntityByName("OptionsPage"))
                 return;
@@ -940,7 +940,7 @@ class LightSourceOptimizer : public patch::BasePatch
         float original = *(float*)(((__int64)this_) + 0x15c);
         *(float*)(((__int64)this_) + 0x15c) = 0.1f;
 
-        std::vector<ItemInfo>& items = real::GetApp()->GetItemInfoManager()->m_items;
+        std::vector<ItemInfo>& items = real::GetApp()->GetItemInfoManager()->m_itemInfo;
         int w = real::GetApp()->GetGameLogic()->GetTileWidth();
         int h = real::GetApp()->GetGameLogic()->GetTileHeight();
         WorldTileMap* tilemap = (WorldTileMap*)real::GetApp()->GetGameLogic()->GetTileMap();
@@ -953,9 +953,9 @@ class LightSourceOptimizer : public patch::BasePatch
         for (size_t i = 0; i < max; i++)
         {
             Tile* tile = (*tiles)[i];
-            int vis = items[tile->m_itemID].visualType;
+            int vis = items[tile->m_itemID].m_visualEffect;
             // Lightsource / Lightsource Pulse / Lightsource If On
-            if ((vis == 34 || vis == 45) || (vis == 35 && (tile->m_tileProperties & 64)))
+            if ((vis == 34 || vis == 45) || (vis == 35 && (tile->m_flags & 64)))
             {
                 int x = tile->x;
                 int y = tile->y;
@@ -984,7 +984,7 @@ class LightSourceOptimizer : public patch::BasePatch
                     for (y = minY; y < maxY; y++)
                     {
                         target = &tilemap->m_tiles[x + (y * w)];
-                        vis = items[target->m_itemBGID].visualType;
+                        vis = items[target->m_itemBGID].m_visualEffect;
                         // Only do light calculations if we're on a darkened tile.
                         if (vis == 33 || vis == 41)
                         {
@@ -1059,7 +1059,7 @@ class BetterLogGrabDPI : public patch::BasePatch
             postInitVideo();
 
         Entity* pConsoleLogParent =
-            real::GetApp()->m_entityRoot->GetEntityByName("ConsoleLogParent");
+            real::GetApp()->m_pEntityRoot->GetEntityByName("ConsoleLogParent");
         if (pConsoleLogParent)
         {
             Entity* pConsoleGrab = pConsoleLogParent->GetEntityByName("ConsoleGrab");
@@ -1073,7 +1073,7 @@ class BetterLogGrabDPI : public patch::BasePatch
         else
             return;
 
-        Entity* pGUI = real::GetApp()->m_entityRoot->GetEntityByName("GUI");
+        Entity* pGUI = real::GetApp()->m_pEntityRoot->GetEntityByName("GUI");
         if (!pGUI)
             return;
         Entity* pWorldGUI = pGUI->GetEntityByName("WorldSpecificGUI");
@@ -1174,7 +1174,7 @@ class LiveGUIRebuilder : public patch::BasePatch
 
     static void __fastcall OnPressingBackDuringGameplay()
     {
-        Entity* pGUI = real::GetApp()->m_entityRoot->GetEntityByName("GUI");
+        Entity* pGUI = real::GetApp()->m_pEntityRoot->GetEntityByName("GUI");
         if (!pGUI->GetEntityByName("OptionsMenu") && !pGUI->GetEntityByName("ResolutionMenu") &&
             !pGUI->GetEntityByName("OptionsPage"))
             real::OnPressingBackDuringGameplay();
@@ -1196,7 +1196,7 @@ class LiveGUIRebuilder : public patch::BasePatch
                     real::KillGameMenu(false);
                     real::InitLog();
                     Entity* pWGUI =
-                        real::GetApp()->m_entityRoot->GetEntityByName("GUI")->GetEntityByName(
+                        real::GetApp()->m_pEntityRoot->GetEntityByName("GUI")->GetEntityByName(
                             "WorldSpecificGUI");
                     Entity* pGameMenu = pWGUI->GetEntityByName("GameMenu");
                     pWGUI->RemoveEntityByAddress(pGameMenu);
@@ -1337,66 +1337,66 @@ class AnchorCameraToPlayerPatch : public patch::BasePatch
             // For right and botttom sides, we have to calculate against the tilemap clamping to get
             // appropriate x/y level.
             WorldTileMap* pTileMap = real::GetApp()->GetGameLogic()->GetTileMap();
-            float xMax = (float)pTileMap->m_width * 32.0f;
-            float yMax = (float)pTileMap->m_height * 32.0f;
-            float clampX = xMax - this_->m_worldCamera.m_zoomedScreenSize.x;
-            float clampY = yMax - this_->m_worldCamera.m_zoomedScreenSize.y;
+            float xMax = (float)pTileMap->m_sizeX * 32.0f;
+            float yMax = (float)pTileMap->m_sizeY * 32.0f;
+            float clampX = xMax - this_->m_camera.m_zoomedScreenSize.x;
+            float clampY = yMax - this_->m_camera.m_zoomedScreenSize.y;
 
             Rectf rect;              // shared rect struct for all the sides
             CL_Vec2f unk4(0.0, 0.0); // bgfx related, mandatory
 
             // Left side of world
-            if (this_->m_worldCamera.m_position.x < 0.0)
+            if (this_->m_camera.m_position.x < 0.0)
             {
                 // Draw from left (0) to right (clamp point) on entire height.
-                rect.right = getClampedLeftBorder(this_->m_worldCamera);
-                rect.bottom = this_->m_worldCamera.m_screenSize.y;
+                rect.right = getClampedLeftBorder(this_->m_camera);
+                rect.bottom = this_->m_camera.m_screenSize.y;
                 rect.ceil();
                 real::DrawFilledRect(rect, 0xAA, 0.0f, &unk4);
             }
             // Right side of world
-            if (clampX < this_->m_worldCamera.m_position.x)
+            if (clampX < this_->m_camera.m_position.x)
             {
                 // Draw from left (clamp point) to edge of screen on entire height.
-                rect.left = getClampedRightBorder(this_->m_worldCamera, clampX);
-                rect.right = this_->m_worldCamera.m_screenSize.x;
+                rect.left = getClampedRightBorder(this_->m_camera, clampX);
+                rect.right = this_->m_camera.m_screenSize.x;
                 rect.top = 0;
-                rect.bottom = this_->m_worldCamera.m_screenSize.y;
+                rect.bottom = this_->m_camera.m_screenSize.y;
                 rect.ceil();
                 real::DrawFilledRect(rect, 0xAA, 0.0f, &unk4);
             }
             // Top side of world
-            if (this_->m_worldCamera.m_position.y < 0.0)
+            if (this_->m_camera.m_position.y < 0.0)
             {
                 rect.right = rect.left = 0;
                 // Exclude world sides on clamp points so we don't overlap.
-                if (this_->m_worldCamera.m_position.x < 0.0)
-                    rect.left = getClampedLeftBorder(this_->m_worldCamera);
-                if (clampX < this_->m_worldCamera.m_position.x)
-                    rect.right = getClampedRightBorder(this_->m_worldCamera, clampX);
+                if (this_->m_camera.m_position.x < 0.0)
+                    rect.left = getClampedLeftBorder(this_->m_camera);
+                if (clampX < this_->m_camera.m_position.x)
+                    rect.right = getClampedRightBorder(this_->m_camera, clampX);
                 else
-                    rect.right = this_->m_worldCamera.m_screenSize.x;
+                    rect.right = this_->m_camera.m_screenSize.x;
 
                 // Draw from top (0) to bottom (clamp point) on entire non-overlapping width.
-                rect.bottom = getClampedTopBorder(this_->m_worldCamera);
+                rect.bottom = getClampedTopBorder(this_->m_camera);
                 rect.ceil();
                 real::DrawFilledRect(rect, 0xAA, 0.0f, &unk4);
             }
             // Bottom side of world
-            if (clampY < this_->m_worldCamera.m_position.y)
+            if (clampY < this_->m_camera.m_position.y)
             {
                 rect.left = rect.right = 0;
                 // Exclude world sides on clamp points so we don't overlap.
-                if (this_->m_worldCamera.m_position.x < 0.0)
-                    rect.left = getClampedLeftBorder(this_->m_worldCamera);
-                if (clampX < this_->m_worldCamera.m_position.x)
-                    rect.right = getClampedRightBorder(this_->m_worldCamera, clampX);
+                if (this_->m_camera.m_position.x < 0.0)
+                    rect.left = getClampedLeftBorder(this_->m_camera);
+                if (clampX < this_->m_camera.m_position.x)
+                    rect.right = getClampedRightBorder(this_->m_camera, clampX);
                 else
-                    rect.right = this_->m_worldCamera.m_screenSize.x;
+                    rect.right = this_->m_camera.m_screenSize.x;
 
                 // Draw from top (clamp point) to bottom of screen on entire non-overlapping width.
-                rect.top = getClampedBottomBorder(this_->m_worldCamera, clampY);
-                rect.bottom = this_->m_worldCamera.m_screenSize.y;
+                rect.top = getClampedBottomBorder(this_->m_camera, clampY);
+                rect.bottom = this_->m_camera.m_screenSize.y;
                 rect.ceil();
                 real::DrawFilledRect(rect, 0xAA, 0.0f, &unk4);
             }
@@ -1421,13 +1421,13 @@ class AnchorCameraToPlayerPatch : public patch::BasePatch
             // apart when both sides are visible.
             if (res->x != 0.0f)
             {
-                float clampX = (float)pTileMap->m_width * 32.0f - this_->m_zoomedScreenSize.x;
+                float clampX = (float)pTileMap->m_sizeX * 32.0f - this_->m_zoomedScreenSize.x;
                 if (clampX < this_->m_position.x)
                     res->x = clampX;
             }
             if (res->y != 0.0f)
             {
-                float clampY = (float)pTileMap->m_height * 32.0f - this_->m_zoomedScreenSize.y;
+                float clampY = (float)pTileMap->m_sizeY * 32.0f - this_->m_zoomedScreenSize.y;
                 if (clampY < this_->m_position.y)
                     res->y = clampY;
             }
@@ -1448,10 +1448,10 @@ class AnchorCameraToPlayerPatch : public patch::BasePatch
             if (this_->m_position.y <= 0.0 && this_->m_position.y != 0.0)
                 this_->m_position.y = 0.0;
 
-            float clampX = (float)pTileMap->m_width * 32.0f - this_->m_zoomedScreenSize.x;
+            float clampX = (float)pTileMap->m_sizeX * 32.0f - this_->m_zoomedScreenSize.x;
             if (clampX < this_->m_position.x)
                 this_->m_position.x = clampX;
-            float clampY = (float)pTileMap->m_height * 32.0f - this_->m_zoomedScreenSize.y;
+            float clampY = (float)pTileMap->m_sizeY * 32.0f - this_->m_zoomedScreenSize.y;
             if (clampY < this_->m_position.y)
                 this_->m_position.y = clampY;
         }
@@ -1467,7 +1467,7 @@ class AnchorCameraToPlayerPatch : public patch::BasePatch
             if (real::GetApp()->GetGameLogic()->IsDialogOpened())
                 return;
 
-            Entity* pGUI = real::GetApp()->m_entityRoot->GetEntityByName("GUI");
+            Entity* pGUI = real::GetApp()->m_pEntityRoot->GetEntityByName("GUI");
             if (pGUI->GetEntityByName("OptionsMenu") || pGUI->GetEntityByName("ResolutionMenu") ||
                 pGUI->GetEntityByName("OptionsPage"))
                 return;
@@ -1511,7 +1511,7 @@ class SheetMusicAudioRenderSync : public patch::BasePatch
     }
     static void __fastcall WorldRendererAdvanceSong(WorldRenderer* this_)
     {
-        if (this_->m_musicCoord == -1)
+        if (this_->m_songPosition == -1)
         {
             // Reset if sheet music is disabled and re-enabled.
             if (!m_finishedPlaying)
@@ -1524,35 +1524,35 @@ class SheetMusicAudioRenderSync : public patch::BasePatch
         // We'll offset the starting music coord to account for the adding/removing we'll be doing.
         if (m_finishedPlaying)
         {
-            this_->m_musicCoord = this_->m_musicStart - 1;
+            this_->m_songPosition = this_->m_songStart - 1;
             m_finishedPlaying = false;
             m_snapbackIdx = -1;
         }
         else if (m_snapbackIdx != -1)
         {
             // Repeats will snap the playing coord back, we'll have to track that as well.
-            this_->m_musicCoord = m_snapbackIdx;
+            this_->m_songPosition = m_snapbackIdx;
             m_snapbackIdx = -1;
         }
-        this_->m_musicCoord++;
+        this_->m_songPosition++;
         // Save current coordinate. The AdvanceSong function increments music coordinate or resets
         // it to start, if we see a sudden jump back to start, we know the song has finished.
-        int curCoord = this_->m_musicCoord;
+        int curCoord = this_->m_songPosition;
         real::WorldRendererAdvanceSong(this_);
-        this_->m_musicCoord--;
-        if (this_->m_musicCoord <= this_->m_musicStart && curCoord >= this_->m_musicEnd)
+        this_->m_songPosition--;
+        if (this_->m_songPosition <= this_->m_songStart && curCoord >= this_->m_songEnd)
         {
-            this_->m_musicCoord = this_->m_musicEnd;
+            this_->m_songPosition = this_->m_songEnd;
             m_finishedPlaying = true;
         }
         else
         {
             // Handling repeats, save their "snapback index" and make it stay visually on repeat end
             // for this cycle.
-            if (curCoord > this_->m_musicCoord)
+            if (curCoord > this_->m_songPosition)
             {
-                m_snapbackIdx = this_->m_musicCoord;
-                this_->m_musicCoord = curCoord;
+                m_snapbackIdx = this_->m_songPosition;
+                this_->m_songPosition = curCoord;
             }
         }
     }
@@ -1650,7 +1650,7 @@ class HotbarExpanded : public patch::BasePatch
         if (m_extraSlots == 0)
         {
             Entity* pGameMenu =
-                real::GetApp()->m_entityRoot->GetEntityByNameRecursively("GameMenu");
+                real::GetApp()->m_pEntityRoot->GetEntityByNameRecursively("GameMenu");
             if (!pGameMenu)
                 return;
             Entity* pTouchEnt = pGameMenu->GetEntityByName("TouchControlsBG");
@@ -1674,13 +1674,13 @@ class HotbarExpanded : public patch::BasePatch
         int nextSlot = 0;
         for (auto it = pPlayerItems->m_items.begin(); it != pPlayerItems->m_items.end(); it++)
         {
-            ItemInfo* pItem = &real::GetApp()->GetItemInfoManager()->m_items[(*it).itemID];
-            if (pItem->category != 20 && pItem->category != 107 && pItem->category != 1)
+            ItemInfo* pItem = &real::GetApp()->GetItemInfoManager()->m_itemInfo[(*it).m_itemID];
+            if (pItem->m_type != 20 && pItem->m_type != 107 && pItem->m_type != 1)
             {
                 if (nextSlot < 4)
-                    pPlayerItems->m_quickSlots[nextSlot++] = pItem->ID;
+                    pPlayerItems->m_quickSlots[nextSlot++] = pItem->m_itemID;
                 else if (nextSlot < 4 + m_extraSlots)
-                    m_extendedSlots[nextSlot++ - 4] = pItem->ID;
+                    m_extendedSlots[nextSlot++ - 4] = pItem->m_itemID;
                 else
                     break;
             }
@@ -1713,10 +1713,9 @@ class HotbarExpanded : public patch::BasePatch
             pPlayerItems->m_quickSlots[0] = itemID;
             return;
         }
-        ItemInfo* pItem = &real::GetApp()->GetItemInfoManager()->m_items[itemID];
-        if (itemID != 6336 && pItem->category != 20 && pItem->category != 107 &&
-            pItem->category != 37 && pItem->category != 114 && pItem->category != 129 &&
-            pItem->category != 64)
+        ItemInfo* pItem = &real::GetApp()->GetItemInfoManager()->m_itemInfo[itemID];
+        if (itemID != 6336 && pItem->m_type != 20 && pItem->m_type != 107 && pItem->m_type != 37 &&
+            pItem->m_type != 114 && pItem->m_type != 129 && pItem->m_type != 64)
         {
             int slot = -1;
             for (int i = 0; i < 4; i++)
@@ -1848,7 +1847,7 @@ class HotbarExpanded : public patch::BasePatch
             real::TradeMenuOnInventoryMoved(real::GetApp()->GetGameLogic()->m_pTradeMenu);
         // Realign touch controls to be higher up since the quickbar is just gonna overlap them when
         // expanded.
-        Entity* pGameMenu = real::GetApp()->m_entityRoot->GetEntityByNameRecursively("GameMenu");
+        Entity* pGameMenu = real::GetApp()->m_pEntityRoot->GetEntityByNameRecursively("GameMenu");
         if (!pGameMenu)
             return;
         Entity* pTouchEnt = pGameMenu->GetEntityByName("TouchControlsBG");
@@ -1959,7 +1958,7 @@ class HotbarExpanded : public patch::BasePatch
     static void updateQuickToolsForNewSize(int iToolsToAdd)
     {
         Entity* pToolMenu =
-            real::GetApp()->m_entityRoot->GetEntityByNameRecursively("ToolSelectMenu");
+            real::GetApp()->m_pEntityRoot->GetEntityByNameRecursively("ToolSelectMenu");
         if (!pToolMenu)
             return;
         float fAddedWidth = calculateAddedWidthPerTool(pToolMenu);
@@ -2149,9 +2148,9 @@ class Buildomatica : public patch::BasePatch
         if (!m_bModEnabled)
             return;
         // Reset our fake tilemap details
-        m_fakeTilemap.m_width = ((WorldRenderer*)this_)->m_pWorld->m_tilemap.m_width;
-        m_fakeTilemap.m_height = ((WorldRenderer*)this_)->m_pWorld->m_tilemap.m_height;
-        m_fakeTilemap.m_pWorldParent = ((WorldRenderer*)this_)->m_pWorld;
+        m_fakeTilemap.m_sizeX = ((WorldRenderer*)this_)->m_pWorld->m_tilemap.m_sizeX;
+        m_fakeTilemap.m_sizeY = ((WorldRenderer*)this_)->m_pWorld->m_tilemap.m_sizeY;
+        m_fakeTilemap.m_pParent = ((WorldRenderer*)this_)->m_pWorld;
 
         m_fakeTilemap.m_tiles.clear();
         m_cameraTiles.clear();
@@ -2209,19 +2208,19 @@ class Buildomatica : public patch::BasePatch
     {
         // Replicate what client does with actual tilemap, it sets a rect for culling purposes and
         // indexes tiles by their order.
-        for (int x = 0; x < pTilemap->m_width; x++)
+        for (int x = 0; x < pTilemap->m_sizeX; x++)
         {
-            for (int y = 0; y < pTilemap->m_height; y++)
+            for (int y = 0; y < pTilemap->m_sizeY; y++)
             {
-                int m_index = x + (y * pTilemap->m_width);
+                int m_index = x + (y * pTilemap->m_sizeX);
                 Tile& t = pTilemap->m_tiles[m_index];
                 t.x = x;
                 t.y = y;
-                t.m_rect.left = t.x * 32.0f;
-                t.m_rect.right = t.m_rect.left + 32.0f;
-                t.m_rect.top = t.y * 32.0f;
-                t.m_rect.bottom = t.m_rect.top + 32.0f;
-                t.m_index = m_index;
+                t.m_worldRect.left = t.x * 32.0f;
+                t.m_worldRect.right = t.m_worldRect.left + 32.0f;
+                t.m_worldRect.top = t.y * 32.0f;
+                t.m_worldRect.bottom = t.m_worldRect.top + 32.0f;
+                t.m_mapIndex = m_index;
             }
         }
     }
@@ -2230,12 +2229,10 @@ class Buildomatica : public patch::BasePatch
     {
         m_cameraTiles.clear();
         WorldRenderer* pRender = (WorldRenderer*)real::GetApp()->GetGameLogic()->m_pWorldRenderer;
-        Rectf m_viewableRect = {pRender->m_worldCamera.m_position.x - 32.f,
-                                pRender->m_worldCamera.m_position.y - 32.f,
-                                pRender->m_worldCamera.m_zoomedScreenSize.x +
-                                    pRender->m_worldCamera.m_position.x + 32.f,
-                                pRender->m_worldCamera.m_zoomedScreenSize.y +
-                                    pRender->m_worldCamera.m_position.y + 32.f};
+        Rectf m_viewableRect = {
+            pRender->m_camera.m_position.x - 32.f, pRender->m_camera.m_position.y - 32.f,
+            pRender->m_camera.m_zoomedScreenSize.x + pRender->m_camera.m_position.x + 32.f,
+            pRender->m_camera.m_zoomedScreenSize.y + pRender->m_camera.m_position.y + 32.f};
 
         // This will reserve either the exact amount or slightly higher amount for vec.
         int x = (int)((m_viewableRect.right - m_viewableRect.left) / 32.0f);
@@ -2243,15 +2240,17 @@ class Buildomatica : public patch::BasePatch
         m_cameraTiles.reserve(x * y);
         for (auto& t : m_fakeTilemap.m_tiles)
         {
-            if (t.m_rect.left >= m_viewableRect.left && t.m_rect.right <= m_viewableRect.right &&
-                t.m_rect.top >= m_viewableRect.top && t.m_rect.bottom <= m_viewableRect.bottom)
+            if (t.m_worldRect.left >= m_viewableRect.left &&
+                t.m_worldRect.right <= m_viewableRect.right &&
+                t.m_worldRect.top >= m_viewableRect.top &&
+                t.m_worldRect.bottom <= m_viewableRect.bottom)
                 m_cameraTiles.push_back(&t);
         }
     }
 
     static int CalculatePaintColor(Tile* t)
     {
-        int Flags = t->m_tileProperties & TILE_PROPERTY_PAINT_BLACK;
+        int Flags = t->m_flags & TILE_PROPERTY_PAINT_BLACK;
         int r = 0xff;
         int g = 0xff;
         int b = 0xff;
@@ -2288,29 +2287,29 @@ class Buildomatica : public patch::BasePatch
     {
         ItemInfo* pItemInfo = real::GetApp()->GetItemInfoManager()->GetItemByIDSafe(
             bFG ? pTile->m_itemID : pTile->m_itemBGID);
-        bool bPainted = pTile->m_currentColor != 0xe8ffb0aa;
-        if (pItemInfo->visualType == 25)
+        bool bPainted = pTile->currentColor != 0xe8ffb0aa;
+        if (pItemInfo->m_visualEffect == 25)
         {
             // VISUAL_EFFECT_RAINBOW_SHIFT
             // (Shifty Blocks)
             int r, g, b = 0;
-            float Hue = (float)(pTile->x + (pTile->x * 4) + pRenderer->m_avatarRenderData.m_hue +
+            float Hue = (float)(pTile->x + (pTile->x * 4) + pRenderer->m_tempRenderData.m_hue +
                                 (pTile->y << 3));
             while (360.f <= Hue)
                 Hue -= 360.f;
             HSVToRGB(Hue, 1.0, 1.0, &r, &g, &b);
             return ColorCombine(0xff + (r << 8) + (g << 16) + (b << 24), 0xe8ffb0aa, 0.66f);
         }
-        else if (pItemInfo->visualType == 36 && !bPainted)
+        else if (pItemInfo->m_visualEffect == 36 && !bPainted)
         {
             // VISUAL_EFFECT_DISCOLOR
             // (Copper Plumbing)
-            if (!(pItemInfo->ID & 1))
+            if (!(pItemInfo->m_itemID & 1))
                 pItemInfo =
-                    real::GetApp()->GetItemInfoManager()->GetItemByIDSafe(pItemInfo->ID + 1);
-            return ColorCombine(pItemInfo->m_overColor, 0xe8ffb0aa, 0.66f);
+                    real::GetApp()->GetItemInfoManager()->GetItemByIDSafe(pItemInfo->m_itemID + 1);
+            return ColorCombine(pItemInfo->m_growInfo.m_overlayColor, 0xe8ffb0aa, 0.66f);
         }
-        return pTile->m_currentColor;
+        return pTile->currentColor;
     }
 
     // Hacks to make client prefer our tilemap inside DrawTile.
@@ -2342,17 +2341,17 @@ class Buildomatica : public patch::BasePatch
         WorldTileMap& m_origTilemap = this_->m_pWorld->m_tilemap;
         for (auto& t : m_cameraTiles)
         {
-            if (t->x >= m_origTilemap.m_width || t->y >= m_origTilemap.m_height)
+            if (t->x >= m_origTilemap.m_sizeX || t->y >= m_origTilemap.m_sizeY)
                 continue;
             if (t->m_itemBGID == 0)
                 continue;
-            Tile* m_pRef = &m_origTilemap.m_tiles[t->x + (t->y * m_origTilemap.m_width)];
+            Tile* m_pRef = &m_origTilemap.m_tiles[t->x + (t->y * m_origTilemap.m_sizeX)];
             if (m_pRef->m_itemID != 0 || m_pRef->m_itemBGID != 0)
                 continue;
             CL_Vec2f tilePos(t->x * 32.f, t->y * 32.f);
-            real::WorldToScreen(&this_->m_worldCamera, &camera, &tilePos);
+            real::WorldToScreen(&this_->m_camera, &camera, &tilePos);
             if (t->m_itemBGID != 0)
-                real::DrawTile(this_, t->m_itemBGID, t->m_tileBGVisual, &camera,
+                real::DrawTile(this_, t->m_itemBGID, t->m_visualBG, &camera,
                                GetMuxedColorForTile(this_, t, false), t, 1, 0);
         }
     }
@@ -2369,34 +2368,34 @@ class Buildomatica : public patch::BasePatch
         m_bDrawingHologram = true;
         for (auto& t : m_cameraTiles)
         {
-            if (t->x >= m_origTilemap.m_width || t->y >= m_origTilemap.m_height)
+            if (t->x >= m_origTilemap.m_sizeX || t->y >= m_origTilemap.m_sizeY)
                 continue;
             if (t->m_itemID == 0)
                 continue;
-            Tile* m_pRef = &m_origTilemap.m_tiles[t->x + (t->y * m_origTilemap.m_width)];
+            Tile* m_pRef = &m_origTilemap.m_tiles[t->x + (t->y * m_origTilemap.m_sizeX)];
             if ((m_pRef->m_itemBGID != 0 && t->m_itemID == 0) || t->m_itemID == m_pRef->m_itemID)
                 continue;
             CL_Vec2f tilePos(t->x * 32.f, t->y * 32.f);
-            real::WorldToScreen(&this_->m_worldCamera, &camera, &tilePos);
+            real::WorldToScreen(&this_->m_camera, &camera, &tilePos);
             // Ignore seeds if they are somehow present in our data. Neither planner format supports
             // it, but converter tools may leave residue.
             if (t->m_itemID != 0 && !(t->m_itemID & 1))
             {
                 ItemInfo* pInfo =
                     real::GetApp()->GetItemInfoManager()->GetItemByIDSafe(t->m_itemID);
-                if (pInfo->m_properties & 0x40)
+                if (pInfo->m_flags & 0x40)
                 {
                     // Hack in workaround for NOSHADOW. Game expects alpha 0xFF, but that kinda
                     // ruins the overlay. One could nop out DrawTile+0x368 to avoid doing this, but
                     // it has unknown consequences.
-                    pInfo->m_properties &= ~0x40;
-                    real::DrawTile(this_, t->m_itemID, t->m_tileVisual, &camera,
+                    pInfo->m_flags &= ~0x40;
+                    real::DrawTile(this_, t->m_itemID, t->m_visual, &camera,
                                    GetMuxedColorForTile(this_, t, true), t, 0, 0);
-                    pInfo->m_properties |= 0x40;
+                    pInfo->m_flags |= 0x40;
                 }
                 else
                 {
-                    real::DrawTile(this_, t->m_itemID, t->m_tileVisual, &camera,
+                    real::DrawTile(this_, t->m_itemID, t->m_visual, &camera,
                                    GetMuxedColorForTile(this_, t, true), t, 0, 0);
                 }
             }
@@ -2416,49 +2415,45 @@ class Buildomatica : public patch::BasePatch
         WorldTileMap& m_origTilemap = this_->m_pWorld->m_tilemap;
         for (auto& t : m_cameraTiles)
         {
-            if (t->x >= m_origTilemap.m_width || t->y >= m_origTilemap.m_height)
+            if (t->x >= m_origTilemap.m_sizeX || t->y >= m_origTilemap.m_sizeY)
                 continue;
-            Tile* m_pRef = &m_origTilemap.m_tiles[t->x + (t->y * m_origTilemap.m_width)];
-            if ((t->m_tileProperties & TILE_PROPERTY_WATER) ==
-                    (m_pRef->m_tileProperties & TILE_PROPERTY_WATER) &&
-                (t->m_tileProperties & TILE_PROPERTY_FIRE) ==
-                    (m_pRef->m_tileProperties & TILE_PROPERTY_FIRE))
+            Tile* m_pRef = &m_origTilemap.m_tiles[t->x + (t->y * m_origTilemap.m_sizeX)];
+            if ((t->m_flags & TILE_PROPERTY_WATER) == (m_pRef->m_flags & TILE_PROPERTY_WATER) &&
+                (t->m_flags & TILE_PROPERTY_FIRE) == (m_pRef->m_flags & TILE_PROPERTY_FIRE))
                 continue;
             CL_Vec2f tilePos(t->x * 32.f, t->y * 32.f);
-            tilePos = *real::WorldToScreen(&this_->m_worldCamera, &camera, &tilePos);
-            if (t->m_tileProperties & TILE_PROPERTY_WATER)
+            tilePos = *real::WorldToScreen(&this_->m_camera, &camera, &tilePos);
+            if (t->m_flags & TILE_PROPERTY_WATER)
             {
                 int visual = real::WorldTileMapChooseVisual_Flag(&m_fakeTilemap, t->x, t->y, 0x400);
-                this_->m_pSurfWater->BlitScaledAnim(tilePos.x, tilePos.y, visual % 8, visual >> 3,
-                                                    &this_->m_worldCamera.m_zoomLevel, 0,
-                                                    0xE8FFB050, 0, rotation, false, false,
-                                                    real::g_globalBatcher);
+                this_->m_waterImg->BlitScaledAnim(tilePos.x, tilePos.y, visual % 8, visual >> 3,
+                                                  &this_->m_camera.m_zoomLevel, 0, 0xE8FFB050, 0,
+                                                  rotation, false, false, real::g_globalBatcher);
             }
-            else if (m_pRef->m_tileProperties & TILE_PROPERTY_WATER)
+            else if (m_pRef->m_flags & TILE_PROPERTY_WATER)
             {
                 // Tint it purplish red by using green water as base surface and tinting it red.
                 int visual = real::WorldTileMapChooseVisual_Flag(&this_->m_pWorld->m_tilemap, t->x,
                                                                  t->y, 0x400);
-                this_->m_pSurfGreenWater->BlitScaledAnim(
-                    tilePos.x, tilePos.y, visual % 8, visual >> 3,
-                    &this_->m_worldCamera.m_zoomLevel, 0, 0xFF90, 0, rotation, false, false,
-                    real::g_globalBatcher);
+                this_->m_greenWaterImg->BlitScaledAnim(
+                    tilePos.x, tilePos.y, visual % 8, visual >> 3, &this_->m_camera.m_zoomLevel, 0,
+                    0xFF90, 0, rotation, false, false, real::g_globalBatcher);
             }
-            else if (t->m_tileProperties & TILE_PROPERTY_FIRE)
+            else if (t->m_flags & TILE_PROPERTY_FIRE)
             {
                 int visual =
                     real::WorldTileMapChooseVisual_Flag(&m_fakeTilemap, t->x, t->y, 0x1000);
-                this_->m_pSurfFire->BlitScaledAnim(tilePos.x, tilePos.y, visual % 8, visual >> 3,
-                                                   &this_->m_worldCamera.m_zoomLevel, 0, 0xE8FFB0A0,
-                                                   0, rotation, false, false, real::g_fireBatcher);
+                this_->m_fireImg->BlitScaledAnim(tilePos.x, tilePos.y, visual % 8, visual >> 3,
+                                                 &this_->m_camera.m_zoomLevel, 0, 0xE8FFB0A0, 0,
+                                                 rotation, false, false, real::g_fireBatcher);
             }
-            else if (m_pRef->m_tileProperties & TILE_PROPERTY_FIRE)
+            else if (m_pRef->m_flags & TILE_PROPERTY_FIRE)
             {
                 int visual = real::WorldTileMapChooseVisual_Flag(&this_->m_pWorld->m_tilemap, t->x,
                                                                  t->y, 0x1000);
-                this_->m_pSurfFire->BlitScaledAnim(tilePos.x, tilePos.y, visual % 8, visual >> 3,
-                                                   &this_->m_worldCamera.m_zoomLevel, 0, 0xFFA0, 0,
-                                                   rotation, false, false, real::g_fireBatcher);
+                this_->m_fireImg->BlitScaledAnim(tilePos.x, tilePos.y, visual % 8, visual >> 3,
+                                                 &this_->m_camera.m_zoomLevel, 0, 0xFFA0, 0,
+                                                 rotation, false, false, real::g_fireBatcher);
             }
         }
         real::RenderBatcherFlush(real::g_globalBatcher, 0, -1);
@@ -2478,9 +2473,9 @@ class Buildomatica : public patch::BasePatch
         WorldTileMap& m_origTilemap = this_->m_pWorld->m_tilemap;
         for (auto& t : m_cameraTiles)
         {
-            if (t->x >= m_origTilemap.m_width || t->y >= m_origTilemap.m_height)
+            if (t->x >= m_origTilemap.m_sizeX || t->y >= m_origTilemap.m_sizeY)
                 continue;
-            Tile* m_pRef = &m_origTilemap.m_tiles[t->x + (t->y * m_origTilemap.m_width)];
+            Tile* m_pRef = &m_origTilemap.m_tiles[t->x + (t->y * m_origTilemap.m_sizeX)];
             bool bMatchingItem = m_pRef->m_itemID == t->m_itemID;
             int overlayIcon = -1;
             int iconTint = 0xFFFFFFAA;
@@ -2489,18 +2484,17 @@ class Buildomatica : public patch::BasePatch
             {
                 ItemInfo* pItemInfo =
                     real::GetApp()->GetItemInfoManager()->GetItemByIDSafe(t->m_itemID);
-                if ((pItemInfo->m_properties & 1) &&
-                    (t->m_tileProperties & TILE_PROPERTY_FACING_LEFT) !=
-                        (m_pRef->m_tileProperties & TILE_PROPERTY_FACING_LEFT))
+                if ((pItemInfo->m_flags & 1) && (t->m_flags & TILE_PROPERTY_FACING_LEFT) !=
+                                                    (m_pRef->m_flags & TILE_PROPERTY_FACING_LEFT))
                     overlayIcon = 2966; // Enchanted Spatula
-                else if ((t->m_tileProperties & TILE_PROPERTY_GLUE) !=
-                         (m_pRef->m_tileProperties & TILE_PROPERTY_GLUE))
+                else if ((t->m_flags & TILE_PROPERTY_GLUE) !=
+                         (m_pRef->m_flags & TILE_PROPERTY_GLUE))
                     overlayIcon = 1866; // Block Glue
-                else if ((t->m_tileProperties & TILE_PROPERTY_PAINT_BLACK) !=
-                         (m_pRef->m_tileProperties & TILE_PROPERTY_PAINT_BLACK))
+                else if ((t->m_flags & TILE_PROPERTY_PAINT_BLACK) !=
+                         (m_pRef->m_flags & TILE_PROPERTY_PAINT_BLACK))
                 {
                     // Overlay a paint bucket icon if we're mismatching a paint.
-                    int Flags = t->m_tileProperties & TILE_PROPERTY_PAINT_BLACK;
+                    int Flags = t->m_flags & TILE_PROPERTY_PAINT_BLACK;
                     if (Flags == 0)
                         overlayIcon = 3492;
                     else if (Flags == TILE_PROPERTY_PAINT_BLACK)
@@ -2523,7 +2517,7 @@ class Buildomatica : public patch::BasePatch
             if (m_pRef->m_itemID == 0 && m_pRef->m_itemBGID == 0)
                 continue;
             CL_Vec2f tilePos(t->x * 32.f, t->y * 32.f);
-            real::WorldToScreen(&this_->m_worldCamera, &camera, &tilePos);
+            real::WorldToScreen(&this_->m_camera, &camera, &tilePos);
             if (m_overlayObtrusiveness >= 2 && !bMatchingBG &&
                 (m_pRef->m_itemBGID != 0 || m_pRef->m_itemID != 0))
             {
@@ -2548,12 +2542,12 @@ class Buildomatica : public patch::BasePatch
                             // confusing.
                             if (m_pRef->m_itemBGID == 0)
                                 col = 0xFFFF80;
-                            real::DrawTile(this_, t->m_itemBGID, t->m_tileBGVisual, &camera, col, t,
-                                           1, 0);
+                            real::DrawTile(this_, t->m_itemBGID, t->m_visualBG, &camera, col, t, 1,
+                                           0);
                         }
                     }
                     else if (t->m_itemBGID == 0 && m_pRef->m_itemID == 0 && !m_bDrawNotesOnly)
-                        real::DrawTile(this_, m_pRef->m_itemBGID, m_pRef->m_tileBGVisual, &camera,
+                        real::DrawTile(this_, m_pRef->m_itemBGID, m_pRef->m_visualBG, &camera,
                                        0xFF80, m_pRef, 1, 0);
                 }
             }
@@ -2564,25 +2558,25 @@ class Buildomatica : public patch::BasePatch
                 // there is one.
                 if (!m_bDrawNotesOnly || (m_bDrawNotesOnly && t->m_itemBGID != 0))
                 {
-                    real::DrawTile(this_, m_pRef->m_itemID, m_pRef->m_tileVisual, &camera, 0xFF40,
+                    real::DrawTile(this_, m_pRef->m_itemID, m_pRef->m_visual, &camera, 0xFF40,
                                    m_pRef, 0, 0);
                     if (t->m_itemID != 0)
                     {
                         m_bDrawingHologram = true;
                         ItemInfo* pInfo =
                             real::GetApp()->GetItemInfoManager()->GetItemByIDSafe(t->m_itemID);
-                        if (pInfo->m_properties & 0x40)
+                        if (pInfo->m_flags & 0x40)
                         {
                             // Hack in workaround for NOSHADOW here as well.
-                            pInfo->m_properties &= ~0x40;
-                            real::DrawTile(this_, t->m_itemID, t->m_tileVisual, &camera, 0xFF80, t,
-                                           0, 0);
-                            pInfo->m_properties |= 0x40;
+                            pInfo->m_flags &= ~0x40;
+                            real::DrawTile(this_, t->m_itemID, t->m_visual, &camera, 0xFF80, t, 0,
+                                           0);
+                            pInfo->m_flags |= 0x40;
                         }
                         else
                         {
-                            real::DrawTile(this_, t->m_itemID, t->m_tileVisual, &camera, 0xFF80, t,
-                                           0, 0);
+                            real::DrawTile(this_, t->m_itemID, t->m_visual, &camera, 0xFF80, t, 0,
+                                           0);
                         }
                         m_bDrawingHologram = false;
                     }
@@ -2593,13 +2587,13 @@ class Buildomatica : public patch::BasePatch
                 // If we have any icon to draw, we'll need to masquerade tile's tilevisual and item
                 // ID, otherwise it'll render garbage.
                 int origItem = t->m_itemID;
-                int origVis = t->m_tileVisual;
+                int origVis = t->m_visual;
 
                 t->m_itemID = overlayIcon;
-                t->m_tileVisual = 0;
-                real::DrawTile(this_, t->m_itemID, t->m_tileVisual, &camera, iconTint, t, 0, 0);
+                t->m_visual = 0;
+                real::DrawTile(this_, t->m_itemID, t->m_visual, &camera, iconTint, t, 0, 0);
                 t->m_itemID = origItem;
-                t->m_tileVisual = origVis;
+                t->m_visual = origVis;
             }
         }
     }
@@ -2639,19 +2633,19 @@ class Buildomatica : public patch::BasePatch
         int Height = _wtoi(tokens[1].c_str());
 
         // Reject loading if sizes do not match.
-        if (Width != m_fakeTilemap.m_width || Height != m_fakeTilemap.m_height)
+        if (Width != m_fakeTilemap.m_sizeX || Height != m_fakeTilemap.m_sizeY)
             return 5;
 
         // Fill in the tilemap and set the tile tint in place.
         m_fakeTilemap.m_tiles.clear();
-        m_fakeTilemap.m_tiles.reserve(m_fakeTilemap.m_height * m_fakeTilemap.m_width);
-        for (int y = 0; y < m_fakeTilemap.m_height; y++)
+        m_fakeTilemap.m_tiles.reserve(m_fakeTilemap.m_sizeY * m_fakeTilemap.m_sizeX);
+        for (int y = 0; y < m_fakeTilemap.m_sizeY; y++)
         {
-            for (int x = 0; x < m_fakeTilemap.m_width; x++)
+            for (int x = 0; x < m_fakeTilemap.m_sizeX; x++)
             {
                 m_fakeTilemap.m_tiles.push_back(Tile());
                 // RGB #b0e8ff
-                m_fakeTilemap.m_tiles.back().m_currentColor = 0xe8ffb0aa;
+                m_fakeTilemap.m_tiles.back().currentColor = 0xe8ffb0aa;
             }
         }
 
@@ -2674,12 +2668,12 @@ class Buildomatica : public patch::BasePatch
         {
             int itemID = *((int*)(pMem + ptr));
             ItemInfo* pItem = real::GetApp()->GetItemInfoManager()->GetItemByIDSafe(itemID);
-            if (pItem->ID != 0 && !(pItem->ID & 1))
+            if (pItem->m_itemID != 0 && !(pItem->m_itemID & 1))
             {
                 m_fakeTilemap.m_tiles[i].m_itemID = itemID;
-                m_fakeTilemap.m_tiles[i].m_collisionType = pItem->m_collision;
-                m_fakeTilemap.m_tiles[i].m_bCollidable =
-                    pItem->m_collision != 0 && pItem->m_collision != 5;
+                m_fakeTilemap.m_tiles[i].m_collisionType = pItem->m_collisionType;
+                m_fakeTilemap.m_tiles[i].m_collidable =
+                    pItem->m_collisionType != 0 && pItem->m_collisionType != 5;
             }
             ptr += 4;
         }
@@ -2688,7 +2682,7 @@ class Buildomatica : public patch::BasePatch
         {
             int itemID = *((int*)(pMem + ptr));
             ItemInfo* pItem = real::GetApp()->GetItemInfoManager()->GetItemByIDSafe(itemID);
-            if (pItem->ID != 0)
+            if (pItem->m_itemID != 0)
                 m_fakeTilemap.m_tiles[i].m_itemBGID = itemID;
             ptr += 4;
         }
@@ -2697,9 +2691,9 @@ class Buildomatica : public patch::BasePatch
         {
             int flags = *((int*)(pMem + ptr));
             if (flags == 10001)
-                m_fakeTilemap.m_tiles[i].m_tileProperties |= TILE_PROPERTY_WATER;
+                m_fakeTilemap.m_tiles[i].m_flags |= TILE_PROPERTY_WATER;
             else if (flags == 10002)
-                m_fakeTilemap.m_tiles[i].m_tileProperties |= TILE_PROPERTY_FIRE;
+                m_fakeTilemap.m_tiles[i].m_flags |= TILE_PROPERTY_FIRE;
             ptr += 4;
         }
         // "meta"
@@ -2708,33 +2702,32 @@ class Buildomatica : public patch::BasePatch
             int Flag = *((int*)(pMem + ptr));
             ptr += 4;
             if (Flag & GPMAP_PROPERTY_GLUE)
-                m_fakeTilemap.m_tiles[i].m_tileProperties |= TILE_PROPERTY_GLUE;
+                m_fakeTilemap.m_tiles[i].m_flags |= TILE_PROPERTY_GLUE;
             if (Flag & GPMAP_PROPERTY_FLIP)
-                m_fakeTilemap.m_tiles[i].m_tileProperties |= TILE_PROPERTY_FACING_LEFT;
+                m_fakeTilemap.m_tiles[i].m_flags |= TILE_PROPERTY_FACING_LEFT;
             if (Flag & GPMAP_PROPERTY_TOGGLED)
-                m_fakeTilemap.m_tiles[i].m_tileProperties |=
-                    TILE_PROPERTY_TOGGLED | TILE_PROPERTY_SILENCED;
+                m_fakeTilemap.m_tiles[i].m_flags |= TILE_PROPERTY_TOGGLED | TILE_PROPERTY_SILENCED;
             if ((Flag & GPMAP_PROPERTY_PAINT_CHARCOAL) == GPMAP_PROPERTY_PAINT_CHARCOAL)
-                m_fakeTilemap.m_tiles[i].m_tileProperties |= TILE_PROPERTY_PAINT_BLACK;
+                m_fakeTilemap.m_tiles[i].m_flags |= TILE_PROPERTY_PAINT_BLACK;
             else if ((Flag & GPMAP_PROPERTY_PAINT_RED) == GPMAP_PROPERTY_PAINT_RED)
-                m_fakeTilemap.m_tiles[i].m_tileProperties |= TILE_PROPERTY_PAINT_RED;
+                m_fakeTilemap.m_tiles[i].m_flags |= TILE_PROPERTY_PAINT_RED;
             else if ((Flag & GPMAP_PROPERTY_PAINT_GREEN) == GPMAP_PROPERTY_PAINT_GREEN)
-                m_fakeTilemap.m_tiles[i].m_tileProperties |= TILE_PROPERTY_PAINT_GREEN;
+                m_fakeTilemap.m_tiles[i].m_flags |= TILE_PROPERTY_PAINT_GREEN;
             else if ((Flag & GPMAP_PROPERTY_PAINT_BLUE) == GPMAP_PROPERTY_PAINT_BLUE)
-                m_fakeTilemap.m_tiles[i].m_tileProperties |= TILE_PROPERTY_PAINT_BLUE;
+                m_fakeTilemap.m_tiles[i].m_flags |= TILE_PROPERTY_PAINT_BLUE;
             else if (Flag & GPMAP_PROPERTY_PAINT_YELLOW)
-                m_fakeTilemap.m_tiles[i].m_tileProperties |= TILE_PROPERTY_PAINT_YELLOW;
+                m_fakeTilemap.m_tiles[i].m_flags |= TILE_PROPERTY_PAINT_YELLOW;
             else if (Flag & GPMAP_PROPERTY_PAINT_PURPLE)
-                m_fakeTilemap.m_tiles[i].m_tileProperties |= TILE_PROPERTY_PAINT_PURPLE;
+                m_fakeTilemap.m_tiles[i].m_flags |= TILE_PROPERTY_PAINT_PURPLE;
             else if (Flag & GPMAP_PROPERTY_PAINT_AQUA)
-                m_fakeTilemap.m_tiles[i].m_tileProperties |= TILE_PROPERTY_PAINT_AQUA;
-            if (m_fakeTilemap.m_tiles[i].m_tileProperties & TILE_PROPERTY_PAINT_BLACK)
+                m_fakeTilemap.m_tiles[i].m_flags |= TILE_PROPERTY_PAINT_AQUA;
+            if (m_fakeTilemap.m_tiles[i].m_flags & TILE_PROPERTY_PAINT_BLACK)
             {
                 if (m_fakeTilemap.m_tiles[i].m_itemID == 0 &&
                     m_fakeTilemap.m_tiles[i].m_itemBGID == 0)
-                    m_fakeTilemap.m_tiles[i].m_tileProperties &= ~TILE_PROPERTY_PAINT_BLACK;
+                    m_fakeTilemap.m_tiles[i].m_flags &= ~TILE_PROPERTY_PAINT_BLACK;
                 else
-                    m_fakeTilemap.m_tiles[i].m_currentColor =
+                    m_fakeTilemap.m_tiles[i].currentColor =
                         CalculatePaintColor(&m_fakeTilemap.m_tiles[i]);
             }
         }
@@ -2745,7 +2738,7 @@ class Buildomatica : public patch::BasePatch
     static int LoadFromCernPlannerFile(std::string Path)
     {
         // Cernodile's World Planner format. Kinda horrible, bunch of string parsing.
-        if (m_fakeTilemap.m_height != 60 && m_fakeTilemap.m_width != 100)
+        if (m_fakeTilemap.m_sizeY != 60 && m_fakeTilemap.m_sizeX != 100)
             return 1;
         std::ifstream world(Path);
         if (!world)
@@ -2757,14 +2750,14 @@ class Buildomatica : public patch::BasePatch
             return 3;
 
         m_fakeTilemap.m_tiles.clear();
-        m_fakeTilemap.m_tiles.reserve(m_fakeTilemap.m_height * m_fakeTilemap.m_width);
-        for (int y = 0; y < m_fakeTilemap.m_height; y++)
+        m_fakeTilemap.m_tiles.reserve(m_fakeTilemap.m_sizeY * m_fakeTilemap.m_sizeX);
+        for (int y = 0; y < m_fakeTilemap.m_sizeY; y++)
         {
-            for (int x = 0; x < m_fakeTilemap.m_width; x++)
+            for (int x = 0; x < m_fakeTilemap.m_sizeX; x++)
             {
                 m_fakeTilemap.m_tiles.push_back(Tile());
                 // RGB #b0e8ff
-                m_fakeTilemap.m_tiles.back().m_currentColor = 0xe8ffb0aa;
+                m_fakeTilemap.m_tiles.back().currentColor = 0xe8ffb0aa;
             }
         }
 
@@ -2834,7 +2827,7 @@ class Buildomatica : public patch::BasePatch
         }
 
         // Planner and tilemap sizes don't match, lets not do any OOB writes here, bail out.
-        if (foreground.size() > (m_fakeTilemap.m_width * m_fakeTilemap.m_height))
+        if (foreground.size() > (m_fakeTilemap.m_sizeX * m_fakeTilemap.m_sizeY))
             return 4;
         for (int i = 0; i < foreground.size(); i++)
         {
@@ -2849,44 +2842,44 @@ class Buildomatica : public patch::BasePatch
                     switch (Paint)
                     {
                     case 'R':
-                        m_fakeTilemap.m_tiles[i].m_tileProperties |= TILE_PROPERTY_PAINT_RED;
+                        m_fakeTilemap.m_tiles[i].m_flags |= TILE_PROPERTY_PAINT_RED;
                         break;
                     case 'G':
-                        m_fakeTilemap.m_tiles[i].m_tileProperties |= TILE_PROPERTY_PAINT_GREEN;
+                        m_fakeTilemap.m_tiles[i].m_flags |= TILE_PROPERTY_PAINT_GREEN;
                         break;
                     case 'B':
-                        m_fakeTilemap.m_tiles[i].m_tileProperties |= TILE_PROPERTY_PAINT_BLUE;
+                        m_fakeTilemap.m_tiles[i].m_flags |= TILE_PROPERTY_PAINT_BLUE;
                         break;
                     case 'P':
-                        m_fakeTilemap.m_tiles[i].m_tileProperties |= TILE_PROPERTY_PAINT_PURPLE;
+                        m_fakeTilemap.m_tiles[i].m_flags |= TILE_PROPERTY_PAINT_PURPLE;
                         break;
                     case 'Y':
-                        m_fakeTilemap.m_tiles[i].m_tileProperties |= TILE_PROPERTY_PAINT_YELLOW;
+                        m_fakeTilemap.m_tiles[i].m_flags |= TILE_PROPERTY_PAINT_YELLOW;
                         break;
                     case 'A':
-                        m_fakeTilemap.m_tiles[i].m_tileProperties |= TILE_PROPERTY_PAINT_AQUA;
+                        m_fakeTilemap.m_tiles[i].m_flags |= TILE_PROPERTY_PAINT_AQUA;
                         break;
                     case 'C':
-                        m_fakeTilemap.m_tiles[i].m_tileProperties |= TILE_PROPERTY_PAINT_BLACK;
+                        m_fakeTilemap.m_tiles[i].m_flags |= TILE_PROPERTY_PAINT_BLACK;
                         break;
                     }
-                    m_fakeTilemap.m_tiles[i].m_currentColor =
+                    m_fakeTilemap.m_tiles[i].currentColor =
                         CalculatePaintColor(&m_fakeTilemap.m_tiles[i]);
                     foreground[i] = foreground[i].substr(3);
                 }
                 if (StringFromEndMatches(foreground[i], "_FL"))
                 {
-                    m_fakeTilemap.m_tiles[i].m_tileProperties |= TILE_PROPERTY_FACING_LEFT;
+                    m_fakeTilemap.m_tiles[i].m_flags |= TILE_PROPERTY_FACING_LEFT;
                     foreground[i] = foreground[i].substr(0, foreground[i].length() - 3);
                 }
             }
             ItemInfo* info = real::GetApp()->GetItemInfoManager()->GetItemByName(foreground[i]);
-            if (info->ID != 0)
+            if (info->m_itemID != 0)
             {
-                (&m_fakeTilemap.m_tiles[i])->m_itemID = info->ID;
-                (&m_fakeTilemap.m_tiles[i])->m_collisionType = info->m_collision;
-                (&m_fakeTilemap.m_tiles[i])->m_bCollidable =
-                    info->m_collision != 0 && info->m_collision != 5;
+                (&m_fakeTilemap.m_tiles[i])->m_itemID = info->m_itemID;
+                (&m_fakeTilemap.m_tiles[i])->m_collisionType = info->m_collisionType;
+                (&m_fakeTilemap.m_tiles[i])->m_collidable =
+                    info->m_collisionType != 0 && info->m_collisionType != 5;
             }
         }
         for (int i = 0; i < background.size(); i++)
@@ -2894,20 +2887,20 @@ class Buildomatica : public patch::BasePatch
             if (background[i].length() == 0)
                 continue;
             ItemInfo* info = real::GetApp()->GetItemInfoManager()->GetItemByName(background[i]);
-            if (info->ID != 0)
-                (&m_fakeTilemap.m_tiles[i])->m_itemBGID = info->ID;
+            if (info->m_itemID != 0)
+                (&m_fakeTilemap.m_tiles[i])->m_itemBGID = info->m_itemID;
         }
         for (int i = 0; i < water.size(); i++)
         {
             if (water[i] == 1)
-                (&m_fakeTilemap.m_tiles[i])->m_tileProperties |= TILE_PROPERTY_WATER;
+                (&m_fakeTilemap.m_tiles[i])->m_flags |= TILE_PROPERTY_WATER;
             else if (water[i] == 2)
-                (&m_fakeTilemap.m_tiles[i])->m_tileProperties |= TILE_PROPERTY_FIRE;
+                (&m_fakeTilemap.m_tiles[i])->m_flags |= TILE_PROPERTY_FIRE;
         }
         for (int i = 0; i < glue.size(); i++)
         {
             if (glue[i] != 0)
-                (&m_fakeTilemap.m_tiles[i])->m_tileProperties |= TILE_PROPERTY_GLUE;
+                (&m_fakeTilemap.m_tiles[i])->m_flags |= TILE_PROPERTY_GLUE;
         }
         return 0;
     }
@@ -2940,7 +2933,7 @@ class Buildomatica : public patch::BasePatch
         short m_rows = *((short*)(pMem + 8));
 
         short m_maxRows =
-            (short)(m_fakeTilemap.m_width * floor((float)m_fakeTilemap.m_height / 14.0f));
+            (short)(m_fakeTilemap.m_sizeX * floor((float)m_fakeTilemap.m_sizeY / 14.0f));
 
         if (m_maxRows < m_rows)
             return 5;
@@ -2949,17 +2942,17 @@ class Buildomatica : public patch::BasePatch
             return 6;
 
         // Verify if we even have a valid tilemap right now..
-        if (m_fakeTilemap.m_tiles.size() != m_fakeTilemap.m_height * m_fakeTilemap.m_width)
+        if (m_fakeTilemap.m_tiles.size() != m_fakeTilemap.m_sizeY * m_fakeTilemap.m_sizeX)
         {
             m_fakeTilemap.m_tiles.clear();
-            m_fakeTilemap.m_tiles.reserve(m_fakeTilemap.m_height * m_fakeTilemap.m_width);
-            for (int y = 0; y < m_fakeTilemap.m_height; y++)
+            m_fakeTilemap.m_tiles.reserve(m_fakeTilemap.m_sizeY * m_fakeTilemap.m_sizeX);
+            for (int y = 0; y < m_fakeTilemap.m_sizeY; y++)
             {
-                for (int x = 0; x < m_fakeTilemap.m_width; x++)
+                for (int x = 0; x < m_fakeTilemap.m_sizeX; x++)
                 {
                     m_fakeTilemap.m_tiles.push_back(Tile());
                     // RGB #b0e8ff
-                    m_fakeTilemap.m_tiles.back().m_currentColor = 0xe8ffb0aa;
+                    m_fakeTilemap.m_tiles.back().currentColor = 0xe8ffb0aa;
                 }
             }
         }
@@ -2971,10 +2964,10 @@ class Buildomatica : public patch::BasePatch
             {
                 if (ptr >= length)
                     return 7;
-                int baseY = (int)floor(i / m_fakeTilemap.m_width) * 14;
+                int baseY = (int)floor(i / m_fakeTilemap.m_sizeX) * 14;
                 int noteID = *((int8_t*)(pMem + ptr++));
-                Tile* pTarget = &m_fakeTilemap.m_tiles[(i % m_fakeTilemap.m_width) +
-                                                       ((baseY + y) * m_fakeTilemap.m_width)];
+                Tile* pTarget = &m_fakeTilemap.m_tiles[(i % m_fakeTilemap.m_sizeX) +
+                                                       ((baseY + y) * m_fakeTilemap.m_sizeX)];
                 if (noteID == 15)
                 {
                     // Audio Rack, skip parsing it, since we don't playback or show its data.
@@ -2999,7 +2992,7 @@ class Buildomatica : public patch::BasePatch
     {
         if (pVL->Get(0).GetUINT32() == m_toggleKey)
         {
-            Entity* pGUI = real::GetApp()->m_entityRoot->GetEntityByName("GUI");
+            Entity* pGUI = real::GetApp()->m_pEntityRoot->GetEntityByName("GUI");
             if (pGUI->GetEntityByName("OptionsMenu") || pGUI->GetEntityByName("ResolutionMenu") ||
                 pGUI->GetEntityByName("OptionsPage"))
                 return;
@@ -3017,7 +3010,7 @@ class Buildomatica : public patch::BasePatch
         }
         else if (m_bModEnabled && pVL->Get(0).GetUINT32() == m_reloadKey)
         {
-            Entity* pGUI = real::GetApp()->m_entityRoot->GetEntityByName("GUI");
+            Entity* pGUI = real::GetApp()->m_pEntityRoot->GetEntityByName("GUI");
             if (pGUI->GetEntityByName("OptionsMenu") || pGUI->GetEntityByName("ResolutionMenu") ||
                 pGUI->GetEntityByName("OptionsPage"))
                 return;

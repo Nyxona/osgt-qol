@@ -33,23 +33,23 @@ void game::WeatherManager::initialize()
 void game::WeatherManager::refreshItemDB()
 {
     auto& weatherMgr = game::WeatherManager::get();
-    for (auto item : real::GetApp()->GetItemInfoManager()->m_items)
+    for (auto item : real::GetApp()->GetItemInfoManager()->m_itemInfo)
     {
         // We only care about weathers
-        if (item.category != 41)
+        if (item.m_type != 41)
             continue;
         // Registering weather server-side works by setting alt-path to
         // loader/weather/pretty_name.
-        if (item.altPath.size() > 0)
+        if (item.m_extraString.size() > 0)
         {
-            if (item.altPath.rfind("loader/weather/", 0) == 0)
+            if (item.m_extraString.rfind("loader/weather/", 0) == 0)
             {
-                std::string prettyName = item.altPath.substr(15);
+                std::string prettyName = item.m_extraString.substr(15);
                 auto pair = weatherMgr.weathers.find(prettyName);
                 if (pair != weatherMgr.weathers.end())
                 {
                     // a match, map it
-                    pair->second.mappedID = item.animationMS;
+                    pair->second.mappedID = item.m_effectTimeMS;
                 }
             }
         }
@@ -82,12 +82,12 @@ void __thiscall game::WeatherManager::WorldRendererForceBackground(uint8_t* this
         if (WeatherID == pair.second.mappedID)
         {
             WorldRenderer* pRender = reinterpret_cast<WorldRenderer*>(this_);
-            if (pRender->m_pWeather != 0)
-                delete pRender->m_pWeather;
+            if (pRender->m_pBackground != 0)
+                delete pRender->m_pBackground;
             Background* pNewBG = pair.second.callback();
             pNewBG->Init(true);
-            pRender->m_activeWeather = WeatherID;
-            pRender->m_pWeather = pNewBG;
+            pRender->m_curWeather = WeatherID;
+            pRender->m_pBackground = pNewBG;
             return;
         }
     }

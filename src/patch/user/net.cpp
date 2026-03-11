@@ -175,7 +175,7 @@ class ServerSwitcher : public patch::BasePatch
             // goes under "GUI", but when you change resolutions *before* entering the game, it
             // suddenly changes whose the parent and causes game to crash.. kinda weird.
             pServerInput = real::GetApp()
-                               ->m_entityRoot->GetEntityByNameRecursively("OnlineMenu")
+                               ->m_pEntityRoot->GetEntityByNameRecursively("OnlineMenu")
                                ->GetEntityByName("osgt_qol_server_input");
         }
 

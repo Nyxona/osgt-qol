@@ -36,15 +36,16 @@ class FramerateUnlockPatch : public patch::BasePatch
             {
                 auto& optionsMgr = game::OptionsManager::get();
                 optionsMgr.addCheckboxOption(
-                    "qol", "Performance", "osgt_qol_fps_min90", "Set FPS Limit minimum value to 90 (may get V-Synced)\n",
+                    "qol", "Performance", "osgt_qol_fps_min90",
+                    "Set FPS Limit minimum value to 90 (may get V-Synced)\n",
                     &OnFPSMinimumCallback);
             }
         }
 
         auto& optionsMgr = game::OptionsManager::get();
-                optionsMgr.addCheckboxOption(
-                    "qol", "Performance", "osgt_qol_fps_temp_killswitch", "Limit FPS back down to 60 (Power Saving)\n",
-                    &OnFPSPowerSaveCallback);
+        optionsMgr.addCheckboxOption("qol", "Performance", "osgt_qol_fps_temp_killswitch",
+                                     "Limit FPS back down to 60 (Power Saving)\n",
+                                     &OnFPSPowerSaveCallback);
 
         // Fix crazy pet movement.
         game.hookFunctionPatternDirect<PetRenderDataUpdate_t>(
@@ -73,7 +74,8 @@ class FramerateUnlockPatch : public patch::BasePatch
         // to 60.
         DEVMODE dm;
         dm.dmSize = sizeof(DEVMODE);
-        if (EnumDisplaySettingsA(NULL, ENUM_CURRENT_SETTINGS, &dm) && !real::GetApp()->GetVar("osgt_qol_fps_temp_killswitch")->GetUINT32())
+        if (EnumDisplaySettingsA(NULL, ENUM_CURRENT_SETTINGS, &dm) &&
+            !real::GetApp()->GetVar("osgt_qol_fps_temp_killswitch")->GetUINT32())
         {
             float fpsLimit = static_cast<float>(dm.dmDisplayFrequency);
             // Do not allow over >400fps. The client has a bug where if the game is open for long

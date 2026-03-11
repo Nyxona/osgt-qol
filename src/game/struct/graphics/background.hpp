@@ -5,37 +5,37 @@
 #include "game/struct/variant.hpp"
 #include "game/struct/vec.hpp"
 
+// Namings matched.
 class Background : public boost::signals::trackable
 {
   public:
     Background();
     virtual ~Background();
 
-    virtual void Render(CL_Vec2f& vScreenPos, float graphicDetail);
-    virtual void Init(bool);
+    virtual void Render(CL_Vec2f& camPos, float graphicDetailLevel);
+    virtual void Init(bool useMap);
     virtual void Update();
-    virtual void RenderForeground(CL_Vec2f&, float);
-    virtual void SetScale(CL_Vec2f&);
-    virtual void UpdateSFXVolume(float vol);
+    virtual void RenderForeground(CL_Vec2f& camPos, float graphicDetailLevel);
+    virtual void SetScale(CL_Vec2f& scrnScale);
+    virtual void UpdateSFXVolume(float sfxVol);
 
-    void OnEnterForeground(VariantList*);
-    void OnEnterBackground(VariantList*);
+    void OnEnterForeground(VariantList* pVList);
+    void OnEnterBackground(VariantList* pVList);
 
     void OnAudioDisabled();
     void OnAudioEnabled();
 
-    // Seems to be used to signify if the weather has snow or other kind of falling particle
-    bool m_bParticles = false;
+    bool m_scaleOnTheFly = false;
 
     // Used for the weather change animation/fade
-    float m_fadeProgress = 1.0f;
+    float m_flashAlpha = 1.0f;
 
     // These two are primarily used in parallax scrolling
-    CL_Vec2f m_screenSize;
+    CL_Vec2f m_areaSize;
     CL_Vec2f m_scale = CL_Vec2f(1.0f, 1.0f);
 
-    Rectf m_renderRect;
+    Rectf m_worldRect;
     LoopingSound m_loopingSound;
-    float m_loopingSoundVol = 0.25f;
+    float m_sfxBaseVolume = 0.25f;
 };
 static_assert(sizeof(Background) == 264, "Background class size mismatch.");

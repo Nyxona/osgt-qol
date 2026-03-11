@@ -113,13 +113,15 @@ class SaveAndLogLocationFixer : public patch::BasePatch
         if (pVariant->GetType() == Variant::TYPE_STRING)
         {
             VideoModeManager* vidMgr = real::GetVideoModeManager();
-            auto it = vidMgr->m_videoModes.find(pVariant->GetString());
-            if (it != vidMgr->m_videoModes.end())
+            auto it = vidMgr->videoModes.find(pVariant->GetString());
+            if (it != vidMgr->videoModes.end())
             {
-                printf("Found vidmode, assigning %s..\n", it->second->m_name.c_str());
-                vidMgr->m_pActiveVidMode = it->second;
-                vidMgr->m_screenW = it->second->m_screenW;
-                vidMgr->m_screenH = it->second->m_screenH;
+                printf("Found vidmode, assigning %s..\n", it->second->name.c_str());
+                vidMgr->currentVideoMode = it->second;
+                vidMgr->actualScreenResolution.screenX =
+                    it->second->defaultScreenResolution.screenX;
+                vidMgr->actualScreenResolution.screenY =
+                    it->second->defaultScreenResolution.screenY;
             }
             else
             {

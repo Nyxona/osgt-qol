@@ -54,7 +54,7 @@ class Surface
         TEXTURE_CREATION_BLANK   // we'll reinitialize the texture as blank, up to you to redraw it
     };
 
-    unsigned short m_glTextureID = -1;
+    unsigned short m_texture = -1; // bgfx::TextureHandle
     int m_texWidth, m_texHeight;
     int m_originalWidth, m_originalHeight;
     bool m_bUsesAlpha;

@@ -113,7 +113,7 @@ class PlaymodTimersOverlay : public patch::BasePatch
     static bool DoesTimerOverlayExist()
     {
         Entity* pWorldSpecificGUI =
-            real::GetApp()->m_entityRoot->GetEntityByName("GUI")->GetEntityByName(
+            real::GetApp()->m_pEntityRoot->GetEntityByName("GUI")->GetEntityByName(
                 "WorldSpecificGUI");
         if (!pWorldSpecificGUI)
             return false;
@@ -124,7 +124,7 @@ class PlaymodTimersOverlay : public patch::BasePatch
     {
         // Clear any old ui
         Entity* pWorldSpecificGUI =
-            real::GetApp()->m_entityRoot->GetEntityByName("GUI")->GetEntityByName(
+            real::GetApp()->m_pEntityRoot->GetEntityByName("GUI")->GetEntityByName(
                 "WorldSpecificGUI");
         if (pWorldSpecificGUI)
             pWorldSpecificGUI->RemoveEntityByAddress(
@@ -145,7 +145,7 @@ class PlaymodTimersOverlay : public patch::BasePatch
         real::OnLogGrabBarChanged(pV);
         // Anchor TimerOverlay below the chat window.
         Entity* pConsoleLogParent =
-            real::GetApp()->m_entityRoot->GetEntityByName("ConsoleLogParent");
+            real::GetApp()->m_pEntityRoot->GetEntityByName("ConsoleLogParent");
         Entity* pLogEnt = pConsoleLogParent->GetEntityByName("ConsoleGrab");
         float yLevel = 0.0;
         if (!pLogEnt)
@@ -158,7 +158,7 @@ class PlaymodTimersOverlay : public patch::BasePatch
         }
         else
             yLevel = pLogEnt->GetVar("pos2d")->GetVector2().y + 16;
-        Entity* pGUI = real::GetApp()->m_entityRoot->GetEntityByName("GUI");
+        Entity* pGUI = real::GetApp()->m_pEntityRoot->GetEntityByName("GUI");
         Entity* pWorldSpecificGUI = pGUI->GetEntityByName("WorldSpecificGUI");
         if (!pWorldSpecificGUI)
             return;
@@ -312,7 +312,7 @@ class PlaymodTimersOverlay : public patch::BasePatch
     static void ConstructOverlay()
     {
         Entity* pWorldSpecificGUI =
-            real::GetApp()->m_entityRoot->GetEntityByName("GUI")->GetEntityByName(
+            real::GetApp()->m_pEntityRoot->GetEntityByName("GUI")->GetEntityByName(
                 "WorldSpecificGUI");
         if (pWorldSpecificGUI->GetEntityByName("TimerOverlay"))
         {
@@ -353,7 +353,7 @@ class PlaymodTimersOverlay : public patch::BasePatch
     {
         // Called to update existing timer with either expiry or changed expiration date.
         Entity* pWorldSpecificGUI =
-            real::GetApp()->m_entityRoot->GetEntityByName("GUI")->GetEntityByName(
+            real::GetApp()->m_pEntityRoot->GetEntityByName("GUI")->GetEntityByName(
                 "WorldSpecificGUI");
         if (!pWorldSpecificGUI)
             return;
@@ -385,7 +385,7 @@ class PlaymodTimersOverlay : public patch::BasePatch
     {
         // Just kill the overlay and create it again.
         Entity* pWorldSpecificGUI =
-            real::GetApp()->m_entityRoot->GetEntityByName("GUI")->GetEntityByName(
+            real::GetApp()->m_pEntityRoot->GetEntityByName("GUI")->GetEntityByName(
                 "WorldSpecificGUI");
         if (!pWorldSpecificGUI)
             return;
@@ -524,7 +524,7 @@ class PlaymodTimersOverlay : public patch::BasePatch
         {
             // Remove immediately if hiding
             Entity* pWorldSpecificGUI =
-                real::GetApp()->m_entityRoot->GetEntityByName("GUI")->GetEntityByName(
+                real::GetApp()->m_pEntityRoot->GetEntityByName("GUI")->GetEntityByName(
                     "WorldSpecificGUI");
 
             if (pWorldSpecificGUI)

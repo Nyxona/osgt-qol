@@ -1,21 +1,26 @@
 #pragma once
 
 // Incomplete type
-#include <stdint.h>
 #include <list>
+#include <stdint.h>
+
 
 struct InventoryItem
 {
-    short itemID;
-    uint8_t quantity;
-    bool bActive;
+    short m_itemID;
+    uint8_t m_count;
+    uint8_t m_flags;
 };
-struct PlayerItems
+class PlayerItems
 {
-    void* vftable;
-    uint8_t pad[0x18];
+  public:
+    virtual ~PlayerItems();
+
+    uint8_t m_version;
+    short m_clothingCache[9];
     std::list<InventoryItem> m_items;
-    short m_quickSlots[4];  // 48
-    short m_maxSlots;
-    uint8_t pad2[30];
+    short m_quickSlots[4];
+    int m_backpackSize;
+    std::list<InventoryItem> m_FilterItems;
+    bool m_IsDirty;
 };

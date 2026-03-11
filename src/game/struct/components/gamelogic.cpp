@@ -4,7 +4,7 @@
 
 bool GameLogicComponent::IsDialogOpened()
 {
-    Entity* pEntRoot = real::GetApp()->m_entityRoot;
+    Entity* pEntRoot = real::GetApp()->m_pEntityRoot;
     if (!pEntRoot)
         return false;
 

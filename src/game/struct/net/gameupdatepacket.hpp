@@ -4,19 +4,19 @@
 #include <stdint.h>
 struct GameUpdatePacket
 {
-    uint8_t m_packetType;
-    uint8_t m_npcType;
-    uint8_t m_removeQtyOrEntID;
-    uint8_t m_addQtyOrAction;
-    int m_netID;
-    int m_objectID;
-    int m_packetFlags;
-    float m_floatVal;
-    int m_itemObjIDOrDelay;
-    CL_Vec2f m_position;
-    CL_Vec2f m_velocity;
-    float m_angle;
-    int m_tileY;
-    int m_tileX;
-    int m_extendedDataLength;
+    uint8_t packetType;
+    uint8_t m_objectFlags;
+    uint8_t byte_remove;
+    uint8_t byte_add;
+    int m_destinationNetID;
+    int m_enemyPlayerID;
+    unsigned int m_flags;
+    float m_rotation;
+    int m_parm1;
+    CL_Vec2f pos;
+    CL_Vec2f speed;
+    float rotation;
+    int x;
+    int y;
+    int extendedDataSize;
 };
