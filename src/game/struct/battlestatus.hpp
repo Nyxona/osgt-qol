@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
 
+class NetAvatar;
+// Namings matched.
 struct BattleStatus
 {
     std::string m_name;
@@ -8,6 +10,6 @@ struct BattleStatus
     int m_timeLeft;
     uint8_t m_teams;
     int m_teamScore[4];
-    void* m_highScore[3]; // NetAvatar*
+    NetAvatar* m_highScore[3];
     bool m_bNoLogging;
 };

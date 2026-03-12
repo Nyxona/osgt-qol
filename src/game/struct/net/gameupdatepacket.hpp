@@ -2,6 +2,8 @@
 
 #include "game/struct/vec.hpp"
 #include <stdint.h>
+
+// Namings matched.
 struct GameUpdatePacket
 {
     uint8_t packetType;

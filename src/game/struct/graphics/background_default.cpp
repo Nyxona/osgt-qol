@@ -5,7 +5,6 @@
 #include "game/struct/graphics/surface.hpp"
 #include "game/struct/renderutils.hpp"
 
-#include "boost/bind/bind.hpp"
 #include "game/struct/vec.hpp"
 #include "surface.hpp"
 

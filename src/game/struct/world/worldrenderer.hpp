@@ -2,7 +2,7 @@
 
 #include "game/struct/graphics/background.hpp"
 #include "game/struct/graphics/surface.hpp"
-#include "game/struct/netavatar/avatarrenderdata.hpp"
+#include "game/struct/renderdata/avatarrenderdata.hpp"
 #include "worldcamera.hpp"
 // Incomplete
 class World;
@@ -44,5 +44,9 @@ class WorldRenderer
     float m_songTickTime;
     uint8_t pad3[40];
     AvatarRenderData m_tempRenderData;
+    int m_ownershipStatus;
+    int m_screenColor;
+    float m_rainbowCycle;
+    int m_rainbowColor;
 };
 // Expected size: 10088 / 0x2768

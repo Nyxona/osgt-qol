@@ -4,13 +4,15 @@
 #include <list>
 #include <stdint.h>
 
-
+// Namings matched.
 struct InventoryItem
 {
     short m_itemID;
     uint8_t m_count;
     uint8_t m_flags;
 };
+
+// Namings matched.
 class PlayerItems
 {
   public:

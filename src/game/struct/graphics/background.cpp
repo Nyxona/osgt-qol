@@ -1,6 +1,5 @@
 #include "background.hpp"
 #include "game/signatures.hpp"
-#include <string>
 
 #include "boost/bind/bind.hpp"
 #include "game/struct/renderutils.hpp"

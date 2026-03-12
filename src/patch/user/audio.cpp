@@ -2,7 +2,6 @@
 #include "game/signatures.hpp"
 #include "game/struct/variant.hpp"
 #include "patch/patch.hpp"
-#include "utils/utils.hpp"
 
 // AudioManagerFMOD::Preload
 REGISTER_GAME_FUNCTION(AudioManagerFMODPreload,

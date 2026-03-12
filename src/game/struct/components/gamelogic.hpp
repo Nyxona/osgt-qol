@@ -14,11 +14,12 @@ struct ProgressUIHelper
     int m_LastCheckTick;
     int m_isShow;
 };
+class NetAvatar;
 // Expected size: 880 bytes
 class GameLogicComponent : public EntityComponent
 {
   public:
-    WorldTileMap* GetTileMap() { return &m_pWorld->m_tilemap; }
+    WorldTileMap* GetTileMap() { return &m_pWorld->m_tiles; }
 
     int GetTileWidth() { return GetTileMap()->m_sizeX; }
     int GetTileHeight() { return GetTileMap()->m_sizeY; }
@@ -44,7 +45,7 @@ class GameLogicComponent : public EntityComponent
     CL_Vec2f* m_pSize2d;
     uint8_t m_netObjManager[48];
     int m_fakeNetID;
-    void* m_pLocalPlayer; // NetAvatar*
+    NetAvatar* m_pLocalPlayer; // NetAvatar*
     uint8_t m_textManager[40];
     PlayerItems m_playerItems;
     int m_activeItemID;

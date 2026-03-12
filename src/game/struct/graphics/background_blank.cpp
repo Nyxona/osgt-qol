@@ -1,7 +1,6 @@
 #include "background_blank.hpp"
 #include "game/signatures.hpp"
 #include "game/struct/components/gamelogic.hpp"
-#include "game/struct/renderutils.hpp"
 
 Background_Blank::Background_Blank() {}
 

@@ -1,7 +1,6 @@
 #pragma once
 #include <cstdint>
 
-#pragma pack(push, 1)
 class ENetClient
 {
   public:
@@ -31,5 +30,4 @@ class ENetClient
     int m_unk18;     // offset_0x128
     int m_unk19;
 };
-#pragma pack(pop)
 static_assert(sizeof(ENetClient) == 312, "ENetClient class size mismatch");

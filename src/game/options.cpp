@@ -1,7 +1,6 @@
 #include "game.hpp"
 #include "game/struct/entity.hpp"
 #include "game/struct/entityutils.hpp"
-#include "game/struct/renderutils.hpp"
 #include "signatures.hpp"
 #include "struct/rtrect.hpp"
 #include "struct/variant.hpp"
@@ -124,14 +123,13 @@ REGISTER_GAME_FUNCTION(SetButtonStyleEntity,
                        __fastcall, void, Entity*, int);
 struct ScrollSettings
 {
-    CL_Vec2f vPos = {0, 0};
-    CL_Vec2f vSize = {0, 0};
-    char m_unk = 0;
-    char m_unk2 = 0;
-    uint8_t m_unk3[6];
-    Entity* m_renderScissor = nullptr;
-    bool m_fingerTracking = true;
-    bool m_scrollWidth = false;
+    CL_Vec2f position = {0, 0};
+    CL_Vec2f size = {0, 0};
+    bool initFromParent = false;
+    bool invertScrollBarProgress = false;
+    Entity* const pParent = nullptr;
+    bool enableFingerTracking = true;
+    bool useScrollWidth = false;
 };
 REGISTER_GAME_FUNCTION(ScrollScroll,
                        "40 57 48 83 EC 50 48 C7 44 24 20 FE FF FF FF 48 89 5C 24 70 48 8B ? ? ? ? "
@@ -469,8 +467,8 @@ void OptionsManager::HandleOptionPageButton(VariantList* pVL)
     // Create scroll itself - using vanilla Proton components won't work as Growtopia modified them
     // heavily. They will function, but you can't use sliders properly with vanilla ones.
     ScrollSettings scrollSet;
-    scrollSet.vPos = vTextAreaPos;
-    scrollSet.vSize = vTextAreaBounds;
+    scrollSet.position = vTextAreaPos;
+    scrollSet.size = vTextAreaBounds;
     Entity* pScroll = real::ScrollScroll(operator new(0x1b8), &scrollSet);
     pOverEnt->AddEntity(pScroll);
     Entity* pScrollChild = pScroll->GetEntityByName("scroll_child");

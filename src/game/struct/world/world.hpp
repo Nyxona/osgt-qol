@@ -1,6 +1,8 @@
 #pragma once
 #include "game/struct/vec.hpp"
 #include <cstdint>
+#include <list>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -28,6 +30,8 @@ enum TileProperties : uint16_t
     TILE_PROPERTY_PAINT_BLACK =
         TILE_PROPERTY_PAINT_BLUE | TILE_PROPERTY_PAINT_GREEN | TILE_PROPERTY_PAINT_RED
 };
+
+// Namings matched.
 struct Tile
 {
     int currentColor;
@@ -52,26 +56,127 @@ struct Tile
 };
 static_assert(sizeof(Tile) == 128, "Tile size mismatch.");
 
+// Namings matched.
+class WorldObject
+{
+  public:
+    virtual ~WorldObject(){};
+    CL_Vec2f m_vPos;
+    short m_itemID;
+    uint8_t m_count;
+    uint8_t m_flags;
+    unsigned int m_objectID;
+    unsigned int m_timeCreated;
+    unsigned int m_timeTouched;
+};
+static_assert(sizeof(WorldObject) == 32, "WorldObject class size mismatch.");
+
 class World;
+
+// Namings matched.
 class WorldTileMap
 {
   public:
-    void* vftable;
+    virtual ~WorldTileMap(){};
     int m_sizeX;
     int m_sizeY;
     short m_firesLit;
     std::vector<Tile> m_tiles;
     World* m_pParent;
 };
-// Incomplete
+// Namings matched.
+class WorldObjectMap
+{
+  public:
+    virtual ~WorldObjectMap(){};
+    unsigned int m_uniqueNumberGen;
+    std::list<WorldObject> m_objects;
+};
+
+struct DoorInfo
+{
+    Tile* m_pTile;
+};
+struct HeartInfo
+{
+    Tile* m_pTile;
+    std::string m_name;
+};
+struct AutoDeleteInfo
+{
+    Tile* m_pTile;
+    unsigned int m_time;
+};
+struct BlockSpawnerInfo
+{
+    Tile* m_pTile;
+};
+
+// Namings matched.
 class World
 {
   public:
-    void* vftable;
-    short pad;
+    virtual ~World();
+    bool XboxLiveExclusive;
     short m_version;
-    int pad2;
-    WorldTileMap m_tilemap;
-    uint8_t m_objectMap[0x20];
+    WorldTileMap m_tiles;
+    WorldObjectMap m_objects;
     std::string m_name;
+    unsigned int m_flags;
+    short m_baseWeatherType;
+    short m_terraformType;
+    short m_currentWeatherType;
+    short m_unused2;
+    unsigned int m_unused3;
+    int m_blockInvite;
+    unsigned int m_timeLastSolidAdded;
+    std::string m_unused_str; // could be "worldBalancerBaseName", "description" or "creationDate",
+                              // but it isn't referenced anywhere in client outside ctor/dtor.
+    std::list<DoorInfo> m_doors;
+    std::list<HeartInfo> m_heartMonitors;
+    std::vector<AutoDeleteInfo> m_autoDeleteBlocks;
+    std::vector<BlockSpawnerInfo> m_blockSpawners;
+    int m_givingTreeCount;
+    int m_steamStompers;
+    int m_steamItems;
+    int m_silkworms;
+    int m_cameras;
+    int m_blasters;
+    int m_robots;
+    Tile* m_pJammerTile;
+    Tile* m_pWorldLockTile;
+    int m_lockCount;
+    Tile* m_pZombieJammerTile;
+    Tile* m_pDropJammerTile;
+    Tile* m_pGravityJammerTile;
+    Tile* m_pConsumableJammerTile;
+    Tile* m_pPunchJammerTile;
+    Tile* m_pXenoniteTile;
+    Tile* m_pFirehouseTile;
+    Tile* m_pGhostCharmTile;
+    Tile* m_pBalloonJammerTile;
+    Tile* m_pArchitectMachineTile;
+    Tile* m_pDwarvenDoorTile;
+    Tile* m_pDoomsdayWeatherTile;
+    std::list<Tile*> m_containmentNodes;
+    std::vector<std::vector<Tile*>> m_activeNodeGroups;
+    std::list<Tile*> m_ArchitectMachineTiles;
+    std::list<Tile*> m_DimensionBlockTiles;
+    std::list<Tile*> m_DeathTrapWalls;
+    std::list<Tile*> lightningClouds;
+    std::list<Tile*> checkoutCounters;
+    std::list<Tile*> m_PlayingCards;
+    std::list<Tile*> m_otherWorldlyWarningLights;
+    std::list<Tile*> m_starshipComponents;
+    std::list<Tile*> m_starshipHull;
+    std::list<Tile*> m_autoActionBlocks;
+    std::list<Tile*> m_DunckingBuckets;
+    std::set<Tile*> m_Tricksters;
+    Tile* m_pDataTile;
+    Tile* m_pMainDoor;
+    bool m_IsTilesDirty;
+    unsigned int m_TilesDirtyVersion;
+    bool m_magplantCountDirty;
+    int m_magplantCount;
 };
+static_assert(sizeof(World) == 688, "World class size mismatch.");

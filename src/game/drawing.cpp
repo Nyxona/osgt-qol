@@ -3,9 +3,7 @@
 
 #include "game.hpp"
 #include "game/struct/component.hpp"
-#include "game/struct/components/mapbg.hpp"
 #include "game/struct/entityutils.hpp"
-#include "patch/patch.hpp"
 #include "signatures.hpp"
 #include <cstdint>
 #include <debugapi.h>

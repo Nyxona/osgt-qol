@@ -1,6 +1,5 @@
 #include "game/game.hpp"
 #include "patch/patch.hpp"
-#include "utils/utils.hpp"
 
 #include "game/struct/net/gameupdatepacket.hpp"
 

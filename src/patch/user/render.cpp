@@ -1310,19 +1310,21 @@ class AnchorCameraToPlayerPatch : public patch::BasePatch
     // Helper functions for amount of pixels drawn out of world bounds
     static float getClampedRightBorder(WorldCamera& pCamera, float& clampX)
     {
-        return pCamera.m_screenSize.x - ((pCamera.m_position.x - clampX) * pCamera.m_zoomLevel.x);
+        return pCamera.m_vScreenSize.x -
+               ((pCamera.m_vCamWorldPosUpperLeft.x - clampX) * pCamera.m_vScale.x);
     }
     static float getClampedLeftBorder(WorldCamera& pCamera)
     {
-        return abs(pCamera.m_position.x) * pCamera.m_zoomLevel.x;
+        return abs(pCamera.m_vCamWorldPosUpperLeft.x) * pCamera.m_vScale.x;
     }
     static float getClampedTopBorder(WorldCamera& pCamera)
     {
-        return abs(pCamera.m_position.y) * pCamera.m_zoomLevel.y;
+        return abs(pCamera.m_vCamWorldPosUpperLeft.y) * pCamera.m_vScale.y;
     }
     static float getClampedBottomBorder(WorldCamera& pCamera, float& clampY)
     {
-        return pCamera.m_screenSize.y - ((pCamera.m_position.y - clampY) * pCamera.m_zoomLevel.y);
+        return pCamera.m_vScreenSize.y -
+               ((pCamera.m_vCamWorldPosUpperLeft.y - clampY) * pCamera.m_vScale.y);
     }
 
     // Camera & render tweaks
@@ -1339,43 +1341,43 @@ class AnchorCameraToPlayerPatch : public patch::BasePatch
             WorldTileMap* pTileMap = real::GetApp()->GetGameLogic()->GetTileMap();
             float xMax = (float)pTileMap->m_sizeX * 32.0f;
             float yMax = (float)pTileMap->m_sizeY * 32.0f;
-            float clampX = xMax - this_->m_camera.m_zoomedScreenSize.x;
-            float clampY = yMax - this_->m_camera.m_zoomedScreenSize.y;
+            float clampX = xMax - this_->m_camera.m_vWorldSizeViewableInScreen.x;
+            float clampY = yMax - this_->m_camera.m_vWorldSizeViewableInScreen.y;
 
             Rectf rect;              // shared rect struct for all the sides
             CL_Vec2f unk4(0.0, 0.0); // bgfx related, mandatory
 
             // Left side of world
-            if (this_->m_camera.m_position.x < 0.0)
+            if (this_->m_camera.m_vCamWorldPosUpperLeft.x < 0.0)
             {
                 // Draw from left (0) to right (clamp point) on entire height.
                 rect.right = getClampedLeftBorder(this_->m_camera);
-                rect.bottom = this_->m_camera.m_screenSize.y;
+                rect.bottom = this_->m_camera.m_vScreenSize.y;
                 rect.ceil();
                 real::DrawFilledRect(rect, 0xAA, 0.0f, &unk4);
             }
             // Right side of world
-            if (clampX < this_->m_camera.m_position.x)
+            if (clampX < this_->m_camera.m_vCamWorldPosUpperLeft.x)
             {
                 // Draw from left (clamp point) to edge of screen on entire height.
                 rect.left = getClampedRightBorder(this_->m_camera, clampX);
-                rect.right = this_->m_camera.m_screenSize.x;
+                rect.right = this_->m_camera.m_vScreenSize.x;
                 rect.top = 0;
-                rect.bottom = this_->m_camera.m_screenSize.y;
+                rect.bottom = this_->m_camera.m_vScreenSize.y;
                 rect.ceil();
                 real::DrawFilledRect(rect, 0xAA, 0.0f, &unk4);
             }
             // Top side of world
-            if (this_->m_camera.m_position.y < 0.0)
+            if (this_->m_camera.m_vCamWorldPosUpperLeft.y < 0.0)
             {
                 rect.right = rect.left = 0;
                 // Exclude world sides on clamp points so we don't overlap.
-                if (this_->m_camera.m_position.x < 0.0)
+                if (this_->m_camera.m_vCamWorldPosUpperLeft.x < 0.0)
                     rect.left = getClampedLeftBorder(this_->m_camera);
-                if (clampX < this_->m_camera.m_position.x)
+                if (clampX < this_->m_camera.m_vCamWorldPosUpperLeft.x)
                     rect.right = getClampedRightBorder(this_->m_camera, clampX);
                 else
-                    rect.right = this_->m_camera.m_screenSize.x;
+                    rect.right = this_->m_camera.m_vScreenSize.x;
 
                 // Draw from top (0) to bottom (clamp point) on entire non-overlapping width.
                 rect.bottom = getClampedTopBorder(this_->m_camera);
@@ -1383,20 +1385,20 @@ class AnchorCameraToPlayerPatch : public patch::BasePatch
                 real::DrawFilledRect(rect, 0xAA, 0.0f, &unk4);
             }
             // Bottom side of world
-            if (clampY < this_->m_camera.m_position.y)
+            if (clampY < this_->m_camera.m_vCamWorldPosUpperLeft.y)
             {
                 rect.left = rect.right = 0;
                 // Exclude world sides on clamp points so we don't overlap.
-                if (this_->m_camera.m_position.x < 0.0)
+                if (this_->m_camera.m_vCamWorldPosUpperLeft.x < 0.0)
                     rect.left = getClampedLeftBorder(this_->m_camera);
-                if (clampX < this_->m_camera.m_position.x)
+                if (clampX < this_->m_camera.m_vCamWorldPosUpperLeft.x)
                     rect.right = getClampedRightBorder(this_->m_camera, clampX);
                 else
-                    rect.right = this_->m_camera.m_screenSize.x;
+                    rect.right = this_->m_camera.m_vScreenSize.x;
 
                 // Draw from top (clamp point) to bottom of screen on entire non-overlapping width.
                 rect.top = getClampedBottomBorder(this_->m_camera, clampY);
-                rect.bottom = this_->m_camera.m_screenSize.y;
+                rect.bottom = this_->m_camera.m_vScreenSize.y;
                 rect.ceil();
                 real::DrawFilledRect(rect, 0xAA, 0.0f, &unk4);
             }
@@ -1412,23 +1414,25 @@ class AnchorCameraToPlayerPatch : public patch::BasePatch
             // Idiomatic way would be to retrieve TileMap through parent WorldRenderer of
             // WorldCamera, but this will suffice.
             WorldTileMap* pTileMap = real::GetApp()->GetGameLogic()->GetTileMap();
-            if (this_->m_position.x <= 0.0 && this_->m_position.x != 0.0)
+            if (this_->m_vCamWorldPosUpperLeft.x <= 0.0 && this_->m_vCamWorldPosUpperLeft.x != 0.0)
                 res->x = 0.0f;
-            if (this_->m_position.y <= 0.0 && this_->m_position.y != 0.0)
+            if (this_->m_vCamWorldPosUpperLeft.y <= 0.0 && this_->m_vCamWorldPosUpperLeft.y != 0.0)
                 res->y = 0.0;
 
             // Only clamp right side if we haven't clamped left side. This makes weathers not fall
             // apart when both sides are visible.
             if (res->x != 0.0f)
             {
-                float clampX = (float)pTileMap->m_sizeX * 32.0f - this_->m_zoomedScreenSize.x;
-                if (clampX < this_->m_position.x)
+                float clampX =
+                    (float)pTileMap->m_sizeX * 32.0f - this_->m_vWorldSizeViewableInScreen.x;
+                if (clampX < this_->m_vCamWorldPosUpperLeft.x)
                     res->x = clampX;
             }
             if (res->y != 0.0f)
             {
-                float clampY = (float)pTileMap->m_sizeY * 32.0f - this_->m_zoomedScreenSize.y;
-                if (clampY < this_->m_position.y)
+                float clampY =
+                    (float)pTileMap->m_sizeY * 32.0f - this_->m_vWorldSizeViewableInScreen.y;
+                if (clampY < this_->m_vCamWorldPosUpperLeft.y)
                     res->y = clampY;
             }
         }
@@ -1443,17 +1447,17 @@ class AnchorCameraToPlayerPatch : public patch::BasePatch
         {
             // Restores the vanilla client clamping logic if we're not using the modification.
             WorldTileMap* pTileMap = real::GetApp()->GetGameLogic()->GetTileMap();
-            if (this_->m_position.x <= 0.0 && this_->m_position.x != 0.0)
-                this_->m_position.x = 0.0;
-            if (this_->m_position.y <= 0.0 && this_->m_position.y != 0.0)
-                this_->m_position.y = 0.0;
+            if (this_->m_vCamWorldPosUpperLeft.x <= 0.0 && this_->m_vCamWorldPosUpperLeft.x != 0.0)
+                this_->m_vCamWorldPosUpperLeft.x = 0.0;
+            if (this_->m_vCamWorldPosUpperLeft.y <= 0.0 && this_->m_vCamWorldPosUpperLeft.y != 0.0)
+                this_->m_vCamWorldPosUpperLeft.y = 0.0;
 
-            float clampX = (float)pTileMap->m_sizeX * 32.0f - this_->m_zoomedScreenSize.x;
-            if (clampX < this_->m_position.x)
-                this_->m_position.x = clampX;
-            float clampY = (float)pTileMap->m_sizeY * 32.0f - this_->m_zoomedScreenSize.y;
-            if (clampY < this_->m_position.y)
-                this_->m_position.y = clampY;
+            float clampX = (float)pTileMap->m_sizeX * 32.0f - this_->m_vWorldSizeViewableInScreen.x;
+            if (clampX < this_->m_vCamWorldPosUpperLeft.x)
+                this_->m_vCamWorldPosUpperLeft.x = clampX;
+            float clampY = (float)pTileMap->m_sizeY * 32.0f - this_->m_vWorldSizeViewableInScreen.y;
+            if (clampY < this_->m_vCamWorldPosUpperLeft.y)
+                this_->m_vCamWorldPosUpperLeft.y = clampY;
         }
     }
 
@@ -2148,8 +2152,8 @@ class Buildomatica : public patch::BasePatch
         if (!m_bModEnabled)
             return;
         // Reset our fake tilemap details
-        m_fakeTilemap.m_sizeX = ((WorldRenderer*)this_)->m_pWorld->m_tilemap.m_sizeX;
-        m_fakeTilemap.m_sizeY = ((WorldRenderer*)this_)->m_pWorld->m_tilemap.m_sizeY;
+        m_fakeTilemap.m_sizeX = ((WorldRenderer*)this_)->m_pWorld->m_tiles.m_sizeX;
+        m_fakeTilemap.m_sizeY = ((WorldRenderer*)this_)->m_pWorld->m_tiles.m_sizeY;
         m_fakeTilemap.m_pParent = ((WorldRenderer*)this_)->m_pWorld;
 
         m_fakeTilemap.m_tiles.clear();
@@ -2229,10 +2233,12 @@ class Buildomatica : public patch::BasePatch
     {
         m_cameraTiles.clear();
         WorldRenderer* pRender = (WorldRenderer*)real::GetApp()->GetGameLogic()->m_pWorldRenderer;
-        Rectf m_viewableRect = {
-            pRender->m_camera.m_position.x - 32.f, pRender->m_camera.m_position.y - 32.f,
-            pRender->m_camera.m_zoomedScreenSize.x + pRender->m_camera.m_position.x + 32.f,
-            pRender->m_camera.m_zoomedScreenSize.y + pRender->m_camera.m_position.y + 32.f};
+        Rectf m_viewableRect = {pRender->m_camera.m_vCamWorldPosUpperLeft.x - 32.f,
+                                pRender->m_camera.m_vCamWorldPosUpperLeft.y - 32.f,
+                                pRender->m_camera.m_vWorldSizeViewableInScreen.x +
+                                    pRender->m_camera.m_vCamWorldPosUpperLeft.x + 32.f,
+                                pRender->m_camera.m_vWorldSizeViewableInScreen.y +
+                                    pRender->m_camera.m_vCamWorldPosUpperLeft.y + 32.f};
 
         // This will reserve either the exact amount or slightly higher amount for vec.
         int x = (int)((m_viewableRect.right - m_viewableRect.left) / 32.0f);
@@ -2293,8 +2299,8 @@ class Buildomatica : public patch::BasePatch
             // VISUAL_EFFECT_RAINBOW_SHIFT
             // (Shifty Blocks)
             int r, g, b = 0;
-            float Hue = (float)(pTile->x + (pTile->x * 4) + pRenderer->m_tempRenderData.m_hue +
-                                (pTile->y << 3));
+            float Hue =
+                (float)(pTile->x + (pTile->x * 4) + pRenderer->m_rainbowCycle + (pTile->y << 3));
             while (360.f <= Hue)
                 Hue -= 360.f;
             HSVToRGB(Hue, 1.0, 1.0, &r, &g, &b);
@@ -2338,7 +2344,7 @@ class Buildomatica : public patch::BasePatch
 
         // Draw our background "hologram" from fake tilemap after world background has been drawn.
         CL_Vec2f camera;
-        WorldTileMap& m_origTilemap = this_->m_pWorld->m_tilemap;
+        WorldTileMap& m_origTilemap = this_->m_pWorld->m_tiles;
         for (auto& t : m_cameraTiles)
         {
             if (t->x >= m_origTilemap.m_sizeX || t->y >= m_origTilemap.m_sizeY)
@@ -2364,7 +2370,7 @@ class Buildomatica : public patch::BasePatch
             return;
         // Draw our foreground "hologram" from fake tilemap after world bgs has been drawn.
         CL_Vec2f camera;
-        WorldTileMap& m_origTilemap = this_->m_pWorld->m_tilemap;
+        WorldTileMap& m_origTilemap = this_->m_pWorld->m_tiles;
         m_bDrawingHologram = true;
         for (auto& t : m_cameraTiles)
         {
@@ -2412,7 +2418,7 @@ class Buildomatica : public patch::BasePatch
         // TODO: Fire skewing/animation
         CL_Vec2f camera;
         CL_Vec2f rotation(0, 0);
-        WorldTileMap& m_origTilemap = this_->m_pWorld->m_tilemap;
+        WorldTileMap& m_origTilemap = this_->m_pWorld->m_tiles;
         for (auto& t : m_cameraTiles)
         {
             if (t->x >= m_origTilemap.m_sizeX || t->y >= m_origTilemap.m_sizeY)
@@ -2427,16 +2433,16 @@ class Buildomatica : public patch::BasePatch
             {
                 int visual = real::WorldTileMapChooseVisual_Flag(&m_fakeTilemap, t->x, t->y, 0x400);
                 this_->m_waterImg->BlitScaledAnim(tilePos.x, tilePos.y, visual % 8, visual >> 3,
-                                                  &this_->m_camera.m_zoomLevel, 0, 0xE8FFB050, 0,
+                                                  &this_->m_camera.m_vScale, 0, 0xE8FFB050, 0,
                                                   rotation, false, false, real::g_globalBatcher);
             }
             else if (m_pRef->m_flags & TILE_PROPERTY_WATER)
             {
                 // Tint it purplish red by using green water as base surface and tinting it red.
-                int visual = real::WorldTileMapChooseVisual_Flag(&this_->m_pWorld->m_tilemap, t->x,
+                int visual = real::WorldTileMapChooseVisual_Flag(&this_->m_pWorld->m_tiles, t->x,
                                                                  t->y, 0x400);
                 this_->m_greenWaterImg->BlitScaledAnim(
-                    tilePos.x, tilePos.y, visual % 8, visual >> 3, &this_->m_camera.m_zoomLevel, 0,
+                    tilePos.x, tilePos.y, visual % 8, visual >> 3, &this_->m_camera.m_vScale, 0,
                     0xFF90, 0, rotation, false, false, real::g_globalBatcher);
             }
             else if (t->m_flags & TILE_PROPERTY_FIRE)
@@ -2444,16 +2450,16 @@ class Buildomatica : public patch::BasePatch
                 int visual =
                     real::WorldTileMapChooseVisual_Flag(&m_fakeTilemap, t->x, t->y, 0x1000);
                 this_->m_fireImg->BlitScaledAnim(tilePos.x, tilePos.y, visual % 8, visual >> 3,
-                                                 &this_->m_camera.m_zoomLevel, 0, 0xE8FFB0A0, 0,
+                                                 &this_->m_camera.m_vScale, 0, 0xE8FFB0A0, 0,
                                                  rotation, false, false, real::g_fireBatcher);
             }
             else if (m_pRef->m_flags & TILE_PROPERTY_FIRE)
             {
-                int visual = real::WorldTileMapChooseVisual_Flag(&this_->m_pWorld->m_tilemap, t->x,
+                int visual = real::WorldTileMapChooseVisual_Flag(&this_->m_pWorld->m_tiles, t->x,
                                                                  t->y, 0x1000);
                 this_->m_fireImg->BlitScaledAnim(tilePos.x, tilePos.y, visual % 8, visual >> 3,
-                                                 &this_->m_camera.m_zoomLevel, 0, 0xFFA0, 0,
-                                                 rotation, false, false, real::g_fireBatcher);
+                                                 &this_->m_camera.m_vScale, 0, 0xFFA0, 0, rotation,
+                                                 false, false, real::g_fireBatcher);
             }
         }
         real::RenderBatcherFlush(real::g_globalBatcher, 0, -1);
@@ -2470,7 +2476,7 @@ class Buildomatica : public patch::BasePatch
             return;
         // Overlay stuff ontop after everythings drawn.
         CL_Vec2f camera;
-        WorldTileMap& m_origTilemap = this_->m_pWorld->m_tilemap;
+        WorldTileMap& m_origTilemap = this_->m_pWorld->m_tiles;
         for (auto& t : m_cameraTiles)
         {
             if (t->x >= m_origTilemap.m_sizeX || t->y >= m_origTilemap.m_sizeY)

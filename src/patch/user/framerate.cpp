@@ -2,6 +2,8 @@
 #include "game/signatures.hpp"
 #include "patch/patch.hpp"
 
+#include "game/struct/renderdata/avatarrenderdata.hpp"
+
 // App::SetFPSLimit
 REGISTER_GAME_FUNCTION(SetFPSLimit,
                        "4C 8B DC 48 81 EC D8 00 00 00 48 C7 44 24 20 FE FF FF FF 48 8B ? ? ? ? ? "
@@ -11,7 +13,7 @@ REGISTER_GAME_FUNCTION(SetFPSLimit,
 // PetRenderData::Update
 REGISTER_GAME_FUNCTION(PetRenderDataUpdate,
                        "48 8B C4 48 89 58 10 48 89 68 18 56 57 41 56 48 81 EC A0 00 00 00 0F B7",
-                       __fastcall, void, void*, void*, float);
+                       __fastcall, void, PetRenderData*, AvatarRenderData*, float);
 
 class FramerateUnlockPatch : public patch::BasePatch
 {
@@ -103,15 +105,16 @@ class FramerateUnlockPatch : public patch::BasePatch
             real::SetFPSLimit(app, 60.f);
     }
 
-    static void __fastcall PetRenderDataUpdate(void* this_, void* unk2, float delta)
+    static void __fastcall PetRenderDataUpdate(PetRenderData* this_, AvatarRenderData* avData,
+                                               float elapsed)
     {
         // The game relies on using this for pet movement correction during fps fluctuations.
         // However, this logic only works properly until 60 FPS. So for our high-fps mod, we patch
         // this to force game to always run an update on pets movement, causing them to move
         // smoothly and as expected again. There are some slight drawbacks to this approach, but
         // it's relatively stable and good enough for vast majority of players.
-        *(float*)((uint8_t*)(this_) + 92) = 0.016666668f;
-        real::PetRenderDataUpdate(this_, unk2, delta);
+        this_->m_timeSinceLastStep = 0.016666668f;
+        real::PetRenderDataUpdate(this_, avData, elapsed);
     }
 };
 REGISTER_USER_GAME_PATCH(FramerateUnlockPatch, framerate_unlock);

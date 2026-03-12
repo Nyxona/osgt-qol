@@ -1,16 +1,11 @@
 #include "game/game.hpp"
 #include "game/signatures.hpp"
-#include "game/struct/graphics/surface.hpp"
 #include "patch/patch.hpp"
-#include "utils/utils.hpp"
 
 #include "game/struct/component.hpp"
 #include "game/struct/components/gamelogic.hpp"
-#include "game/struct/components/mapbg.hpp"
 #include "game/struct/entity.hpp"
 #include "game/struct/entityutils.hpp"
-#include "game/struct/renderutils.hpp"
-#include "game/struct/rtrect.hpp"
 #include "game/struct/variant.hpp"
 
 #include "game/struct/custom/playmodoverlay.hpp"

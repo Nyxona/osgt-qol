@@ -1,7 +1,6 @@
 #pragma once
 #include <string>
 
-#pragma pack(push, 1)
 // We don't need full-fat CL_Vec classes, use more lean structs.
 template<typename Type>
 class Vec2
@@ -114,4 +113,3 @@ typedef Vec2<float> CL_Vec2f;
 typedef Vec2<int> CL_Vec2i;
 typedef Vec3f CL_Vec3f;
 typedef Rectf CL_Rectf;
-#pragma pack(pop)

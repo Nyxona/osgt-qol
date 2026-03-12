@@ -1,6 +1,5 @@
 #pragma once
 #include "graphics/surface.hpp"
-#include <deque>
 #include <map>
 #include <string>
 #include <vector>

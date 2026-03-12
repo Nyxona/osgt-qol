@@ -1,6 +1,5 @@
 #pragma once
 #include "background.hpp"
-#include "surface.hpp"
 
 // Namings matched.
 class Background_Blank : public Background
