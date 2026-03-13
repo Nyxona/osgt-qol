@@ -10,10 +10,9 @@ REGISTER_GAME_FUNCTION(GetSavePath,
                        "FF FF 48 89 58 10 48 89 70 18 48 89 78 20",
                        __fastcall, std::string);
 
-REGISTER_GAME_FUNCTION(
-    RemoveFile,
-    "4C 8B DC 57 48 81 EC 80 00 00 00 49 C7 43 98 FE FF FF FF 49 89 5B 10 48 8B ? ? ? ? ? 48 33 C4",
-    __fastcall, void, std::string);
+REGISTER_GAME_FUNCTION(RemoveFile,
+                       "4C 8B DC 57 48 81 EC 80 00 00 00 49 C7 43 98 FE FF FF FF 49 89 5B 10 48 8B ? ? ? ? ? 48 33 C4",
+                       __fastcall, void, std::string);
 
 REGISTER_GAME_FUNCTION(InitVideo,
                        "48 89 5C 24 08 48 89 74 24 10 57 48 81 EC C0 00 00 00 48 8B ? ? ? ? ? 48 "
@@ -30,15 +29,14 @@ REGISTER_GAME_FUNCTION(VideoModeManagerSetVideoMode,
                        "89 44 24 58 48 8B D9 48 C7 44 24 50 0F 00 00 00",
                        __fastcall, void, VideoModeManager*);
 
-REGISTER_GAME_FUNCTION(
-    GamepadConnectToArcadeComponent,
-    "40 55 56 57 41 54 41 55 41 56 41 57 48 8D AC 24 60 FF FF FF 48 81 EC A0 01 00 00 48 C7 44 24 "
-    "50 FE FF FF FF 48 89 9C 24 F0 01 00 00 48 8B ? ? ? ? ? 48 33 C4 48 89 85 90 00 00 00 45 0F B6",
-    __fastcall, void, void*, EntityComponent* pComp, bool, bool);
+REGISTER_GAME_FUNCTION(GamepadConnectToArcadeComponent,
+                       "40 55 56 57 41 54 41 55 41 56 41 57 48 8D AC 24 60 FF FF FF 48 81 EC A0 01 00 00 48 C7 44 24 "
+                       "50 FE FF FF FF 48 89 9C 24 F0 01 00 00 48 8B ? ? ? ? ? 48 33 C4 48 89 85 90 00 00 00 45 0F B6",
+                       __fastcall, void, void*, EntityComponent* pComp, bool, bool);
 
 REGISTER_GAME_FUNCTION(VideoModeManagerSetFullscreenMode,
-                       "40 53 48 83 EC 30 48 8B D9 E8 ? ? ? ? 48 8B C8 E8 ? ? ? ? 84 C0",
-                       __fastcall, void, VideoModeManager*);
+                       "40 53 48 83 EC 30 48 8B D9 E8 ? ? ? ? 48 8B C8 E8 ? ? ? ? 84 C0", __fastcall, void,
+                       VideoModeManager*);
 
 static bool g_wndProcWMSizeDone = false;
 static int* g_devicePixelsPerInch = nullptr;
@@ -63,30 +61,24 @@ class SaveAndLogLocationFixer : public patch::BasePatch
         }
 
         // We need to reset videomode after save.dat reload.
-        real::GetVideoModeManager =
-            game.findMemoryPattern<GetVideoModeManager_t>(pattern::GetVideoModeManager);
-        real::VideoModeManagerSetVideoMode = game.findMemoryPattern<VideoModeManagerSetVideoMode_t>(
-            pattern::VideoModeManagerSetVideoMode);
+        real::GetVideoModeManager = game.findMemoryPattern<GetVideoModeManager_t>(pattern::GetVideoModeManager);
+        real::VideoModeManagerSetVideoMode =
+            game.findMemoryPattern<VideoModeManagerSetVideoMode_t>(pattern::VideoModeManagerSetVideoMode);
         real::VideoModeManagerSetFullscreenMode =
-            game.findMemoryPattern<VideoModeManagerSetFullscreenMode_t>(
-                pattern::VideoModeManagerSetFullscreenMode);
+            game.findMemoryPattern<VideoModeManagerSetFullscreenMode_t>(pattern::VideoModeManagerSetFullscreenMode);
 
         // We also need to rearm gamepad stuff when InitVideo is called.
         real::GamepadConnectToArcadeComponent =
-            game.findMemoryPattern<GamepadConnectToArcadeComponent_t>(
-                pattern::GamepadConnectToArcadeComponent);
+            game.findMemoryPattern<GamepadConnectToArcadeComponent_t>(pattern::GamepadConnectToArcadeComponent);
 
         // DPI never gets recalculated after launching the game, resulting in some elements being
         // wrongly sized, we'll reset it with a small hack.
-        g_devicePixelsPerInch =
-            utils::resolveMovCall<int*>((uint8_t*)real::GetDevicePixelsPerInchDiagonal + 6);
+        g_devicePixelsPerInch = utils::resolveMovCall<int*>((uint8_t*)real::GetDevicePixelsPerInchDiagonal + 6);
 
         // We will replace normal AppData path with Current Directory.
-        game.hookFunctionPatternDirect<GetSavePath_t>(pattern::GetSavePath, GetSavePath,
-                                                      &real::GetSavePath, true);
+        game.hookFunctionPatternDirect<GetSavePath_t>(pattern::GetSavePath, GetSavePath, &real::GetSavePath, true);
         // Also hook InitVideo so we can refresh handle and title
-        game.hookFunctionPatternDirect<InitVideo_t>(pattern::InitVideo, InitVideo, &real::InitVideo,
-                                                    true);
+        game.hookFunctionPatternDirect<InitVideo_t>(pattern::InitVideo, InitVideo, &real::InitVideo, true);
 
         // We'll need to truncate the logfile like the client normally would. Our log location fix
         // happens after this call, so we'll need to call it again ourselves instead.
@@ -118,10 +110,8 @@ class SaveAndLogLocationFixer : public patch::BasePatch
             {
                 printf("Found vidmode, assigning %s..\n", it->second->name.c_str());
                 vidMgr->currentVideoMode = it->second;
-                vidMgr->actualScreenResolution.screenX =
-                    it->second->defaultScreenResolution.screenX;
-                vidMgr->actualScreenResolution.screenY =
-                    it->second->defaultScreenResolution.screenY;
+                vidMgr->actualScreenResolution.screenX = it->second->defaultScreenResolution.screenX;
+                vidMgr->actualScreenResolution.screenY = it->second->defaultScreenResolution.screenY;
             }
             else
             {
@@ -146,8 +136,7 @@ class SaveAndLogLocationFixer : public patch::BasePatch
     {
         if (!g_wndProcWMSizeDone)
         {
-            printf(
-                "wndProc likely called InitVideo with its own videomode, restoring old one...\n");
+            printf("wndProc likely called InitVideo with its own videomode, restoring old one...\n");
             g_wndProcWMSizeDone = true;
             if (real::GetApp()->GetVar("fullscreen")->GetUINT32() == 1)
                 real::VideoModeManagerSetFullscreenMode(real::GetVideoModeManager());

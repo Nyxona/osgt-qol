@@ -11,24 +11,21 @@ REGISTER_GAME_FUNCTION(AudioManagerFMODPreload,
 
 // AudioManagerFMOD::Play
 REGISTER_GAME_FUNCTION(AudioManagerFMODPlay,
-                       "40 55 53 56 57 41 54 41 56 41 57 48 8D 6C 24 E9 48 81 EC A0 00 00 00 48 C7",
-                       __fastcall, void*, AudioManagerFMOD* this_, std::string fName, bool bLooping,
-                       bool bIsMusic, bool bAddBasePath, bool bForceStreaming)
+                       "40 55 53 56 57 41 54 41 56 41 57 48 8D 6C 24 E9 48 81 EC A0 00 00 00 48 C7", __fastcall, void*,
+                       AudioManagerFMOD* this_, std::string fName, bool bLooping, bool bIsMusic, bool bAddBasePath,
+                       bool bForceStreaming)
 
-REGISTER_GAME_FUNCTION(
-    OnProgressChangedMusic,
-    "40 53 48 83 EC 60 48 C7 44 24 20 FE FF FF FF 0F 29 74 24 50 48 8B ? ? ? ? ? 48 33 C4 48 89 44 "
-    "24 48 48 8B D9 83 39 00 75 1E C7 01 01 00 00 00 C7 41 10 00 00 00 00 48 8B 49 40 48 85 C9 74 "
-    "08 48 8B D3 E8 ? ? ? ? F3 0F 10 73 10 48 C7 44 24 40 0F 00 00 00 48 C7 44 24 38 00 00 00 00 "
-    "C6 44 24 28 00 41 B8 09 00 00 00 48 8D",
-    __fastcall, void, Variant*);
+REGISTER_GAME_FUNCTION(OnProgressChangedMusic,
+                       "40 53 48 83 EC 60 48 C7 44 24 20 FE FF FF FF 0F 29 74 24 50 48 8B ? ? ? ? ? 48 33 C4 48 89 44 "
+                       "24 48 48 8B D9 83 39 00 75 1E C7 01 01 00 00 00 C7 41 10 00 00 00 00 48 8B 49 40 48 85 C9 74 "
+                       "08 48 8B D3 E8 ? ? ? ? F3 0F 10 73 10 48 C7 44 24 40 0F 00 00 00 48 C7 44 24 38 00 00 00 00 "
+                       "C6 44 24 28 00 41 B8 09 00 00 00 48 8D",
+                       __fastcall, void, Variant*);
 
-REGISTER_GAME_FUNCTION(AudioManagerFMODSetMusicVol,
-                       "40 53 48 83 EC 30 48 8B D9 0F 29 74 24 20 48 8B 89 A8 00 00 00", __thiscall,
-                       void, AudioManagerFMOD*, float);
+REGISTER_GAME_FUNCTION(AudioManagerFMODSetMusicVol, "40 53 48 83 EC 30 48 8B D9 0F 29 74 24 20 48 8B 89 A8 00 00 00",
+                       __thiscall, void, AudioManagerFMOD*, float);
 
-REGISTER_GAME_FUNCTION(AudioManagerFMODStopMusic,
-                       "48 89 5C 24 10 57 48 83 EC 40 48 8B 19 48 8B F9 FF 93 E0 00 00 00",
+REGISTER_GAME_FUNCTION(AudioManagerFMODStopMusic, "48 89 5C 24 10 57 48 83 EC 40 48 8B 19 48 8B F9 FF 93 E0 00 00 00",
                        __thiscall, void, AudioManagerFMOD*);
 
 class AudioStutterPatch : public patch::BasePatch
@@ -42,9 +39,8 @@ class AudioStutterPatch : public patch::BasePatch
                                        &real::AudioManagerFMODPreload);
     }
 
-    static void __fastcall AudioManagerFMODPreload(AudioManagerFMOD* this_, void* unk2,
-                                                   bool bLooping, bool bIsMusic, bool bAddBasePath,
-                                                   bool bForceStreaming)
+    static void __fastcall AudioManagerFMODPreload(AudioManagerFMOD* this_, void* unk2, bool bLooping, bool bIsMusic,
+                                                   bool bAddBasePath, bool bForceStreaming)
     {
         // Current assumption is PC client had streaming disabled because of Seth's attempt to
         // utilize extra memory resources in order to save performance and cache audio files.
@@ -53,8 +49,7 @@ class AudioStutterPatch : public patch::BasePatch
         // use file streaming to fix said stutter.
         // nit: This approach can cause audio cutoff for those with the hearing to notice it.
         bForceStreaming = true;
-        real::AudioManagerFMODPreload(this_, unk2, bLooping, bIsMusic, bAddBasePath,
-                                      bForceStreaming);
+        real::AudioManagerFMODPreload(this_, unk2, bLooping, bIsMusic, bAddBasePath, bForceStreaming);
     }
 };
 REGISTER_USER_GAME_PATCH(AudioStutterPatch, audio_stutter_fix);
@@ -86,8 +81,7 @@ class StartMusicSliderBackport : public patch::BasePatch
             pVariant->Set(0.33f);
 
         auto& optionsMgr = game::OptionsManager::get();
-        optionsMgr.addSliderOption("qol", "Audio", "start_vol", "Start Music",
-                                   &StartVolumeSliderCallback);
+        optionsMgr.addSliderOption("qol", "Audio", "start_vol", "Start Music", &StartVolumeSliderCallback);
 
         // Hook.
         game.hookFunctionPatternDirect(pattern::AudioManagerFMODPlay, AudioManagerFMODPlay,
@@ -133,12 +127,10 @@ class StartMusicSliderBackport : public patch::BasePatch
         real::GetAudioManager()->SetMusicVol(volume);
     }
 
-    static void* __fastcall AudioManagerFMODPlay(AudioManagerFMOD* this_, std::string fName,
-                                                 bool bLooping, bool bIsMusic, bool bAddBasePath,
-                                                 bool bForceStreaming)
+    static void* __fastcall AudioManagerFMODPlay(AudioManagerFMOD* this_, std::string fName, bool bLooping,
+                                                 bool bIsMusic, bool bAddBasePath, bool bForceStreaming)
     {
-        void* ret = real::AudioManagerFMODPlay(this_, fName, bLooping, bIsMusic, bAddBasePath,
-                                               bForceStreaming);
+        void* ret = real::AudioManagerFMODPlay(this_, fName, bLooping, bIsMusic, bAddBasePath, bForceStreaming);
         if (bIsMusic)
             adjustMusicVolume(real::GetAudioManager());
         return ret;
@@ -158,11 +150,10 @@ class AudioMuteFix : public patch::BasePatch
             real::GetAudioManager()->SetMusicEnabled(false);
 
         auto& game = game::GameHarness::get();
-        game.hookFunctionPatternDirect(pattern::AudioManagerFMODSetMusicVol,
-                                       AudioManagerFMODSetMusicVol,
+        game.hookFunctionPatternDirect(pattern::AudioManagerFMODSetMusicVol, AudioManagerFMODSetMusicVol,
                                        &real::AudioManagerFMODSetMusicVol);
-        game.hookFunctionPatternDirect(pattern::AudioManagerFMODStopMusic,
-                                       AudioManagerFMODStopMusic, &real::AudioManagerFMODStopMusic);
+        game.hookFunctionPatternDirect(pattern::AudioManagerFMODStopMusic, AudioManagerFMODStopMusic,
+                                       &real::AudioManagerFMODStopMusic);
     }
 
     static void onMusicVolChanged(Variant* pVariant)
@@ -176,8 +167,7 @@ class AudioMuteFix : public patch::BasePatch
             real::GetAudioManager()->SetMusicVol(pVariant->GetFloat());
             if (real::GetAudioManager()->m_lastPlayedTrack != "")
                 real::GetAudioManager()->Play(real::GetAudioManager()->m_lastPlayedTrack,
-                                              real::GetAudioManager()->m_bLastMusicLooping, true,
-                                              false, true);
+                                              real::GetAudioManager()->m_bLastMusicLooping, true, false, true);
         }
         else if (real::GetAudioManager()->m_bMusicEnabled && pVariant->GetFloat() <= 0.00f)
         {

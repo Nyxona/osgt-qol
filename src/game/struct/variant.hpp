@@ -315,7 +315,7 @@ class Variant
 class VariantList
 {
   public:
-    VariantList() {};
+    VariantList(){};
 
     Variant& Get(int parmNum) { return m_variant[parmNum]; }
     VariantList(Variant v0) { m_variant[0] = v0; }

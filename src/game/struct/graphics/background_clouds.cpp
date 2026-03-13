@@ -21,11 +21,9 @@ void Cloud::Init(Background* parent, eCloudMoveType moveType, eCloudTintType tin
     this->distance = RandomRangeFloat(0.1f, 1.0f);
     this->flip = RandomRangeFloat(0.0f, 1.0f) < 0.5f;
 
-    this->x = RandomRangeFloat(0.0f, (parent->m_worldRect.right - parent->m_worldRect.left) /
-                                         this->distance);
+    this->x = RandomRangeFloat(0.0f, (parent->m_worldRect.right - parent->m_worldRect.left) / this->distance);
     this->x += parent->m_worldRect.left / this->distance;
-    this->y = RandomRangeFloat(
-        0.0f, ((parent->m_worldRect.bottom - parent->m_worldRect.top) * 0.5f) / this->distance);
+    this->y = RandomRangeFloat(0.0f, ((parent->m_worldRect.bottom - parent->m_worldRect.top) * 0.5f) / this->distance);
     this->y += parent->m_worldRect.top / this->distance;
 
     if (moveType == CLOUD_MOVE_DRIFT)
@@ -51,8 +49,8 @@ void Cloud::Init(Background* parent, eCloudMoveType moveType, eCloudTintType tin
     this->tint = MAKE_RGBA(r, g, b, 255);
 }
 
-Background_Clouds::Background_Clouds(Background* parent, std::string cloudImg,
-                                     eCloudMoveType moveType, eCloudTintType tintType)
+Background_Clouds::Background_Clouds(Background* parent, std::string cloudImg, eCloudMoveType moveType,
+                                     eCloudTintType tintType)
 {
     m_moveType = moveType;
     m_tintType = tintType;
@@ -105,28 +103,26 @@ void Background_Clouds::Update()
         // Define our boundaries
         // For left side, we have to factor in the cloud surface size and the distance its at.
         float boundLeftX =
-            (m_pParent->m_worldRect.left - (m_pParent->m_scale.x * 197.0f) * pCloud->distance) /
-            pCloud->distance;
+            (m_pParent->m_worldRect.left - (m_pParent->m_scale.x * 197.0f) * pCloud->distance) / pCloud->distance;
         // For right side, even though we never move cloud there, it may get stuck on too far right
         // end or cloud may initialize too far right.
-        float boundRightX = ((m_pParent->m_worldRect.right - m_pParent->m_worldRect.left) * 1.4f +
-                             m_pParent->m_worldRect.left) /
-                            pCloud->distance;
+        float boundRightX =
+            ((m_pParent->m_worldRect.right - m_pParent->m_worldRect.left) * 1.4f + m_pParent->m_worldRect.left) /
+            pCloud->distance;
         if (pCloud->x < boundLeftX || pCloud->x > boundRightX)
         {
             // Reset the cloud and it's X coordinate to right side.
             pCloud->Init(m_pParent, m_moveType, m_tintType);
             // UNMATCHING behaviour - this shouldn't be needed!
-            pCloud->x = ((m_pParent->m_worldRect.right - m_pParent->m_worldRect.left) * 1.2f +
-                         m_pParent->m_worldRect.left) /
-                        pCloud->distance;
+            pCloud->x =
+                ((m_pParent->m_worldRect.right - m_pParent->m_worldRect.left) * 1.2f + m_pParent->m_worldRect.left) /
+                pCloud->distance;
         }
         i++;
     }
 }
 
-void Background_Clouds::Render(CL_Vec2f& camPos, float graphicDetailLevel, float minDistance,
-                               float maxDistance)
+void Background_Clouds::Render(CL_Vec2f& camPos, float graphicDetailLevel, float minDistance, float maxDistance)
 {
     // We don't really render clouds if we have none or are using low detail.
     if (!m_pClouds || m_cloudCount == 0 || graphicDetailLevel < 0.4)
@@ -148,9 +144,8 @@ void Background_Clouds::Render(CL_Vec2f& camPos, float graphicDetailLevel, float
             // appropriate opacity.
             if (0.8 < graphicDetailLevel)
                 pCloud->tint = -0x100 - (int)(pCloud->distance * -255.0);
-            m_cloud.BlitScaledAnim((pCloud->distance * pCloud->x) - camPos.x,
-                                   (pCloud->distance * pCloud->y) - camPos.y, 0, 0, &vScale, 0,
-                                   pCloud->tint, 0, 0, pCloud->flip);
+            m_cloud.BlitScaledAnim((pCloud->distance * pCloud->x) - camPos.x, (pCloud->distance * pCloud->y) - camPos.y,
+                                   0, 0, &vScale, 0, pCloud->tint, 0, 0, pCloud->flip);
         }
     }
 }

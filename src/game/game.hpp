@@ -14,24 +14,24 @@
 // alias called <name>_t, and create an instance of said function pointer in the real namespace.
 // The pattern will be accessible in the pattern namespace. (e.g. pattern::name). Do not use this
 // macro in header files to avoid namespace pollution.
-#define REGISTER_GAME_FUNCTION(name, patt, conv, ret, ...)                                         \
-    using name##_t = ret(conv*)(__VA_ARGS__);                                                      \
-    namespace real                                                                                 \
-    {                                                                                              \
-    name##_t name = nullptr;                                                                       \
-    }                                                                                              \
-    namespace pattern                                                                              \
-    {                                                                                              \
-    std::string name = patt;                                                                       \
+#define REGISTER_GAME_FUNCTION(name, patt, conv, ret, ...)                                                             \
+    using name##_t = ret(conv*)(__VA_ARGS__);                                                                          \
+    namespace real                                                                                                     \
+    {                                                                                                                  \
+    name##_t name = nullptr;                                                                                           \
+    }                                                                                                                  \
+    namespace pattern                                                                                                  \
+    {                                                                                                                  \
+    std::string name = patt;                                                                                           \
     }
-#define REGISTER_GAME_GLOBAL_VAR(name, patt, ret)                                                  \
-    namespace real                                                                                 \
-    {                                                                                              \
-    ret name = nullptr;                                                                            \
-    }                                                                                              \
-    namespace pattern                                                                              \
-    {                                                                                              \
-    std::string name = patt;                                                                       \
+#define REGISTER_GAME_GLOBAL_VAR(name, patt, ret)                                                                      \
+    namespace real                                                                                                     \
+    {                                                                                                                  \
+    ret name = nullptr;                                                                                                \
+    }                                                                                                                  \
+    namespace pattern                                                                                                  \
+    {                                                                                                                  \
+    std::string name = patt;                                                                                           \
     }
 
 namespace game
@@ -66,20 +66,17 @@ class GameHarness
     // Detours function located at target address to function located at detour address. Optionally,
     // a pointer might be passed in order to store the original (undetoured) function address.
     // Throws std::runtime_error on failure.
-    template <typename F>
-    void hookFunction(F target, F detour, F* original, bool hasPriority = false);
+    template <typename F> void hookFunction(F target, F detour, F* original, bool hasPriority = false);
 
     // Works exactly as hookFunction, but uses an IDA-style pattern string to locate the target
     // function address. Throws std::runtime_error on failure.
     template <typename F>
-    void hookFunctionPatternDirect(const std::string& pattern, F detour, F* original,
-                                   bool hasPriority = false);
+    void hookFunctionPatternDirect(const std::string& pattern, F detour, F* original, bool hasPriority = false);
 
     // Works exactly as hookFunctionPatternDirect, but resolves a function call at the target
     // address in order to locate the target function address. Throws std::runtime_error on failure.
     template <typename F>
-    void hookFunctionPatternCall(const std::string& pattern, F detour, F* original,
-                                 bool hasPriority = false);
+    void hookFunctionPatternCall(const std::string& pattern, F detour, F* original, bool hasPriority = false);
 
     // Changes the game window title to the specified string.
     void setWindowTitle(const std::string& title);
@@ -91,10 +88,7 @@ class GameHarness
     void setWindowModdedIcon();
 
     // Sets the game window visibility.
-    inline void setWindowVisible(bool visible) const
-    {
-        ShowWindow(window, visible ? SW_SHOW : SW_HIDE);
-    }
+    inline void setWindowVisible(bool visible) const { ShowWindow(window, visible ? SW_SHOW : SW_HIDE); }
 
     // Enables all created function hooks
     void finalizeInitialization();
@@ -159,10 +153,7 @@ class OptionsManager
     void initialize();
 
     // Creates an option page with fancy name
-    void addOptionPage(std::string ID, std::string displayName)
-    {
-        optionPages[ID].fancyName = displayName;
-    }
+    void addOptionPage(std::string ID, std::string displayName) { optionPages[ID].fancyName = displayName; }
 
     // Adds a slider option to end of GameOptions list.
     // varName is points to a variable in save.dat.
@@ -179,9 +170,8 @@ class OptionsManager
         rootOptions.push_back(option);
     }
 
-    void addSliderOption(std::string page, std::string section, std::string varName,
-                         std::string displayName, VariantCallback pCallback,
-                         std::string hintStr = "")
+    void addSliderOption(std::string page, std::string section, std::string varName, std::string displayName,
+                         VariantCallback pCallback, std::string hintStr = "")
     {
 #ifdef DEBUG
         if (optionPages.find(page) == optionPages.end())
@@ -203,8 +193,7 @@ class OptionsManager
     // Adds a checkbox option to end of GameOptions list.
     // varName is points to a variable in save.dat.
     // displayName is the string visibile directly next to the checkbox.
-    void addCheckboxOption(std::string varName, std::string displayName,
-                           VariantListCallback pCallback)
+    void addCheckboxOption(std::string varName, std::string displayName, VariantListCallback pCallback)
     {
         GameOption option;
         option.type = OPTION_CHECKBOX;
@@ -213,8 +202,8 @@ class OptionsManager
         option.signal = (void*)pCallback;
         rootOptions.push_back(option);
     }
-    void addCheckboxOption(std::string page, std::string section, std::string varName,
-                           std::string displayName, VariantListCallback pCallback)
+    void addCheckboxOption(std::string page, std::string section, std::string varName, std::string displayName,
+                           VariantListCallback pCallback)
     {
 #ifdef DEBUG
         if (optionPages.find(page) == optionPages.end())
@@ -240,10 +229,8 @@ class OptionsManager
     // Draws an option that looks roughly:
     // displayName
     // [<] [ displayOptions[var] ] [>]
-    void addMultiChoiceOption(std::string varName, std::string displayName,
-                              std::vector<std::string>& displayOptions,
-                              VariantListCallback pCallback, float vModSizeX = 0,
-                              std::string hintStr = "")
+    void addMultiChoiceOption(std::string varName, std::string displayName, std::vector<std::string>& displayOptions,
+                              VariantListCallback pCallback, float vModSizeX = 0, std::string hintStr = "")
     {
         GameOption option;
         option.type = OPTION_MULTICHOICE;
@@ -255,10 +242,9 @@ class OptionsManager
         option.extraInfo = hintStr;
         rootOptions.push_back(option);
     }
-    void addMultiChoiceOption(std::string page, std::string section, std::string varName,
-                              std::string displayName, std::vector<std::string>& displayOptions,
-                              VariantListCallback pCallback, float vModSizeX = 0,
-                              std::string hintStr = "")
+    void addMultiChoiceOption(std::string page, std::string section, std::string varName, std::string displayName,
+                              std::vector<std::string>& displayOptions, VariantListCallback pCallback,
+                              float vModSizeX = 0, std::string hintStr = "")
     {
 #ifdef DEBUG
         if (optionPages.find(page) == optionPages.end())
@@ -288,11 +274,9 @@ class OptionsManager
         optionPages[page].sections[section].push_back(option);
     }
 
-    void addMultiChoiceOptionDoubleButtons(std::string page, std::string section,
-                                           std::string varName, std::string displayName,
-                                           std::vector<std::string>& displayOptions,
-                                           VariantListCallback pCallback, float vModSizeX = 0,
-                                           std::string hintStr = "")
+    void addMultiChoiceOptionDoubleButtons(std::string page, std::string section, std::string varName,
+                                           std::string displayName, std::vector<std::string>& displayOptions,
+                                           VariantListCallback pCallback, float vModSizeX = 0, std::string hintStr = "")
     {
 #ifdef DEBUG
         if (optionPages.find(page) == optionPages.end())
@@ -328,12 +312,9 @@ class OptionsManager
 
   private:
     // Helper functions called during the hook to render our options.
-    static void renderSlider(OptionsManager::GameOption& optionDef, void* pEntPtr, float vPosX,
-                             float& vPosY);
-    static void renderCheckbox(OptionsManager::GameOption& optionDef, void* pEntPtr, float vPosX,
-                               float& vPosY);
-    static void renderMultiChoice(OptionsManager::GameOption& optionDef, void* pEntPtr, float vPosX,
-                                  float& vPosY);
+    static void renderSlider(OptionsManager::GameOption& optionDef, void* pEntPtr, float vPosX, float& vPosY);
+    static void renderCheckbox(OptionsManager::GameOption& optionDef, void* pEntPtr, float vPosX, float& vPosY);
+    static void renderMultiChoice(OptionsManager::GameOption& optionDef, void* pEntPtr, float vPosX, float& vPosY);
     static void HandleOptionPageButton(VariantList* pVL);
     static void HandleOptionPageScrollButton(VariantList* pVL);
 
@@ -380,8 +361,7 @@ class WeatherManager
     boost::signal<void(game::WeatherManager::CustomWeatherEvent*)> m_sig_eventSubscribe;
 
   private:
-    static void __thiscall WorldRendererForceBackground(uint8_t* this_, int WeatherID, void* unk3,
-                                                        void* unk4);
+    static void __thiscall WorldRendererForceBackground(uint8_t* this_, int WeatherID, void* unk3, void* unk4);
 };
 
 // For now this just serves as a way to get signalled on events.
@@ -408,8 +388,7 @@ class EventsAPI
   private:
     static void __thiscall ItemInfoManagerLoadFromMem(void* this_, char* pBytes, bool arg3);
     static void __fastcall OnArcadeInput(VariantList* pVL);
-    static void __fastcall NetControllerLocalOnArcadeInput(void* this_, int keyCode,
-                                                           bool bKeyFired);
+    static void __fastcall NetControllerLocalOnArcadeInput(void* this_, int keyCode, bool bKeyFired);
     static void __fastcall AddWASDKeys();
     static void __fastcall OnMapLoaded(void* this_, __int64 p1, __int64 p2, __int64 p3);
     static void __fastcall WorldRendererOnRender(void* this_, CL_Vec2f*);
@@ -450,8 +429,7 @@ template <typename T> T game::GameHarness::findMemoryPattern(const std::string& 
     throw std::runtime_error("Failed to find pattern '" + pattern + "'.");
 }
 
-template <typename F>
-void game::GameHarness::hookFunction(F target, F detour, F* original, bool hasPriority)
+template <typename F> void game::GameHarness::hookFunction(F target, F detour, F* original, bool hasPriority)
 {
     MH_STATUS status = MH_CreateHook(target, detour, reinterpret_cast<void**>(original));
     if (status != MH_OK)
@@ -473,8 +451,7 @@ void game::GameHarness::hookFunction(F target, F detour, F* original, bool hasPr
 }
 
 template <typename F>
-void game::GameHarness::hookFunctionPatternDirect(const std::string& pattern, F detour, F* original,
-                                                  bool hasPriority)
+void game::GameHarness::hookFunctionPatternDirect(const std::string& pattern, F detour, F* original, bool hasPriority)
 {
     auto addr = findMemoryPattern<F>(pattern);
     if (addr == nullptr)
@@ -483,8 +460,7 @@ void game::GameHarness::hookFunctionPatternDirect(const std::string& pattern, F 
 }
 
 template <typename F>
-void game::GameHarness::hookFunctionPatternCall(const std::string& pattern, F detour, F* original,
-                                                bool hasPriority)
+void game::GameHarness::hookFunctionPatternCall(const std::string& pattern, F detour, F* original, bool hasPriority)
 {
     auto addr = findMemoryPattern<F>(pattern);
     if (addr == nullptr)

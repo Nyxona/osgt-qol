@@ -11,15 +11,11 @@ Surface::~Surface() { real::SurfaceDtor(this); }
 
 SurfaceAnim::SurfaceAnim() { real::SurfaceAnimCtor(this); }
 
-bool Surface::LoadFile(std::string name, bool bAddBasePath)
+bool Surface::LoadFile(std::string name, bool bAddBasePath) { return real::SurfaceLoadFile(this, name, bAddBasePath); }
+void Surface::BlitScaled(float x, float y, CL_Vec2f& vScale, int alignment, unsigned int rgba, float rotation,
+                         void* pRenderBatcher, bool flipX, bool flipY)
 {
-    return real::SurfaceLoadFile(this, name, bAddBasePath);
-}
-void Surface::BlitScaled(float x, float y, CL_Vec2f& vScale, int alignment, unsigned int rgba,
-                         float rotation, void* pRenderBatcher, bool flipX, bool flipY)
-{
-    real::SurfaceBlitScaled(this, x, y, vScale, alignment, rgba, rotation, pRenderBatcher, flipX,
-                            flipY);
+    real::SurfaceBlitScaled(this, x, y, vScale, alignment, rgba, rotation, pRenderBatcher, flipX, flipY);
 }
 void SurfaceAnim::SetupAnim(int framesX, int framesY)
 {
@@ -29,11 +25,10 @@ void SurfaceAnim::SetupAnim(int framesX, int framesY)
     m_frameWidth = (float)(int(GetWidth() / framesX));
     m_frameHeight = (float)(int(GetHeight() / framesY));
 }
-void SurfaceAnim::BlitScaledAnim(float x, float y, int frameX, int frameY, CL_Vec2f* vScale,
-                                 int alignment, unsigned int rgba, float rotation,
-                                 CL_Vec2f vRotationPt, bool flipX, bool flipY, void* pBatcher,
-                                 int padding)
+void SurfaceAnim::BlitScaledAnim(float x, float y, int frameX, int frameY, CL_Vec2f* vScale, int alignment,
+                                 unsigned int rgba, float rotation, CL_Vec2f vRotationPt, bool flipX, bool flipY,
+                                 void* pBatcher, int padding)
 {
-    real::SurfaceAnimBlitScaledAnim(this, x, y, frameX, frameY, vScale, alignment, rgba, rotation,
-                                    &vRotationPt, flipX, flipY, pBatcher, padding);
+    real::SurfaceAnimBlitScaledAnim(this, x, y, frameX, frameY, vScale, alignment, rgba, rotation, &vRotationPt, flipX,
+                                    flipY, pBatcher, padding);
 }

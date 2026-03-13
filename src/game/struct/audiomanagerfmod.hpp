@@ -10,12 +10,12 @@ class AudioManagerFMOD : public AudioManager
     virtual ~AudioManagerFMOD();
     virtual void Init();
     virtual void Kill();
-    virtual void Play(std::string fName, bool bLooping = false, bool bIsMusic = false,
-                      bool bAddBasePath = true, bool bForceStreaming = false);
+    virtual void Play(std::string fName, bool bLooping = false, bool bIsMusic = false, bool bAddBasePath = true,
+                      bool bForceStreaming = false);
     virtual void vfunction5();
     virtual void vfunction6();
-    virtual void Preload(std::string fName, bool bLooping = false, bool bIsMusic = false,
-                         bool bAddBasePath = true, bool bForceStreaming = false);
+    virtual void Preload(std::string fName, bool bLooping = false, bool bIsMusic = false, bool bAddBasePath = true,
+                         bool bForceStreaming = false);
     virtual void SetMusicEnabled(bool bNew);
     virtual void vfunction9();
     virtual void vfunction10();

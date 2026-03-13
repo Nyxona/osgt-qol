@@ -1,8 +1,9 @@
 #pragma once
 #include "baseapp.hpp"
-#include "iteminfomanager.hpp"
 #include "enetclient.hpp"
+#include "iteminfomanager.hpp"
 #include "variantdb.hpp"
+
 
 class GameLogicComponent;
 

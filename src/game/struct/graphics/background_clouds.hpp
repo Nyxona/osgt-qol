@@ -32,11 +32,9 @@ struct Cloud
 class Background_Clouds
 {
   public:
-    Background_Clouds(Background* parent, std::string cloudImg, eCloudMoveType moveType,
-                      eCloudTintType tintType);
+    Background_Clouds(Background* parent, std::string cloudImg, eCloudMoveType moveType, eCloudTintType tintType);
     virtual ~Background_Clouds();
-    virtual void Render(CL_Vec2f& camPos, float graphicDetailLevel, float minDistance,
-                        float maxDistance);
+    virtual void Render(CL_Vec2f& camPos, float graphicDetailLevel, float minDistance, float maxDistance);
     virtual void Update();
 
     void InitClouds(int clouds);

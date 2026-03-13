@@ -1,6 +1,7 @@
 #include "gamelogic.hpp"
-#include "game/struct/app.hpp"
 #include "game/signatures.hpp"
+#include "game/struct/app.hpp"
+
 
 bool GameLogicComponent::IsDialogOpened()
 {

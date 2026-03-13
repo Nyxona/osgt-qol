@@ -27,8 +27,8 @@ class WorldRenderer
     WorldCamera m_camera;
     Background* m_pBackground;
     int m_curWeather;
-    bool m_bWeatherLock; // If true, ignores ForceBackground and other such calls unless it
-                         // originates from ClientPetBattle
+    bool m_bWeatherLock; // If true, ignores ForceBackground and other such calls unless it originates from
+                         // ClientPetBattle
     uint8_t pad2[3];
     uint8_t m_particles[40];
     SurfaceAnim* m_pickupBox;

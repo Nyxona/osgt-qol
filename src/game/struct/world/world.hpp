@@ -27,8 +27,7 @@ enum TileProperties : uint16_t
     TILE_PROPERTY_PAINT_YELLOW = TILE_PROPERTY_PAINT_RED | TILE_PROPERTY_PAINT_GREEN,
     TILE_PROPERTY_PAINT_PURPLE = TILE_PROPERTY_PAINT_BLUE | TILE_PROPERTY_PAINT_RED,
     TILE_PROPERTY_PAINT_AQUA = TILE_PROPERTY_PAINT_BLUE | TILE_PROPERTY_PAINT_GREEN,
-    TILE_PROPERTY_PAINT_BLACK =
-        TILE_PROPERTY_PAINT_BLUE | TILE_PROPERTY_PAINT_GREEN | TILE_PROPERTY_PAINT_RED
+    TILE_PROPERTY_PAINT_BLACK = TILE_PROPERTY_PAINT_BLUE | TILE_PROPERTY_PAINT_GREEN | TILE_PROPERTY_PAINT_RED
 };
 
 // Namings matched.
@@ -130,8 +129,7 @@ class World
     unsigned int m_unused3;
     int m_blockInvite;
     unsigned int m_timeLastSolidAdded;
-    std::string m_unused_str; // could be "worldBalancerBaseName", "description" or "creationDate",
-                              // but it isn't referenced anywhere in client outside ctor/dtor.
+    std::string m_unused_str; // could be "worldBalancerBaseName", "description" or "creationDate", but it isn't referenced anywhere in client outside ctor/dtor.
     std::list<DoorInfo> m_doors;
     std::list<HeartInfo> m_heartMonitors;
     std::vector<AutoDeleteInfo> m_autoDeleteBlocks;

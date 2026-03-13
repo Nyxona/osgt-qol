@@ -39,9 +39,8 @@ class Surface
 
     bool LoadFile(std::string fName, bool bAddBasePath = true);
 
-    void BlitScaled(float x, float y, CL_Vec2f& vScale, int alignment = 1,
-                    unsigned int rgba = 0xFFFFFFFF, float rotation = 0, void* pRenderBatcher = NULL,
-                    bool flipX = false, bool flipY = false);
+    void BlitScaled(float x, float y, CL_Vec2f& vScale, int alignment = 1, unsigned int rgba = 0xFFFFFFFF,
+                    float rotation = 0, void* pRenderBatcher = NULL, bool flipX = false, bool flipY = false);
     void SetBlendingMode(eBlendingMode blendMode) { m_blendingMode = blendMode; }
     int GetWidth() { return m_originalWidth; }
     int GetHeight() { return m_originalHeight; }
@@ -77,10 +76,10 @@ class SurfaceAnim : public Surface
     float m_frameWidth;
     float m_frameHeight;
 
-    void BlitScaledAnim(float x, float y, int frameX, int frameY, CL_Vec2f* vScale,
-                        int alignment = 1, unsigned int rgba = 0xFFFFFFFF, float rotation = 0,
-                        CL_Vec2f vRotationPtScreenCoords = CL_Vec2f(0, 0), bool flipX = false,
-                        bool flipY = false, void* pBatcher = NULL, int padding = 0);
+    void BlitScaledAnim(float x, float y, int frameX, int frameY, CL_Vec2f* vScale, int alignment = 1,
+                        unsigned int rgba = 0xFFFFFFFF, float rotation = 0,
+                        CL_Vec2f vRotationPtScreenCoords = CL_Vec2f(0, 0), bool flipX = false, bool flipY = false,
+                        void* pBatcher = NULL, int padding = 0);
     void SetupAnim(int framesX, int framesY);
     int GetFramesX() { return m_framesX; }
     int GetFramesY() { return m_framesY; }

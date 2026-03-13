@@ -20,8 +20,7 @@ void createDebugConsole()
 
 void showErrorMessageBox(const std::string& message)
 {
-    MessageBoxA(nullptr, message.c_str(), "Error",
-                MB_ICONERROR | MB_OK | MB_TOPMOST | MB_SETFOREGROUND);
+    MessageBoxA(nullptr, message.c_str(), "Error", MB_ICONERROR | MB_OK | MB_TOPMOST | MB_SETFOREGROUND);
 }
 
 void setup()
@@ -87,8 +86,7 @@ void setup()
     }
 
     auto endTime = std::chrono::high_resolution_clock::now();
-    auto duration =
-        std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
     std::fprintf(stderr, "Setup completed in %lld ms\n", duration);
 }
 
@@ -102,12 +100,10 @@ void loadOriginalDirectInput8Create()
 
     // Load original function
     HMODULE dinput8 = LoadLibraryW(modulePath.c_str());
-    originalDirectInput8Create =
-        reinterpret_cast<DirectInput8CreateFn>(GetProcAddress(dinput8, "DirectInput8Create"));
+    originalDirectInput8Create = reinterpret_cast<DirectInput8CreateFn>(GetProcAddress(dinput8, "DirectInput8Create"));
 }
 
-HRESULT WINAPI DirectInput8Create(HINSTANCE hInst, DWORD dwVersion, REFIID riidltf, LPVOID* ppvOut,
-                                  LPVOID punkOuter)
+HRESULT WINAPI DirectInput8Create(HINSTANCE hInst, DWORD dwVersion, REFIID riidltf, LPVOID* ppvOut, LPVOID punkOuter)
 {
     std::call_once(isInitialized,
                    []()

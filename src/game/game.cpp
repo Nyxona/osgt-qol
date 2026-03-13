@@ -29,8 +29,7 @@ void GameHarness::initialize()
     MH_STATUS status = MH_Initialize();
     if (status != MH_OK)
     {
-        throw std::runtime_error("Failed to initialize MinHook: " +
-                                 std::string(MH_StatusToString(status)));
+        throw std::runtime_error("Failed to initialize MinHook: " + std::string(MH_StatusToString(status)));
     }
 
     // Block function until game processes this message. This lets us know the game is in an
@@ -71,8 +70,7 @@ void GameHarness::finalizeInitialization()
     MH_STATUS status;
     if ((status = MH_EnableHook(MH_ALL_HOOKS)) != MH_OK)
     {
-        throw std::runtime_error("Failed to enable hooks: " +
-                                 std::string(MH_StatusToString(status)));
+        throw std::runtime_error("Failed to enable hooks: " + std::string(MH_StatusToString(status)));
     }
 }
 

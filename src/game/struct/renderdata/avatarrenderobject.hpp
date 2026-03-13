@@ -24,40 +24,34 @@ class AvatarRenderObject
     virtual void Update() {};
     virtual void RenderGUIStuff(NetAvatar* me, CL_Vec2f localScale) {};
     virtual void RenderInBed(float offset_x, float offset_y, unsigned int forceColor) {};
-    virtual void RenderPortrait(AvatarRenderData* avData, float offset_x, float offset_y,
-                                unsigned int) {};
+    virtual void RenderPortrait(AvatarRenderData* avData, float offset_x, float offset_y, unsigned int) {};
     virtual void RenderSitting(float offset_x, float offset_y, unsigned int forceColor, int) {};
-    virtual void RenderSittingInTheater(float offset_x, float offset_y, unsigned int forceColor,
-                                        int) {};
+    virtual void RenderSittingInTheater(float offset_x, float offset_y, unsigned int forceColor, int) {};
     virtual void RenderInRobot(float offset_x, float offset_y, unsigned int forceColor) {};
     virtual void RenderInPineapple(float offset_x, float offset_y, unsigned int forceColor) {};
     virtual void RenderPresentGoblin(float offset_x, float offset_y, unsigned int forceColor) {};
     virtual void RenderPet() {};
-    virtual void RenderBackpack(float cx, float cy, int itemID, unsigned int tint, bool faceLeft) {
-    };
-    virtual void RenderFrontpack(float cx, float cy, int itemID, unsigned int tint, bool faceLeft) {
-    };
-    virtual void RenderBackArm(float cx, float cy, int tint, int otherTint, int itemID, float angle,
-                               bool faceLeft) {};
+    virtual void RenderBackpack(float cx, float cy, int itemID, unsigned int tint, bool faceLeft) {};
+    virtual void RenderFrontpack(float cx, float cy, int itemID, unsigned int tint, bool faceLeft) {};
+    virtual void RenderBackArm(float cx, float cy, int tint, int otherTint, int itemID, float angle, bool faceLeft) {};
     virtual void RenderBody(float cx, float cy, int skinTint, bool) {};
     virtual void RenderFace(float cx, float cy, int skinTint, int, bool, int) {};
-    virtual void RenderShoes(float cx, float cy, int itemID, float horseY, int skinTint,
-                             int otherTint, bool faceLeft, bool) {};
-    virtual void RenderShoeWings(float cx, float cy, int itemID, float horseY, int skinTint,
-                                 int otherTint, bool faceLeft, bool) {};
-    virtual void RenderPants(float cx, float cy, int itemID, int otherTint, int forceColor,
-                             bool faceLeft, int horsey) {};
-    virtual void RenderShirt(float cx, float cy, int itemID, int skinTint, int otherTint,
-                             bool faceLeft) {};
-    virtual void RenderChestItem(float cx, float cy, int itemID, int otherTint, bool faceLeft,
-                                 bool topHalfOnly, bool backSide) {};
+    virtual void RenderShoes(float cx, float cy, int itemID, float horseY, int skinTint, int otherTint, bool faceLeft,
+                             bool) {};
+    virtual void RenderShoeWings(float cx, float cy, int itemID, float horseY, int skinTint, int otherTint,
+                                 bool faceLeft, bool) {};
+    virtual void RenderPants(float cx, float cy, int itemID, int otherTint, int forceColor, bool faceLeft, int horsey) {
+    };
+    virtual void RenderShirt(float cx, float cy, int itemID, int skinTint, int otherTint, bool faceLeft) {};
+    virtual void RenderChestItem(float cx, float cy, int itemID, int otherTint, bool faceLeft, bool topHalfOnly,
+                                 bool backSide) {};
     virtual void RenderFaceItem(float cx, float cy, int itemID, int otherTint, bool faceLeft) {};
     virtual void RenderHair(float cx, float cy, int itemID, int otherTint, bool faceLeft) {};
     virtual void RenderHat(float cx, float cy, int itemID, int otherTint, bool faceLeft) {};
     virtual void RenderAccoutrements(float cx, float cy, int otherTint, bool faceLeft) {
     }; // No idea what this is, no xrefs.
-    virtual void RenderFrontArm(float cx, float cy, float arm2Angle, int itemID, int skinTint,
-                                int othertint, bool faceLeft, int forceColor) {};
+    virtual void RenderFrontArm(float cx, float cy, float arm2Angle, int itemID, int skinTint, int othertint,
+                                bool faceLeft, int forceColor) {};
     virtual void RenderAura(float cx, float cy, unsigned int forceColor) {};
     virtual void RenderInFront(float cx, float cy, unsigned int forceColor) {};
     virtual void OnAvatarRenderDataUpdate()
@@ -71,14 +65,11 @@ class AvatarRenderObject
                 m_pAvatarRenderData->m_offset += offset;
         }
     };
-    virtual void OnDeath(AvatarRenderData* pAvatarRenderData)
-    {
-        m_pAvatarRenderData = pAvatarRenderData;
-    };
+    virtual void OnDeath(AvatarRenderData* pAvatarRenderData) { m_pAvatarRenderData = pAvatarRenderData; };
     virtual void OnKilled(AvatarRenderData* pAvatarRenderData, float cx, float cy) {};
     virtual void OnRespawned(AvatarRenderData* pAvatarRenderData) {};
-    virtual void AddClothingParticles(AvatarRenderData* pAvatarRenderData, bool iStink,
-                                      bool fastStink, bool slowStink, bool crazyStink) {};
+    virtual void AddClothingParticles(AvatarRenderData* pAvatarRenderData, bool iStink, bool fastStink, bool slowStink,
+                                      bool crazyStink) {};
     virtual void SwitchOffClothingParticles(AvatarRenderData* pAvatarRenderData) {};
     virtual void EndClothingParticles(AvatarRenderData* pAvatarRenderData) {};
     virtual CL_Vec2f* GetCharacterOffset(CL_Vec2f* result)

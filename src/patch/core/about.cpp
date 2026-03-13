@@ -5,9 +5,8 @@
 #include <string>
 #include <version.h>
 
-REGISTER_GAME_FUNCTION(AboutMenuAddScrollContent,
-                       "48 8B C4 55 41 56 41 57 48 8D A8 F8 FB FF FF 48 81 EC F0 04", __fastcall,
-                       void, Entity*);
+REGISTER_GAME_FUNCTION(AboutMenuAddScrollContent, "48 8B C4 55 41 56 41 57 48 8D A8 F8 FB FF FF 48 81 EC F0 04",
+                       __fastcall, void, Entity*);
 
 class AboutMenuAttribution : public patch::BasePatch
 {
@@ -17,8 +16,7 @@ class AboutMenuAttribution : public patch::BasePatch
         auto& game = game::GameHarness::get();
         // Hook AboutMenuAddScrollContent.
         game.hookFunctionPatternDirect<AboutMenuAddScrollContent_t>(
-            pattern::AboutMenuAddScrollContent, AboutMenuAddScrollContent,
-            &real::AboutMenuAddScrollContent);
+            pattern::AboutMenuAddScrollContent, AboutMenuAddScrollContent, &real::AboutMenuAddScrollContent);
     }
 
     static void __fastcall AboutMenuAddScrollContent(Entity* pScrollChild)

@@ -22,11 +22,10 @@ class PauseMenuNoAAP : public patch::BasePatch
 
         auto& optionsMgr = game::OptionsManager::get();
         optionsMgr.addCheckboxOption("qol", "UI", "osgt_qol_hide_aap_button",
-                                     "Hide \"Secure my Account\" text from Pause Menu",
-                                     &OnCheckboxCallback);
+                                     "Hide \"Secure my Account\" text from Pause Menu", &OnCheckboxCallback);
 
-        createAccSecurityAddr = game.findMemoryPattern<uint8_t*>(
-            "0F 84 ? ? ? ? E8 ? ? ? ? 80 B8 15 02 00 00 00 0F 85 ? ? ? ? E8");
+        createAccSecurityAddr =
+            game.findMemoryPattern<uint8_t*>("0F 84 ? ? ? ? E8 ? ? ? ? 80 B8 15 02 00 00 00 0F 85 ? ? ? ? E8");
 
         patchIfNeeded();
     }

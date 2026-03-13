@@ -180,7 +180,7 @@ class AvatarRenderData
     std::vector<int> m_GauntletSpawnEffectEmitters;   // Unsure, lacks xrefs.
     std::vector<int> m_DanceMasterSquareEmitterIndex; // Unsure, lacks xrefs.
     std::vector<int> m_galaxyAuraEmitters;            // Unsure, lacks xrefs.
-    int m_punchHairEmitterIndex; // Lacks xrefs, could also be m_moneyAuraEmitterIndex
+    int m_punchHairEmitterIndex;                      // Lacks xrefs, could also be m_moneyAuraEmitterIndex
     RidingDragonRenderHelper m_RidingDragonRenderHelper;
     CL_Vec2f m_GauntletFrontArmCPos;
     int m_GauntletRenderTimes;

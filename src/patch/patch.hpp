@@ -29,8 +29,7 @@ class PatchManager
     static PatchManager& get();
 
     // Register a new game patch.
-    template <class T, PatchType P>
-    inline void registerPatch(BasePatch* instance, const std::string& name)
+    template <class T, PatchType P> inline void registerPatch(BasePatch* instance, const std::string& name)
     {
         static_assert(std::is_base_of_v<BasePatch, T>, "T must derive from BasePatch.");
         patchMap[name] = PatchInfo{instance, P};
@@ -82,31 +81,28 @@ template <class T, PatchType P> class RegisterPatch
   public:
     T instance;
     // Add pointer to instance to the GameHarness patch map.
-    inline RegisterPatch(const std::string& name)
-    {
-        PatchManager::get().registerPatch<T, P>(&instance, name);
-    }
+    inline RegisterPatch(const std::string& name) { PatchManager::get().registerPatch<T, P>(&instance, name); }
 };
 
 // Utility macro for easy registration of core game patches. Creates an instance of
 // RegisterPatch<type, PatchType::Core> within the patch namespace.
-#define REGISTER_CORE_GAME_PATCH(type, name)                                                       \
-    namespace patch                                                                                \
-    {                                                                                              \
-    namespace internal                                                                             \
-    {                                                                                              \
-    RegisterPatch<type, PatchType::Core> patch##name(#name);                                       \
-    }                                                                                              \
+#define REGISTER_CORE_GAME_PATCH(type, name)                                                                           \
+    namespace patch                                                                                                    \
+    {                                                                                                                  \
+    namespace internal                                                                                                 \
+    {                                                                                                                  \
+    RegisterPatch<type, PatchType::Core> patch##name(#name);                                                           \
+    }                                                                                                                  \
     }
 
 // Ditto, but for user patches.
-#define REGISTER_USER_GAME_PATCH(type, name)                                                       \
-    namespace patch                                                                                \
-    {                                                                                              \
-    namespace internal                                                                             \
-    {                                                                                              \
-    RegisterPatch<type, PatchType::User> patch##name(#name);                                       \
-    }                                                                                              \
+#define REGISTER_USER_GAME_PATCH(type, name)                                                                           \
+    namespace patch                                                                                                    \
+    {                                                                                                                  \
+    namespace internal                                                                                                 \
+    {                                                                                                                  \
+    RegisterPatch<type, PatchType::User> patch##name(#name);                                                           \
+    }                                                                                                                  \
     }
 
 } // namespace internal

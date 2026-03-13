@@ -11,18 +11,15 @@
 #include "game/struct/custom/playmodoverlay.hpp"
 #include "game/struct/net/enet.hpp"
 
-REGISTER_GAME_FUNCTION(
-    GetMessageTypeFromPacket,
-    "48 83 EC 28 48 83 79 18 04 73 13 48 8D ? ? ? ? ? E8 ? ? ? ? 33 C0 48 83 C4 28 C3", __fastcall,
-    int, void*);
-REGISTER_GAME_FUNCTION(
-    OnLogGrabBarChanged,
-    "48 8B C4 55 41 56 41 57 48 8D 68 A1 48 81 EC E0 00 00 00 48 C7 45 AF FE FF FF FF 48 89 58 08 "
-    "48 89 70 10 48 89 78 18 4C 89 60 20 0F 29 70 D8 44 0F 29 40 C8 48 8B ? ? ? ? ? 48 33 C4 48 89 "
-    "45 17 E8 ? ? ? ? 48 85 C0 0F 84 ? ? ? ? 48 C7 45 0F 0F 00 00 00",
-    __fastcall, void, Variant*);
-REGISTER_GAME_FUNCTION(GameLogicComponentKillWorld,
-                       "48 89 5C 24 08 48 89 74 24 10 57 48 83 EC 20 0F B6 FA 48 8B D9 E8",
+REGISTER_GAME_FUNCTION(GetMessageTypeFromPacket,
+                       "48 83 EC 28 48 83 79 18 04 73 13 48 8D ? ? ? ? ? E8 ? ? ? ? 33 C0 48 83 C4 28 C3", __fastcall,
+                       int, void*);
+REGISTER_GAME_FUNCTION(OnLogGrabBarChanged,
+                       "48 8B C4 55 41 56 41 57 48 8D 68 A1 48 81 EC E0 00 00 00 48 C7 45 AF FE FF FF FF 48 89 58 08 "
+                       "48 89 70 10 48 89 78 18 4C 89 60 20 0F 29 70 D8 44 0F 29 40 C8 48 8B ? ? ? ? ? 48 33 C4 48 89 "
+                       "45 17 E8 ? ? ? ? 48 85 C0 0F 84 ? ? ? ? 48 C7 45 0F 0F 00 00 00",
+                       __fastcall, void, Variant*);
+REGISTER_GAME_FUNCTION(GameLogicComponentKillWorld, "48 89 5C 24 08 48 89 74 24 10 57 48 83 EC 20 0F B6 FA 48 8B D9 E8",
                        __fastcall, void, GameLogicComponent*, bool);
 
 static std::vector<ActiveMod> g_activeMods;
@@ -76,17 +73,15 @@ class PlaymodTimersOverlay : public patch::BasePatch
         // We need to receive modded packets from server. We COULD hook into ENetClient functions
         // instead.
         game.hookFunctionPatternDirect<GetMessageTypeFromPacket_t>(
-            pattern::GetMessageTypeFromPacket, GetMessageTypeFromPacket,
-            &real::GetMessageTypeFromPacket);
+            pattern::GetMessageTypeFromPacket, GetMessageTypeFromPacket, &real::GetMessageTypeFromPacket);
 
         // We anchor into OnLogGrabBarChanged so we can position ourselves against it.
-        game.hookFunctionPatternDirect<OnLogGrabBarChanged_t>(
-            pattern::OnLogGrabBarChanged, OnLogGrabBarChanged, &real::OnLogGrabBarChanged);
+        game.hookFunctionPatternDirect<OnLogGrabBarChanged_t>(pattern::OnLogGrabBarChanged, OnLogGrabBarChanged,
+                                                              &real::OnLogGrabBarChanged);
 
         // We should cleanup when player leaves world as well, so we need to know an event for it.
         game.hookFunctionPatternDirect<GameLogicComponentKillWorld_t>(
-            pattern::GameLogicComponentKillWorld, GameLogicComponentKillWorld,
-            &real::GameLogicComponentKillWorld);
+            pattern::GameLogicComponentKillWorld, GameLogicComponentKillWorld, &real::GameLogicComponentKillWorld);
 
         // LoadFromMem is a good enough signal that we should ask for playmod data.
         auto& events = game::EventsAPI::get();
@@ -98,18 +93,16 @@ class PlaymodTimersOverlay : public patch::BasePatch
         // TODO: Clear UI on server exit.
 
         // In-game way of toggling overlay visibility
-        g_IsOverlayHidden =
-            real::GetApp()->GetVar("osgt_qol_hide_playmod_overlay")->GetUINT32() != 0;
+        g_IsOverlayHidden = real::GetApp()->GetVar("osgt_qol_hide_playmod_overlay")->GetUINT32() != 0;
         auto& optionsMgr = game::OptionsManager::get();
-        optionsMgr.addCheckboxOption("qol", "UI", "osgt_qol_hide_playmod_overlay",
-                                     "Hide playmod overlay\n", &OnOverlayHideCallback);
+        optionsMgr.addCheckboxOption("qol", "UI", "osgt_qol_hide_playmod_overlay", "Hide playmod overlay\n",
+                                     &OnOverlayHideCallback);
     }
 
     static bool DoesTimerOverlayExist()
     {
         Entity* pWorldSpecificGUI =
-            real::GetApp()->m_pEntityRoot->GetEntityByName("GUI")->GetEntityByName(
-                "WorldSpecificGUI");
+            real::GetApp()->m_pEntityRoot->GetEntityByName("GUI")->GetEntityByName("WorldSpecificGUI");
         if (!pWorldSpecificGUI)
             return false;
         return pWorldSpecificGUI->GetEntityByName("TimerOverlay") != nullptr;
@@ -119,11 +112,9 @@ class PlaymodTimersOverlay : public patch::BasePatch
     {
         // Clear any old ui
         Entity* pWorldSpecificGUI =
-            real::GetApp()->m_pEntityRoot->GetEntityByName("GUI")->GetEntityByName(
-                "WorldSpecificGUI");
+            real::GetApp()->m_pEntityRoot->GetEntityByName("GUI")->GetEntityByName("WorldSpecificGUI");
         if (pWorldSpecificGUI)
-            pWorldSpecificGUI->RemoveEntityByAddress(
-                pWorldSpecificGUI->GetEntityByName("TimerOverlay"));
+            pWorldSpecificGUI->RemoveEntityByAddress(pWorldSpecificGUI->GetEntityByName("TimerOverlay"));
         real::GameLogicComponentKillWorld(this_, bUnk);
     }
 
@@ -139,8 +130,7 @@ class PlaymodTimersOverlay : public patch::BasePatch
     {
         real::OnLogGrabBarChanged(pV);
         // Anchor TimerOverlay below the chat window.
-        Entity* pConsoleLogParent =
-            real::GetApp()->m_pEntityRoot->GetEntityByName("ConsoleLogParent");
+        Entity* pConsoleLogParent = real::GetApp()->m_pEntityRoot->GetEntityByName("ConsoleLogParent");
         Entity* pLogEnt = pConsoleLogParent->GetEntityByName("ConsoleGrab");
         float yLevel = 0.0;
         if (!pLogEnt)
@@ -186,8 +176,7 @@ class PlaymodTimersOverlay : public patch::BasePatch
                 break;
             }
             int offset = 10;
-            PlaymodPacketDataPlaymodInfo* modData =
-                (PlaymodPacketDataPlaymodInfo*)(packet->data + offset);
+            PlaymodPacketDataPlaymodInfo* modData = (PlaymodPacketDataPlaymodInfo*)(packet->data + offset);
             bool bNewTarget = true;
             for (auto it = g_activeMods.begin(); it != g_activeMods.end();)
             {
@@ -199,8 +188,7 @@ class PlaymodTimersOverlay : public patch::BasePatch
                     it->m_killstamp = modData->Duration + time(0);
                     if (!DoesTimerOverlayExist())
                     {
-                        if (oldKillstamp <= time(0) || it->m_killstamp <= time(0) ||
-                            modData->Duration <= 0)
+                        if (oldKillstamp <= time(0) || it->m_killstamp <= time(0) || modData->Duration <= 0)
                         {
                             printf("[PlaymodOverlays] killing offscreen\n");
                             it = g_activeMods.erase(it);
@@ -212,8 +200,8 @@ class PlaymodTimersOverlay : public patch::BasePatch
                     if (it->m_killstamp - time(0) > 7200)
                         it->m_bDelayLoad = true;
                     UpdateOverlayTimer(modData->PlaymodID, it->m_killstamp);
-                    printf("[PlaymodOverlays] upd kstamp=%lld, oldstamp=%lld, dur=%d, pmod=%d\n",
-                           it->m_killstamp, oldKillstamp, modData->Duration, modData->PlaymodID);
+                    printf("[PlaymodOverlays] upd kstamp=%lld, oldstamp=%lld, dur=%d, pmod=%d\n", it->m_killstamp,
+                           oldKillstamp, modData->Duration, modData->PlaymodID);
                     if (it->m_killstamp <= time(0) || modData->Duration <= 0)
                     {
                         it = g_activeMods.erase(it);
@@ -250,8 +238,7 @@ class PlaymodTimersOverlay : public patch::BasePatch
             int offset = 10;
             for (int i = 0; i < ToParse; i++)
             {
-                PlaymodPacketDataPlaymodInfo* modData =
-                    (PlaymodPacketDataPlaymodInfo*)(packet->data + offset);
+                PlaymodPacketDataPlaymodInfo* modData = (PlaymodPacketDataPlaymodInfo*)(packet->data + offset);
                 offset += 6;
 
                 if (modData->Duration <= 0)
@@ -285,8 +272,7 @@ class PlaymodTimersOverlay : public patch::BasePatch
             int offset = 10;
             for (int i = 0; i < ToParse; i++)
             {
-                PlaymodPacketDataIconInfo* iconData =
-                    (PlaymodPacketDataIconInfo*)(packet->data + offset);
+                PlaymodPacketDataIconInfo* iconData = (PlaymodPacketDataIconInfo*)(packet->data + offset);
                 offset += 4;
                 g_modIcons.insert(std::make_pair(iconData->PlaymodID, iconData->ItemID));
             }
@@ -307,8 +293,7 @@ class PlaymodTimersOverlay : public patch::BasePatch
     static void ConstructOverlay()
     {
         Entity* pWorldSpecificGUI =
-            real::GetApp()->m_pEntityRoot->GetEntityByName("GUI")->GetEntityByName(
-                "WorldSpecificGUI");
+            real::GetApp()->m_pEntityRoot->GetEntityByName("GUI")->GetEntityByName("WorldSpecificGUI");
         if (pWorldSpecificGUI->GetEntityByName("TimerOverlay"))
         {
             OnRefreshOverlay();
@@ -338,8 +323,7 @@ class PlaymodTimersOverlay : public patch::BasePatch
 
         g_lastPlaymodTimerRecycle = time(0);
         pOverlayEnt->GetFunction("OnUpdate")
-            ->sig_function.connect(
-                1, boost::bind(&PlaymodTimersOverlay::OnOverlayUpdate, pOverlayEnt, _1));
+            ->sig_function.connect(1, boost::bind(&PlaymodTimersOverlay::OnOverlayUpdate, pOverlayEnt, _1));
         pOverlayEnt->GetVar("alpha")->GetSigOnChanged()->connect(
             1, boost::bind(&PlaymodTimersOverlay::OnOverlayAlphaChange, pOverlayEnt, _1));
     }
@@ -348,8 +332,7 @@ class PlaymodTimersOverlay : public patch::BasePatch
     {
         // Called to update existing timer with either expiry or changed expiration date.
         Entity* pWorldSpecificGUI =
-            real::GetApp()->m_pEntityRoot->GetEntityByName("GUI")->GetEntityByName(
-                "WorldSpecificGUI");
+            real::GetApp()->m_pEntityRoot->GetEntityByName("GUI")->GetEntityByName("WorldSpecificGUI");
         if (!pWorldSpecificGUI)
             return;
         Entity* pOverlayEnt = pWorldSpecificGUI->GetEntityByName("TimerOverlay");
@@ -380,8 +363,7 @@ class PlaymodTimersOverlay : public patch::BasePatch
     {
         // Just kill the overlay and create it again.
         Entity* pWorldSpecificGUI =
-            real::GetApp()->m_pEntityRoot->GetEntityByName("GUI")->GetEntityByName(
-                "WorldSpecificGUI");
+            real::GetApp()->m_pEntityRoot->GetEntityByName("GUI")->GetEntityByName("WorldSpecificGUI");
         if (!pWorldSpecificGUI)
             return;
         Entity* pOverlayEnt = pWorldSpecificGUI->GetEntityByName("TimerOverlay");
@@ -519,8 +501,7 @@ class PlaymodTimersOverlay : public patch::BasePatch
         {
             // Remove immediately if hiding
             Entity* pWorldSpecificGUI =
-                real::GetApp()->m_pEntityRoot->GetEntityByName("GUI")->GetEntityByName(
-                    "WorldSpecificGUI");
+                real::GetApp()->m_pEntityRoot->GetEntityByName("GUI")->GetEntityByName("WorldSpecificGUI");
 
             if (pWorldSpecificGUI)
             {

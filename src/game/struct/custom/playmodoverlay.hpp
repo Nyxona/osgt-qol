@@ -1,7 +1,8 @@
-#include <cstdint>
 #include "game/struct/entity.hpp"
-#include "game/struct/variant.hpp"
 #include "game/struct/miscutils.hpp"
+#include "game/struct/variant.hpp"
+#include <cstdint>
+
 
 #pragma pack(push, 1)
 enum PlaymodPacketAction : uint8_t
@@ -29,8 +30,7 @@ class PlaymodTimerEntity : public Entity
     PlaymodTimerEntity()
     {
         SetName("PlaymodTimerEntity");
-        GetFunction("OnUpdate")
-            ->sig_function.connect(1, boost::bind(&PlaymodTimerEntity::OnUpdate, this, _1));
+        GetFunction("OnUpdate")->sig_function.connect(1, boost::bind(&PlaymodTimerEntity::OnUpdate, this, _1));
     }
     std::string m_trackableStr;
     time_t m_killstamp = 0;
@@ -54,8 +54,7 @@ class PlaymodTimerEntity : public Entity
             return;
         if (m_killstamp <= time(0))
             m_bKillable = true;
-        Variant* pTextVar =
-            GetEntityByName("txt")->GetComponentByName("TextRender")->GetVar("text");
+        Variant* pTextVar = GetEntityByName("txt")->GetComponentByName("TextRender")->GetVar("text");
         int remainder = (int)(m_killstamp - time(0));
         if (remainder < 0)
             remainder = 0;

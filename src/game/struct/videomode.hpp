@@ -22,8 +22,8 @@ struct VideoMode
     {
         printf("VIDEOMODE: %s - platformID=%d forceOrientation=%d aspectRatio=%.2f "
                "defaultScreenResolution.screenX=%d defaultScreenResolution.screenY=%d\n",
-               name.c_str(), platformID, forceOrientation, aspectRatio,
-               defaultScreenResolution.screenX, defaultScreenResolution.screenY);
+               name.c_str(), platformID, forceOrientation, aspectRatio, defaultScreenResolution.screenX,
+               defaultScreenResolution.screenY);
     }
 };
 static_assert(sizeof(VideoMode) == 64, "VideoMode struct size mismatch.");

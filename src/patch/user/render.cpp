@@ -29,10 +29,9 @@
 #include <lz-string.hpp>
 
 // MainMenuCreate
-REGISTER_GAME_FUNCTION(
-    MainMenuCreate,
-    "48 8B C4 55 57 41 54 41 56 41 57 48 8D A8 E8 F8 FF FF 48 81 EC F0 07 00 00 48 C7 85 80 01",
-    __fastcall, void, Entity*, bool);
+REGISTER_GAME_FUNCTION(MainMenuCreate,
+                       "48 8B C4 55 57 41 54 41 56 41 57 48 8D A8 E8 F8 FF FF 48 81 EC F0 07 00 00 48 C7 85 80 01",
+                       __fastcall, void, Entity*, bool);
 
 // Background_Sunset::Background_Sunset
 REGISTER_GAME_FUNCTION(BackgroundSunset,
@@ -41,11 +40,10 @@ REGISTER_GAME_FUNCTION(BackgroundSunset,
                        __fastcall, Background*, void*);
 
 // Background_Night::Background_Night
-REGISTER_GAME_FUNCTION(
-    BackgroundNight,
-    "48 89 4C 24 08 55 56 57 41 54 41 55 41 56 41 57 48 8B EC 48 81 EC 80 00 00 00 48 C7 45 B0 FE "
-    "FF FF FF 48 89 9C 24 C8 00 00 00",
-    __fastcall, Background*, void*, int);
+REGISTER_GAME_FUNCTION(BackgroundNight,
+                       "48 89 4C 24 08 55 56 57 41 54 41 55 41 56 41 57 48 8B EC 48 81 EC 80 00 00 00 48 C7 45 B0 FE "
+                       "FF FF FF 48 89 9C 24 C8 00 00 00",
+                       __fastcall, Background*, void*, int);
 
 // Background_Desert::Background_Desert
 REGISTER_GAME_FUNCTION(BackgroundDesert,
@@ -54,10 +52,9 @@ REGISTER_GAME_FUNCTION(BackgroundDesert,
                        __fastcall, Background*, void*);
 
 // Background_Harvest::Background_Harvest
-REGISTER_GAME_FUNCTION(
-    BackgroundHarvest,
-    "48 8B C4 48 89 48 08 55 57 41 54 41 56 41 57 48 8B EC 48 83 EC 70 48 C7 45 B0 FE FF FF FF",
-    __fastcall, Background*, void*);
+REGISTER_GAME_FUNCTION(BackgroundHarvest,
+                       "48 8B C4 48 89 48 08 55 57 41 54 41 56 41 57 48 8B EC 48 83 EC 70 48 C7 45 B0 FE FF FF FF",
+                       __fastcall, Background*, void*);
 
 // Background_Mars::Background_Mars
 REGISTER_GAME_FUNCTION(BackgroundMars,
@@ -66,8 +63,7 @@ REGISTER_GAME_FUNCTION(BackgroundMars,
                        __fastcall, Background*, void*);
 
 // Background_Undersea::Background_Undersea
-REGISTER_GAME_FUNCTION(BackgroundUndersea,
-                       "48 89 4C 24 08 55 56 57 48 83 EC 70 48 C7 44 24 20 FE FF FF FF", __fastcall,
+REGISTER_GAME_FUNCTION(BackgroundUndersea, "48 89 4C 24 08 55 56 57 48 83 EC 70 48 C7 44 24 20 FE FF FF FF", __fastcall,
                        Background*, void*);
 
 // Background_Warp::Background_Warp
@@ -89,11 +85,10 @@ REGISTER_GAME_FUNCTION(BackgroundPagoda,
                        __fastcall, Background*, void*);
 
 // Background_Monochrome::Background_Monochrome
-REGISTER_GAME_FUNCTION(
-    BackgroundMonochrome,
-    "48 89 4C 24 08 55 56 57 48 8B EC 48 81 EC 80 00 00 00 48 C7 45 B0 FE FF FF FF 48 89 9C 24 B8 "
-    "00 00 00 48 8B F9 E8 ? ? ? ? 90 48 8D ? ? ? ? ? 48 89 07 48 8D 8F 10 01 00 00 E8 ? ? ? ?",
-    __fastcall, Background*, void*);
+REGISTER_GAME_FUNCTION(BackgroundMonochrome,
+                       "48 89 4C 24 08 55 56 57 48 8B EC 48 81 EC 80 00 00 00 48 C7 45 B0 FE FF FF FF 48 89 9C 24 B8 "
+                       "00 00 00 48 8B F9 E8 ? ? ? ? 90 48 8D ? ? ? ? ? 48 89 07 48 8D 8F 10 01 00 00 E8 ? ? ? ?",
+                       __fastcall, Background*, void*);
 
 // Background_Treasure::Background_Treasure
 REGISTER_GAME_FUNCTION(BackgroundTreasure,
@@ -108,15 +103,13 @@ REGISTER_GAME_FUNCTION(BackgroundSurgery,
                        __fastcall, Background*, void*);
 
 // Background_Bountiful::Background_Bountiful
-REGISTER_GAME_FUNCTION(
-    BackgroundBountiful,
-    "48 89 4C 24 08 55 56 57 48 8B EC 48 81 EC 80 00 00 00 48 C7 45 B0 FE FF FF FF 48 89 9C 24 B8 "
-    "00 00 00 48 8B F9 E8 ? ? ? ? 90 48 8D ? ? ? ? ? 48 89 07 48 8D 8F 18 01 00 00",
-    __fastcall, Background*, void*);
+REGISTER_GAME_FUNCTION(BackgroundBountiful,
+                       "48 89 4C 24 08 55 56 57 48 8B EC 48 81 EC 80 00 00 00 48 C7 45 B0 FE FF FF FF 48 89 9C 24 B8 "
+                       "00 00 00 48 8B F9 E8 ? ? ? ? 90 48 8D ? ? ? ? ? 48 89 07 48 8D 8F 18 01 00 00",
+                       __fastcall, Background*, void*);
 
 // DrawFilledBitmapRect
-REGISTER_GAME_FUNCTION(DrawFilledBitmapRect,
-                       "48 83 EC 48 66 0F 6E 01 66 0F 6E 49 04 0F B6 44 24 70", __fastcall, void,
+REGISTER_GAME_FUNCTION(DrawFilledBitmapRect, "48 83 EC 48 66 0F 6E 01 66 0F 6E 49 04 0F B6 44 24 70", __fastcall, void,
                        rtRectf&, uint32_t, uint32_t, void*, bool);
 
 REGISTER_GAME_FUNCTION(AvatarDataGetSetAsUint16,
@@ -125,37 +118,35 @@ REGISTER_GAME_FUNCTION(AvatarDataGetSetAsUint16,
                        __fastcall, void, void*, uint16_t*);
 
 REGISTER_GAME_FUNCTION(WorldRendererTileLineOfSight,
-                       "48 8B C4 48 89 78 10 55 48 8D 68 A9 48 81 EC E0 00 00 00 0F 29 70 E8",
-                       __fastcall, bool, void*, Tile*, Tile*, float, float*);
-REGISTER_GAME_FUNCTION(WorldRendererDrawTiles, "48 8B C4 55 57 41 54 41 55 41 57", __fastcall, void,
-                       void*, std::vector<Tile*>*, int);
+                       "48 8B C4 48 89 78 10 55 48 8D 68 A9 48 81 EC E0 00 00 00 0F 29 70 E8", __fastcall, bool, void*,
+                       Tile*, Tile*, float, float*);
+REGISTER_GAME_FUNCTION(WorldRendererDrawTiles, "48 8B C4 55 57 41 54 41 55 41 57", __fastcall, void, void*,
+                       std::vector<Tile*>*, int);
 
-REGISTER_GAME_FUNCTION(SetGrabBarSize, "48 89 5C 24 08 57 48 83 EC 20 48 8B F9 BB A3 00 00 00 E8",
-                       __fastcall, void, Entity*);
+REGISTER_GAME_FUNCTION(SetGrabBarSize, "48 89 5C 24 08 57 48 83 EC 20 48 8B F9 BB A3 00 00 00 E8", __fastcall, void,
+                       Entity*);
 
 REGISTER_GAME_FUNCTION(CreateOptionsMenu,
                        "48 89 5C 24 08 48 89 6C 24 10 48 89 74 24 18 57 48 83 EC 20 83 39 00 48 8B "
                        "F9 75 1E C7 01 05 00 00 00 C7 41 10 00 00 00 00",
                        __fastcall, void, VariantList*);
-REGISTER_GAME_FUNCTION(InitLog, "40 55 48 8B EC 48 81 EC 80 00 00 00 48 C7 45 D0 FE FF FF FF",
-                       __fastcall, void);
+REGISTER_GAME_FUNCTION(InitLog, "40 55 48 8B EC 48 81 EC 80 00 00 00 48 C7 45 D0 FE FF FF FF", __fastcall, void);
 REGISTER_GAME_FUNCTION(KillGameMenu,
                        "40 55 48 8B EC 48 83 EC 50 48 C7 45 D0 FE FF FF FF 48 89 5C 24 60 48 8B ? "
                        "? ? ? ? 48 33 C4 48 89 45 F8 0F B6 D9 E8",
                        __fastcall, void, bool);
-REGISTER_GAME_FUNCTION(
-    GameMenuCreate,
-    "48 8B C4 55 48 8D 68 A1 48 81 EC 00 01 00 00 48 C7 45 87 FE FF FF FF 48 89 58 10 48 89 70 18",
-    __fastcall, void, Entity*);
+REGISTER_GAME_FUNCTION(GameMenuCreate,
+                       "48 8B C4 55 48 8D 68 A1 48 81 EC 00 01 00 00 48 C7 45 87 FE FF FF FF 48 89 58 10 48 89 70 18",
+                       __fastcall, void, Entity*);
 REGISTER_GAME_FUNCTION(OnPressingBackDuringGameplay,
                        "48 8B C4 55 41 56 41 57 48 8D 68 C8 48 81 EC 20 01 00 00 48 C7 44 24 28 FE "
                        "FF FF FF 48 89 58 08 48 89 70 10 48 89 78 18",
                        __fastcall, void);
 REGISTER_GAME_FUNCTION(WorldCameraOnUpdate,
-                       "40 53 48 83 EC 60 41 8B 00 48 8B D9 89 41 20 41 8B 40 04 89 41 24 F3 0F 2C",
-                       __fastcall, void, WorldCamera*, CL_Vec2f*, CL_Vec2f*);
-REGISTER_GAME_FUNCTION(WorldCameraGetCamWorldPos, "8B 41 10 89 02 8B 41 14 89 42 04 48 8B C2 C3",
-                       __fastcall, CL_Vec2f*, WorldCamera*, CL_Vec2f*);
+                       "40 53 48 83 EC 60 41 8B 00 48 8B D9 89 41 20 41 8B 40 04 89 41 24 F3 0F 2C", __fastcall, void,
+                       WorldCamera*, CL_Vec2f*, CL_Vec2f*);
+REGISTER_GAME_FUNCTION(WorldCameraGetCamWorldPos, "8B 41 10 89 02 8B 41 14 89 42 04 48 8B C2 C3", __fastcall, CL_Vec2f*,
+                       WorldCamera*, CL_Vec2f*);
 REGISTER_GAME_FUNCTION(WorldRendererAdvanceSong,
                        "48 8B C4 55 41 54 41 55 41 56 41 57 48 8D 68 A1 48 81 EC F0 00 00 00 48 C7 "
                        "45 8F FE FF FF FF 48 89 58 10",
@@ -181,47 +172,38 @@ REGISTER_GAME_FUNCTION(GameLogicComponentGetQuickToolInSlot,
                        "F3 0F 2C ? ? ? ? ? 44 0F BE ? ? ? ? ? 44 03 C0 48 63 C2 44 29 ? ? ? ? ? 0F "
                        "BF 84 41 E8 01 00 00",
                        __fastcall, int, GameLogicComponent*, int);
-REGISTER_GAME_FUNCTION(PlayerItemsSetQuickSlotItem,
-                       "E8 ? ? ? ? 8B 56 14 49 8B CE E8 ? ? ? ? F3 0F 10", __fastcall, void, void*,
-                       int, short);
-REGISTER_GAME_FUNCTION(
-    PlayerItemsUpdateQuickSlotsWithUsedItem,
-    "85 D2 0F 84 ? ? ? ? 48 89 5C 24 10 57 48 83 EC 20 48 63 DA 48 8B F9 83 FB 70 0F 84",
-    __fastcall, void, PlayerItems*, int);
-REGISTER_GAME_FUNCTION(PlayerItemsRemoveFromQuickSlots,
-                       "40 53 48 83 EC 20 48 8B 41 20 48 8B D9 44 8B CA 48 8B 08", __fastcall, void,
-                       PlayerItems*, int);
-REGISTER_GAME_FUNCTION(
-    PlayerItemsFillBlankQuickToolSlotsWithStuff,
-    "48 89 5C 24 08 48 89 6C 24 10 48 89 74 24 18 57 41 56 41 57 48 83 EC 30 48 8B 41 20",
-    __fastcall, void, PlayerItems*);
+REGISTER_GAME_FUNCTION(PlayerItemsSetQuickSlotItem, "E8 ? ? ? ? 8B 56 14 49 8B CE E8 ? ? ? ? F3 0F 10", __fastcall,
+                       void, void*, int, short);
+REGISTER_GAME_FUNCTION(PlayerItemsUpdateQuickSlotsWithUsedItem,
+                       "85 D2 0F 84 ? ? ? ? 48 89 5C 24 10 57 48 83 EC 20 48 63 DA 48 8B F9 83 FB 70 0F 84", __fastcall,
+                       void, PlayerItems*, int);
+REGISTER_GAME_FUNCTION(PlayerItemsRemoveFromQuickSlots, "40 53 48 83 EC 20 48 8B 41 20 48 8B D9 44 8B CA 48 8B 08",
+                       __fastcall, void, PlayerItems*, int);
+REGISTER_GAME_FUNCTION(PlayerItemsFillBlankQuickToolSlotsWithStuff,
+                       "48 89 5C 24 08 48 89 6C 24 10 48 89 74 24 18 57 41 56 41 57 48 83 EC 30 48 8B 41 20",
+                       __fastcall, void, PlayerItems*);
 REGISTER_GAME_FUNCTION(WorldRendererDrawWorldBackground,
-                       "40 57 48 83 EC 40 48 8B F9 48 8B 89 C8 00 00 00 48 85 C9 74 79", __fastcall,
-                       void, WorldRenderer*);
+                       "40 57 48 83 EC 40 48 8B F9 48 8B 89 C8 00 00 00 48 85 C9 74 79", __fastcall, void,
+                       WorldRenderer*);
 REGISTER_GAME_FUNCTION(WorldRendererDrawBackgroundTiles,
-                       "48 89 54 24 10 53 55 56 41 54 41 55 41 56 41 57 48 81 EC C0 00 00 00",
-                       __fastcall, void, WorldRenderer*, std::vector<Tile*>*);
-REGISTER_GAME_FUNCTION(
-    WorldRendererDrawWater,
-    "48 8B C4 55 53 56 57 41 54 41 56 41 57 48 8D A8 18 FF FF FF 48 81 EC B0 01 00 00", __fastcall,
-    void, WorldRenderer*, std::vector<Tile*>*);
-REGISTER_GAME_FUNCTION(WorldTileMapGetTileSafe, "85 D2 78 23 45 85 C0 78 1E 8B 41 08 3B D0 7D 17",
-                       __fastcall, Tile*, WorldTileMap*, int, int);
-REGISTER_GAME_FUNCTION(WorldTileMapChooseVisual,
-                       "48 85 D2 0F 84 ? ? ? ? 48 89 74 24 20 57 48 83 EC 20 48 8B F1", __fastcall,
-                       void, WorldTileMap*, Tile*);
-REGISTER_GAME_FUNCTION(WorldTileMapChooseVisual_Flag,
-                       "40 57 41 57 F3 0F 10 ? ? ? ? ? 8B ? ? ? ? ? F3 0F 58", __fastcall, int,
-                       WorldTileMap*, int, int, int);
-REGISTER_GAME_FUNCTION(WorldTileMapChooseVisual_SmartEdge,
-                       "48 8B C4 48 89 50 10 55 57 41 54 41 55 41 56 48 83 EC 50", __fastcall, int,
-                       WorldTileMap*, Tile*, int);
+                       "48 89 54 24 10 53 55 56 41 54 41 55 41 56 41 57 48 81 EC C0 00 00 00", __fastcall, void,
+                       WorldRenderer*, std::vector<Tile*>*);
+REGISTER_GAME_FUNCTION(WorldRendererDrawWater,
+                       "48 8B C4 55 53 56 57 41 54 41 56 41 57 48 8D A8 18 FF FF FF 48 81 EC B0 01 00 00", __fastcall,
+                       void, WorldRenderer*, std::vector<Tile*>*);
+REGISTER_GAME_FUNCTION(WorldTileMapGetTileSafe, "85 D2 78 23 45 85 C0 78 1E 8B 41 08 3B D0 7D 17", __fastcall, Tile*,
+                       WorldTileMap*, int, int);
+REGISTER_GAME_FUNCTION(WorldTileMapChooseVisual, "48 85 D2 0F 84 ? ? ? ? 48 89 74 24 20 57 48 83 EC 20 48 8B F1",
+                       __fastcall, void, WorldTileMap*, Tile*);
+REGISTER_GAME_FUNCTION(WorldTileMapChooseVisual_Flag, "40 57 41 57 F3 0F 10 ? ? ? ? ? 8B ? ? ? ? ? F3 0F 58",
+                       __fastcall, int, WorldTileMap*, int, int, int);
+REGISTER_GAME_FUNCTION(WorldTileMapChooseVisual_SmartEdge, "48 8B C4 48 89 50 10 55 57 41 54 41 55 41 56 48 83 EC 50",
+                       __fastcall, int, WorldTileMap*, Tile*, int);
 REGISTER_GAME_FUNCTION(DrawTile,
                        "40 55 53 56 57 41 54 41 55 41 56 41 57 48 8D AC 24 98 EE FF FF B8 68 12 00 "
                        "00 E8 ? ? ? ? 48 2B E0 48 C7 85 C0 0C 00 00 FE FF FF FF",
-                       __fastcall, void, WorldRenderer* param_1, unsigned short param_2,
-                       int param_3, CL_Vec2f* param_4, unsigned int param_5, Tile* param_6,
-                       uint8_t param_7, char param_8);
+                       __fastcall, void, WorldRenderer* param_1, unsigned short param_2, int param_3, CL_Vec2f* param_4,
+                       unsigned int param_5, Tile* param_6, uint8_t param_7, char param_8);
 REGISTER_GAME_FUNCTION(WorldToScreen,
                        "F3 41 0F 10 00 F3 0F 5C 41 10 F3 41 0F 10 48 04 F3 0F 5C 49 14 F3 0F 58 41 "
                        "28 F3 0F 58 49 2C F3 0F 59 41 20",
@@ -237,28 +219,19 @@ class CustomizedTitleScreen : public patch::BasePatch
     {
         auto& game = game::GameHarness::get();
         // Resolve functions
-        real::BackgroundSunset =
-            game.findMemoryPattern<BackgroundSunset_t>(pattern::BackgroundSunset);
+        real::BackgroundSunset = game.findMemoryPattern<BackgroundSunset_t>(pattern::BackgroundSunset);
         real::BackgroundNight = game.findMemoryPattern<BackgroundNight_t>(pattern::BackgroundNight);
-        real::BackgroundDesert =
-            game.findMemoryPattern<BackgroundDesert_t>(pattern::BackgroundDesert);
-        real::BackgroundHarvest =
-            game.findMemoryPattern<BackgroundHarvest_t>(pattern::BackgroundHarvest);
+        real::BackgroundDesert = game.findMemoryPattern<BackgroundDesert_t>(pattern::BackgroundDesert);
+        real::BackgroundHarvest = game.findMemoryPattern<BackgroundHarvest_t>(pattern::BackgroundHarvest);
         real::BackgroundMars = game.findMemoryPattern<BackgroundMars_t>(pattern::BackgroundMars);
-        real::BackgroundUndersea =
-            game.findMemoryPattern<BackgroundUndersea_t>(pattern::BackgroundUndersea);
+        real::BackgroundUndersea = game.findMemoryPattern<BackgroundUndersea_t>(pattern::BackgroundUndersea);
         real::BackgroundWarp = game.findMemoryPattern<BackgroundWarp_t>(pattern::BackgroundWarp);
         real::BackgroundWolf = game.findMemoryPattern<BackgroundWolf_t>(pattern::BackgroundWolf);
-        real::BackgroundPagoda =
-            game.findMemoryPattern<BackgroundPagoda_t>(pattern::BackgroundPagoda);
-        real::BackgroundMonochrome =
-            game.findMemoryPattern<BackgroundMonochrome_t>(pattern::BackgroundMonochrome);
-        real::BackgroundTreasure =
-            game.findMemoryPattern<BackgroundTreasure_t>(pattern::BackgroundTreasure);
-        real::BackgroundSurgery =
-            game.findMemoryPattern<BackgroundSurgery_t>(pattern::BackgroundSurgery);
-        real::BackgroundBountiful =
-            game.findMemoryPattern<BackgroundBountiful_t>(pattern::BackgroundBountiful);
+        real::BackgroundPagoda = game.findMemoryPattern<BackgroundPagoda_t>(pattern::BackgroundPagoda);
+        real::BackgroundMonochrome = game.findMemoryPattern<BackgroundMonochrome_t>(pattern::BackgroundMonochrome);
+        real::BackgroundTreasure = game.findMemoryPattern<BackgroundTreasure_t>(pattern::BackgroundTreasure);
+        real::BackgroundSurgery = game.findMemoryPattern<BackgroundSurgery_t>(pattern::BackgroundSurgery);
+        real::BackgroundBountiful = game.findMemoryPattern<BackgroundBountiful_t>(pattern::BackgroundBountiful);
 
         game.hookFunctionPatternDirect<MainMenuCreate_t>(pattern::MainMenuCreate, MainMenuCreate,
                                                          &real::MainMenuCreate);
@@ -271,10 +244,9 @@ class CustomizedTitleScreen : public patch::BasePatch
         // We will allow the end-user to change their title screen weather preference
         auto& optionsMgr = game::OptionsManager::get();
         // Populate our options
-        displayNames = {"Sunny",     "Sunset",      "Night",    "Desert",     "Harvest",
-                        "Mars",      "Nothingness", "Undersea", "Warp Speed", "Comet (Blue)",
-                        "Spring",    "Howling",     "Pagoda",   "Monochrome", "Treasure",
-                        "SurgWorld", "Bountiful"};
+        displayNames = {"Sunny",       "Sunset",     "Night",      "Desert",       "Harvest",  "Mars",
+                        "Nothingness", "Undersea",   "Warp Speed", "Comet (Blue)", "Spring",   "Howling",
+                        "Pagoda",      "Monochrome", "Treasure",   "SurgWorld",    "Bountiful"};
         // Any custom weathers
         auto& weatherMgr = game::WeatherManager::get();
         for (auto it = weatherMgr.weathers.begin(); it != weatherMgr.weathers.end(); ++it)
@@ -284,8 +256,8 @@ class CustomizedTitleScreen : public patch::BasePatch
         }
         weatherMgr.m_sig_eventSubscribe.connect(&customWeatherEvent);
         // Register the Multi-Choice option
-        optionsMgr.addMultiChoiceOption("qol", "UI", "osgt_qol_title_bg", "Title Screen Background",
-                                        displayNames, &TitleBackgroundOnSelect, 80.0f);
+        optionsMgr.addMultiChoiceOption("qol", "UI", "osgt_qol_title_bg", "Title Screen Background", displayNames,
+                                        &TitleBackgroundOnSelect, 80.0f);
     }
 
     static void customWeatherEvent(game::WeatherManager::CustomWeatherEvent* pCustomWeather)
@@ -346,9 +318,9 @@ class CustomizedTitleScreen : public patch::BasePatch
         CL_Vec2f m_verLabelSize = pVerLabel->GetVar("size2d")->GetVector2();
 
         std::string versionText = "`wOSGT-QOL " OSGT_QOL_DISPLAY_VERSION "``";
-        Entity* pTextLabel = real::CreateTextLabelEntity(
-            pEnt->GetEntityByName("MainMenu"), "mltxt", real::iPhoneMapX(5.0f),
-            m_verLabelPos.y - m_verLabelSize.y, versionText);
+        Entity* pTextLabel =
+            real::CreateTextLabelEntity(pEnt->GetEntityByName("MainMenu"), "mltxt", real::iPhoneMapX(5.0f),
+                                        m_verLabelPos.y - m_verLabelSize.y, versionText);
 
         // Retrieve fontscale and scale created entity
         uint32_t fontID;
@@ -372,8 +344,7 @@ class CustomizedTitleScreen : public patch::BasePatch
             // Get custom weather from weather manager - if we don't have it, most likely the mod
             // has been uninstalled or save.dat is manually tampered.
             auto& weatherMgr = game::WeatherManager::get();
-            auto pair = weatherMgr.weathers.find(
-                real::GetApp()->GetVar("osgt_qol_title_bg_modded")->GetString());
+            auto pair = weatherMgr.weathers.find(real::GetApp()->GetVar("osgt_qol_title_bg_modded")->GetString());
             if (pair == weatherMgr.weathers.end())
             {
                 pNewBG = new Background_Default();
@@ -541,8 +512,8 @@ class BubbleOpacityBackport : public patch::BasePatch
                                    &BubbleOpacitySliderCallback);
 
         // Hook
-        game.hookFunctionPatternDirect<DrawFilledBitmapRect_t>(
-            pattern::DrawFilledBitmapRect, DrawFilledBitmapRect, &real::DrawFilledBitmapRect);
+        game.hookFunctionPatternDirect<DrawFilledBitmapRect_t>(pattern::DrawFilledBitmapRect, DrawFilledBitmapRect,
+                                                               &real::DrawFilledBitmapRect);
     }
 
     static void BubbleOpacitySliderCallback(Variant* pVariant)
@@ -550,8 +521,7 @@ class BubbleOpacityBackport : public patch::BasePatch
         real::GetApp()->GetVar("speech_bubble_opacity")->Set(pVariant->GetFloat());
     }
 
-    static void __fastcall DrawFilledBitmapRect(rtRectf& r, uint32_t middleColor,
-                                                uint32_t borderColor, void* pSurf,
+    static void __fastcall DrawFilledBitmapRect(rtRectf& r, uint32_t middleColor, uint32_t borderColor, void* pSurf,
                                                 bool bFillMiddleCloserToEdges)
     {
         float opacity = real::GetApp()->GetVar("speech_bubble_opacity")->GetFloat();
@@ -584,11 +554,9 @@ class HideMyUI : public patch::BasePatch
         pVariant->GetSigOnChanged()->connect(&OnOpacitySigFire);
 
         auto& optionsMgr = game::OptionsManager::get();
-        optionsMgr.addSliderOption("qol", "UI", "hide_ui_opacity", "Hide UI Opacity",
-                                   &HideUIOpacitySliderCallback,
+        optionsMgr.addSliderOption("qol", "UI", "hide_ui_opacity", "Hide UI Opacity", &HideUIOpacitySliderCallback,
                                    "`5(Use CTRL+H while inside a world to toggle this)``");
-        optionsMgr.addCheckboxOption("qol", "UI", "hide_ui_scrollers",
-                                     "Hide chat and inventory handles too",
+        optionsMgr.addCheckboxOption("qol", "UI", "hide_ui_scrollers", "Hide chat and inventory handles too",
                                      &HideUIScrollHandlesCallback);
     }
 
@@ -621,16 +589,12 @@ class HideMyUI : public patch::BasePatch
                             ->GetEntityByName("GameMenu");
         if (pMenu)
         {
-            pMenu->GetEntityByName("ItemsParent")
-                ->GetEntityByName("InventoryGrab")
-                ->GetVar("alpha")
-                ->Set(alphaLevel);
+            pMenu->GetEntityByName("ItemsParent")->GetEntityByName("InventoryGrab")->GetVar("alpha")->Set(alphaLevel);
         }
         if (real::GetApp()->m_pEntityRoot->GetEntityByName("ConsoleLogParent"))
         {
-            Entity* ConsoleGrab = real::GetApp()
-                                      ->m_pEntityRoot->GetEntityByName("ConsoleLogParent")
-                                      ->GetEntityByName("ConsoleGrab");
+            Entity* ConsoleGrab =
+                real::GetApp()->m_pEntityRoot->GetEntityByName("ConsoleLogParent")->GetEntityByName("ConsoleGrab");
             ConsoleGrab->RemoveComponentByName("Interpolate");
             ConsoleGrab->GetVar("alpha")->Set(alphaLevel);
         }
@@ -732,16 +696,12 @@ class HideMyUI : public patch::BasePatch
                 {
                     alphaLevel = 1.00f;
                     // Bring back the input sink for buttons.
-                    pMenu->GetEntityByName("MENU")->AddComponent(
-                        real::TouchHandlerComponent(operator new(0x120)));
-                    pMenu->GetEntityByName("CHAT")->AddComponent(
-                        real::TouchHandlerComponent(operator new(0x120)));
-                    pMenu->GetEntityByName("FRIENDS")->AddComponent(
-                        real::TouchHandlerComponent(operator new(0x120)));
+                    pMenu->GetEntityByName("MENU")->AddComponent(real::TouchHandlerComponent(operator new(0x120)));
+                    pMenu->GetEntityByName("CHAT")->AddComponent(real::TouchHandlerComponent(operator new(0x120)));
+                    pMenu->GetEntityByName("FRIENDS")->AddComponent(real::TouchHandlerComponent(operator new(0x120)));
                     if (pEventMenu)
                         pEventMenu->AddComponent(real::TouchHandlerComponent(operator new(0x120)));
-                    pMenu->GetEntityByName("GemTouch")
-                        ->AddComponent(real::TouchHandlerComponent(operator new(0x120)));
+                    pMenu->GetEntityByName("GemTouch")->AddComponent(real::TouchHandlerComponent(operator new(0x120)));
                 }
 
                 SetGameMenuOpacity(pMenu, alphaLevel);
@@ -769,8 +729,7 @@ class RemoveCheckboxPadding : public patch::BasePatch
         // Reverts the checkbox spacings back to how they were since 2013.
 
         auto& game = game::GameHarness::get();
-        auto addr = game.findMemoryPattern<uint8_t*>(
-            "E8 ? ? ? ? C7 00 03 00 00 00 F3 44 0F 11 40 10 F3 0F 11");
+        auto addr = game.findMemoryPattern<uint8_t*>("E8 ? ? ? ? C7 00 03 00 00 00 F3 44 0F 11 40 10 F3 0F 11");
         // They multiplied some values related to size2d at end of function here in V2.997+. By
         // patching out the 2 MOVSS instructions in CreateCheckbox, we essentially revert that
         // change.
@@ -803,8 +762,7 @@ class DaVinciFakeID : public patch::BasePatch
         // Cosmetic issue with this approach is that it shows as unequipped in inventory.
         auto& game = game::GameHarness::get();
         game.hookFunctionPatternDirect<AvatarDataGetSetAsUint16_t>(
-            pattern::AvatarDataGetSetAsUint16, AvatarDataGetSetAsUint16,
-            &real::AvatarDataGetSetAsUint16);
+            pattern::AvatarDataGetSetAsUint16, AvatarDataGetSetAsUint16, &real::AvatarDataGetSetAsUint16);
     }
 
     static void __fastcall AvatarDataGetSetAsUint16(void* this_, uint16_t* set)
@@ -838,9 +796,8 @@ class LegendaryWingsPatch : public patch::BasePatch
         // does not seem to break any other back items.
 
         auto& game = game::GameHarness::get();
-        auto addr =
-            game.findMemoryPattern<uint8_t*>("E9 ? ? ? ? 81 FE CE 24 00 00 75 0C 4D 8B A6 E8 00 00 "
-                                             "00 E9 ? ? ? ? 81 FE 9A 1E 00 00 74 08");
+        auto addr = game.findMemoryPattern<uint8_t*>("E9 ? ? ? ? 81 FE CE 24 00 00 75 0C 4D 8B A6 E8 00 00 "
+                                                     "00 E9 ? ? ? ? 81 FE 9A 1E 00 00 74 08");
         // E9 84 00 00 00 -> E9 DF 00 00 00, rel32 jump changed from 132 bytes to 223.
         utils::fillMemory(addr + 1, 1, 0xDF);
     }
@@ -874,11 +831,11 @@ class LightSourceOptimizer : public patch::BasePatch
 
         auto& game = game::GameHarness::get();
 
-        game.hookFunctionPatternDirect<WorldRendererDrawTiles_t>(
-            pattern::WorldRendererDrawTiles, WorldRendererDrawTiles, &real::WorldRendererDrawTiles);
+        game.hookFunctionPatternDirect<WorldRendererDrawTiles_t>(pattern::WorldRendererDrawTiles,
+                                                                 WorldRendererDrawTiles, &real::WorldRendererDrawTiles);
 
-        real::WorldRendererTileLineOfSight = game.findMemoryPattern<WorldRendererTileLineOfSight_t>(
-            pattern::WorldRendererTileLineOfSight);
+        real::WorldRendererTileLineOfSight =
+            game.findMemoryPattern<WorldRendererTileLineOfSight_t>(pattern::WorldRendererTileLineOfSight);
 
         Variant* pVariant = real::GetApp()->GetVar("osgt_qol_lightopt_rad");
         if (pVariant->GetType() != Variant::TYPE_FLOAT)
@@ -893,11 +850,10 @@ class LightSourceOptimizer : public patch::BasePatch
             g_bLightSourcesOptimized = pVariant->GetUINT32() == 1;
 
         auto& optionsMgr = game::OptionsManager::get();
-        optionsMgr.addCheckboxOption("qol", "Performance", "osgt_qol_lightopt_enabled",
-                                     "Optimize Light Emitters", &LightOptimizerToggle);
-        optionsMgr.addSliderOption("qol", "Performance", "osgt_qol_lightopt_rad",
-                                   "Light Emitter Strength", &LightOptimizerSlider,
-                                   "`5(See more at expense of fps)``");
+        optionsMgr.addCheckboxOption("qol", "Performance", "osgt_qol_lightopt_enabled", "Optimize Light Emitters",
+                                     &LightOptimizerToggle);
+        optionsMgr.addSliderOption("qol", "Performance", "osgt_qol_lightopt_rad", "Light Emitter Strength",
+                                   &LightOptimizerSlider, "`5(See more at expense of fps)``");
     }
 
     static void LightOptimizerSlider(Variant* pVariant)
@@ -993,8 +949,7 @@ class LightSourceOptimizer : public patch::BasePatch
                             if (target->m_lightLevel > 0.0f)
                             {
                                 float rayPower;
-                                if (real::WorldRendererTileLineOfSight(this_, tile, target,
-                                                                       lightStrength, &rayPower))
+                                if (real::WorldRendererTileLineOfSight(this_, tile, target, lightStrength, &rayPower))
                                 {
                                     // Game resets tile->m_lightLevel across the board on each
                                     // render cycle, so we don't need to worry about perma-stuck
@@ -1027,8 +982,7 @@ class BetterLogGrabDPI : public patch::BasePatch
         // demographic of this mod is going to be mouse & keyboard users, we can afford to make the
         // DPI a bit more sensible.
         // This mod also adds 4K scaling to grab handles.
-        g_devicePixelsPerInch =
-            utils::resolveMovCall<int*>((uint8_t*)real::GetDevicePixelsPerInchDiagonal + 6);
+        g_devicePixelsPerInch = utils::resolveMovCall<int*>((uint8_t*)real::GetDevicePixelsPerInchDiagonal + 6);
 
         auto& game = game::GameHarness::get();
         real::SetGrabBarSize = game.findMemoryPattern<SetGrabBarSize_t>(pattern::SetGrabBarSize);
@@ -1042,8 +996,7 @@ class BetterLogGrabDPI : public patch::BasePatch
 
         auto& optionsMgr = game::OptionsManager::get();
         optionsMgr.addCheckboxOption("qol", "UI", "osgt_qol_loggrab_dpi",
-                                     "Use DPI scales more fit for desktop use on high resolutions",
-                                     &DPIScaleToggle);
+                                     "Use DPI scales more fit for desktop use on high resolutions", &DPIScaleToggle);
     }
 
     static void DPIScaleToggle(VariantList* pVariant)
@@ -1058,8 +1011,7 @@ class BetterLogGrabDPI : public patch::BasePatch
         if (bChecked)
             postInitVideo();
 
-        Entity* pConsoleLogParent =
-            real::GetApp()->m_pEntityRoot->GetEntityByName("ConsoleLogParent");
+        Entity* pConsoleLogParent = real::GetApp()->m_pEntityRoot->GetEntityByName("ConsoleLogParent");
         if (pConsoleLogParent)
         {
             Entity* pConsoleGrab = pConsoleLogParent->GetEntityByName("ConsoleGrab");
@@ -1161,15 +1113,14 @@ class LiveGUIRebuilder : public patch::BasePatch
             "01 48 8B 88 48 0F 00 00 E8 ? ? ? ? 48 8D ? ? ? ? ? E8 ? ? ? ? EB 3D");
         utils::nopMemory(addr, 69);
 
-        game.hookFunctionPatternDirect<CreateOptionsMenu_t>(
-            pattern::CreateOptionsMenu, CreateOptionsMenu, &real::CreateOptionsMenu);
+        game.hookFunctionPatternDirect<CreateOptionsMenu_t>(pattern::CreateOptionsMenu, CreateOptionsMenu,
+                                                            &real::CreateOptionsMenu);
         real::InitLog = game.findMemoryPattern<InitLog_t>(pattern::InitLog);
         real::KillGameMenu = game.findMemoryPattern<KillGameMenu_t>(pattern::KillGameMenu);
         real::GameMenuCreate = game.findMemoryPattern<GameMenuCreate_t>(pattern::GameMenuCreate);
 
         game.hookFunctionPatternDirect<OnPressingBackDuringGameplay_t>(
-            pattern::OnPressingBackDuringGameplay, OnPressingBackDuringGameplay,
-            &real::OnPressingBackDuringGameplay);
+            pattern::OnPressingBackDuringGameplay, OnPressingBackDuringGameplay, &real::OnPressingBackDuringGameplay);
     }
 
     static void __fastcall OnPressingBackDuringGameplay()
@@ -1196,8 +1147,7 @@ class LiveGUIRebuilder : public patch::BasePatch
                     real::KillGameMenu(false);
                     real::InitLog();
                     Entity* pWGUI =
-                        real::GetApp()->m_pEntityRoot->GetEntityByName("GUI")->GetEntityByName(
-                            "WorldSpecificGUI");
+                        real::GetApp()->m_pEntityRoot->GetEntityByName("GUI")->GetEntityByName("WorldSpecificGUI");
                     Entity* pGameMenu = pWGUI->GetEntityByName("GameMenu");
                     pWGUI->RemoveEntityByAddress(pGameMenu);
                     real::GameMenuCreate(pWGUI);
@@ -1258,13 +1208,12 @@ class AnchorCameraToPlayerPatch : public patch::BasePatch
         utils::nopMemory(p, 80);
 
         // WorldCamera::OnUpdate hook for toggling between the anchoring.
-        game.hookFunctionPatternDirect<WorldCameraOnUpdate_t>(
-            pattern::WorldCameraOnUpdate, WorldCameraOnUpdate, &real::WorldCameraOnUpdate);
+        game.hookFunctionPatternDirect<WorldCameraOnUpdate_t>(pattern::WorldCameraOnUpdate, WorldCameraOnUpdate,
+                                                              &real::WorldCameraOnUpdate);
         // WorldCamera::GetCamWorldPos for clamping weathers separately while using anchored view,
         // prevents glitched out weathers.
         game.hookFunctionPatternDirect<WorldCameraGetCamWorldPos_t>(
-            pattern::WorldCameraGetCamWorldPos, WorldCameraGetCamWorldPos,
-            &real::WorldCameraGetCamWorldPos);
+            pattern::WorldCameraGetCamWorldPos, WorldCameraGetCamWorldPos, &real::WorldCameraGetCamWorldPos);
 
         // These will default to 0 on new vars.
         m_centerCameraOnPlayer = real::GetApp()->GetVar("osgt_qol_camera_clamp")->GetUINT32();
@@ -1274,11 +1223,9 @@ class AnchorCameraToPlayerPatch : public patch::BasePatch
         // in UI and Input respectively.
         auto& optionsMgr = game::OptionsManager::get();
         optionsMgr.addCheckboxOption("qol", "UI", "osgt_qol_camera_clamp",
-                                     "Always center camera on player (shows out of bounds)",
-                                     &OnClampCallback);
+                                     "Always center camera on player (shows out of bounds)", &OnClampCallback);
         optionsMgr.addCheckboxOption("qol", "Input", "osgt_qol_quick_clamp",
-                                     "Toggle centered camera with Ctrl+C hotkey",
-                                     &OnHotkeyCallback);
+                                     "Toggle centered camera with Ctrl+C hotkey", &OnHotkeyCallback);
 
         // Subscribe to events for hotkeys and renderer access
         auto& events = game::EventsAPI::get();
@@ -1310,8 +1257,7 @@ class AnchorCameraToPlayerPatch : public patch::BasePatch
     // Helper functions for amount of pixels drawn out of world bounds
     static float getClampedRightBorder(WorldCamera& pCamera, float& clampX)
     {
-        return pCamera.m_vScreenSize.x -
-               ((pCamera.m_vCamWorldPosUpperLeft.x - clampX) * pCamera.m_vScale.x);
+        return pCamera.m_vScreenSize.x - ((pCamera.m_vCamWorldPosUpperLeft.x - clampX) * pCamera.m_vScale.x);
     }
     static float getClampedLeftBorder(WorldCamera& pCamera)
     {
@@ -1323,8 +1269,7 @@ class AnchorCameraToPlayerPatch : public patch::BasePatch
     }
     static float getClampedBottomBorder(WorldCamera& pCamera, float& clampY)
     {
-        return pCamera.m_vScreenSize.y -
-               ((pCamera.m_vCamWorldPosUpperLeft.y - clampY) * pCamera.m_vScale.y);
+        return pCamera.m_vScreenSize.y - ((pCamera.m_vCamWorldPosUpperLeft.y - clampY) * pCamera.m_vScale.y);
     }
 
     // Camera & render tweaks
@@ -1423,15 +1368,13 @@ class AnchorCameraToPlayerPatch : public patch::BasePatch
             // apart when both sides are visible.
             if (res->x != 0.0f)
             {
-                float clampX =
-                    (float)pTileMap->m_sizeX * 32.0f - this_->m_vWorldSizeViewableInScreen.x;
+                float clampX = (float)pTileMap->m_sizeX * 32.0f - this_->m_vWorldSizeViewableInScreen.x;
                 if (clampX < this_->m_vCamWorldPosUpperLeft.x)
                     res->x = clampX;
             }
             if (res->y != 0.0f)
             {
-                float clampY =
-                    (float)pTileMap->m_sizeY * 32.0f - this_->m_vWorldSizeViewableInScreen.y;
+                float clampY = (float)pTileMap->m_sizeY * 32.0f - this_->m_vWorldSizeViewableInScreen.y;
                 if (clampY < this_->m_vCamWorldPosUpperLeft.y)
                     res->y = clampY;
             }
@@ -1439,8 +1382,7 @@ class AnchorCameraToPlayerPatch : public patch::BasePatch
         return res;
     }
 
-    static void __fastcall WorldCameraOnUpdate(WorldCamera* this_, CL_Vec2f* screenSize,
-                                               CL_Vec2f* zoom)
+    static void __fastcall WorldCameraOnUpdate(WorldCamera* this_, CL_Vec2f* screenSize, CL_Vec2f* zoom)
     {
         real::WorldCameraOnUpdate(this_, screenSize, zoom);
         if (!m_centerCameraOnPlayer)
@@ -1501,8 +1443,7 @@ class SheetMusicAudioRenderSync : public patch::BasePatch
     {
         auto& game = game::GameHarness::get();
         game.hookFunctionPatternDirect<WorldRendererAdvanceSong_t>(
-            pattern::WorldRendererAdvanceSong, WorldRendererAdvanceSong,
-            &real::WorldRendererAdvanceSong);
+            pattern::WorldRendererAdvanceSong, WorldRendererAdvanceSong, &real::WorldRendererAdvanceSong);
 
         auto& events = game::EventsAPI::get();
         events.m_sig_onMapLoaded.connect(&OnMapLoaded);
@@ -1582,27 +1523,23 @@ class HotbarExpanded : public patch::BasePatch
         auto& game = game::GameHarness::get();
         // Hooks
         game.hookFunctionPatternDirect<PlayerItemsFillBlankQuickToolSlotsWithStuff_t>(
-            pattern::PlayerItemsFillBlankQuickToolSlotsWithStuff,
-            PlayerItemsFillBlankQuickToolSlotsWithStuff,
+            pattern::PlayerItemsFillBlankQuickToolSlotsWithStuff, PlayerItemsFillBlankQuickToolSlotsWithStuff,
             &real::PlayerItemsFillBlankQuickToolSlotsWithStuff);
-        game.hookFunctionPatternDirect<PlayerItemsRemoveFromQuickSlots_t>(
-            pattern::PlayerItemsRemoveFromQuickSlots, PlayerItemsRemoveFromQuickSlots,
-            &real::PlayerItemsRemoveFromQuickSlots);
+        game.hookFunctionPatternDirect<PlayerItemsRemoveFromQuickSlots_t>(pattern::PlayerItemsRemoveFromQuickSlots,
+                                                                          PlayerItemsRemoveFromQuickSlots,
+                                                                          &real::PlayerItemsRemoveFromQuickSlots);
         game.hookFunctionPatternDirect<PlayerItemsUpdateQuickSlotsWithUsedItem_t>(
-            pattern::PlayerItemsUpdateQuickSlotsWithUsedItem,
-            PlayerItemsUpdateQuickSlotsWithUsedItem,
+            pattern::PlayerItemsUpdateQuickSlotsWithUsedItem, PlayerItemsUpdateQuickSlotsWithUsedItem,
             &real::PlayerItemsUpdateQuickSlotsWithUsedItem);
         game.hookFunctionPatternCall<PlayerItemsSetQuickSlotItem_t>(
-            pattern::PlayerItemsSetQuickSlotItem, PlayerItemsSetQuickSlotItem,
-            &real::PlayerItemsSetQuickSlotItem);
+            pattern::PlayerItemsSetQuickSlotItem, PlayerItemsSetQuickSlotItem, &real::PlayerItemsSetQuickSlotItem);
         game.hookFunctionPatternDirect<GameLogicComponentGetQuickToolInSlot_t>(
             pattern::GameLogicComponentGetQuickToolInSlot, GameLogicComponentGetQuickToolInSlot,
             &real::GameLogicComponentGetQuickToolInSlot);
         game.hookFunctionPatternDirect<UpdateTouchControlPositions_t>(
-            pattern::UpdateTouchControlPositions, UpdateTouchControlPositions,
-            &real::UpdateTouchControlPositions);
-        game.hookFunctionPatternDirect<InventoryMenuCreate_t>(
-            pattern::InventoryMenuCreate, InventoryMenuCreate, &real::InventoryMenuCreate);
+            pattern::UpdateTouchControlPositions, UpdateTouchControlPositions, &real::UpdateTouchControlPositions);
+        game.hookFunctionPatternDirect<InventoryMenuCreate_t>(pattern::InventoryMenuCreate, InventoryMenuCreate,
+                                                              &real::InventoryMenuCreate);
 
         // Function resolves
         real::AddTool = game.findMemoryPattern<AddTool_t>(pattern::AddTool);
@@ -1618,8 +1555,8 @@ class HotbarExpanded : public patch::BasePatch
         m_optionNames.push_back("4 total slots (vanilla)");
         for (int i = 5; i <= 10; i++)
             m_optionNames.push_back(std::to_string(i) + " total slots");
-        optionsMgr.addMultiChoiceOption("qol", "UI", "osgt_qol_hotbar_size", "Hotbar slots",
-                                        m_optionNames, &OnInventoryResize, 80.0f);
+        optionsMgr.addMultiChoiceOption("qol", "UI", "osgt_qol_hotbar_size", "Hotbar slots", m_optionNames,
+                                        &OnInventoryResize, 80.0f);
     }
 
     // Option callbacks
@@ -1653,8 +1590,7 @@ class HotbarExpanded : public patch::BasePatch
         // Also restore touch paddings if we've removed all extra slots
         if (m_extraSlots == 0)
         {
-            Entity* pGameMenu =
-                real::GetApp()->m_pEntityRoot->GetEntityByNameRecursively("GameMenu");
+            Entity* pGameMenu = real::GetApp()->m_pEntityRoot->GetEntityByNameRecursively("GameMenu");
             if (!pGameMenu)
                 return;
             Entity* pTouchEnt = pGameMenu->GetEntityByName("TouchControlsBG");
@@ -1701,8 +1637,7 @@ class HotbarExpanded : public patch::BasePatch
         real::PlayerItemsRemoveFromQuickSlots(pPlayerItems, itemID);
     }
 
-    static void __fastcall PlayerItemsUpdateQuickSlotsWithUsedItem(PlayerItems* pPlayerItems,
-                                                                   int itemID)
+    static void __fastcall PlayerItemsUpdateQuickSlotsWithUsedItem(PlayerItems* pPlayerItems, int itemID)
     {
         if (m_extraSlots == 0)
         {
@@ -1782,8 +1717,7 @@ class HotbarExpanded : public patch::BasePatch
             m_extendedSlots[slot - 4] = itemID;
     }
 
-    static int __fastcall GameLogicComponentGetQuickToolInSlot(GameLogicComponent* pGameLogic,
-                                                               int slot)
+    static int __fastcall GameLogicComponentGetQuickToolInSlot(GameLogicComponent* pGameLogic, int slot)
     {
         if (slot < 4)
             return real::GameLogicComponentGetQuickToolInSlot(pGameLogic, slot);
@@ -1896,8 +1830,7 @@ class HotbarExpanded : public patch::BasePatch
             fixTouchButtonAlignment(pPunchButton, fNewY);
 
             // Position the arrows to be more centered with jump/punch ones.
-            fNewY = vItemsParentPos.y - vArrowButtonSize.y -
-                    ((vJumpButtonSize.y - vArrowButtonSize.y) / 2) - fMarginY;
+            fNewY = vItemsParentPos.y - vArrowButtonSize.y - ((vJumpButtonSize.y - vArrowButtonSize.y) / 2) - fMarginY;
             if (fNewY > screenRect.bottom)
                 fNewY = screenRect.bottom;
 
@@ -1928,8 +1861,7 @@ class HotbarExpanded : public patch::BasePatch
         Entity* pTool1 = pToolMenu->GetEntityByName("Tool1");
         CL_Vec2f vToolSize = pTool0->GetVar("size2d")->GetVector2();
         float fWidthMargin =
-            (pTool1->GetVar("pos2d")->GetVector2() - pTool0->GetVar("pos2d")->GetVector2()).x -
-            vToolSize.x;
+            (pTool1->GetVar("pos2d")->GetVector2() - pTool0->GetVar("pos2d")->GetVector2()).x - vToolSize.x;
         return fWidthMargin + vToolSize.x;
     }
 
@@ -1961,8 +1893,7 @@ class HotbarExpanded : public patch::BasePatch
 
     static void updateQuickToolsForNewSize(int iToolsToAdd)
     {
-        Entity* pToolMenu =
-            real::GetApp()->m_pEntityRoot->GetEntityByNameRecursively("ToolSelectMenu");
+        Entity* pToolMenu = real::GetApp()->m_pEntityRoot->GetEntityByNameRecursively("ToolSelectMenu");
         if (!pToolMenu)
             return;
         float fAddedWidth = calculateAddedWidthPerTool(pToolMenu);
@@ -2006,8 +1937,7 @@ class HotbarExpanded : public patch::BasePatch
             for (int i = iCurrentTools; i < iToolsToAdd + 4; i++)
                 real::AddTool(i, pToolMenu);
             // We will need to re-populate the slots as well
-            PlayerItemsFillBlankQuickToolSlotsWithStuff(
-                &real::GetApp()->GetGameLogic()->m_playerItems);
+            PlayerItemsFillBlankQuickToolSlotsWithStuff(&real::GetApp()->GetGameLogic()->m_playerItems);
         }
     }
 
@@ -2021,13 +1951,12 @@ short HotbarExpanded::m_extraSlots = 0;
 std::vector<std::string> HotbarExpanded::m_optionNames;
 REGISTER_USER_GAME_PATCH(HotbarExpanded, hotbar_expanded);
 
-static int gmsfNoteIDs[34] = {0,    420,   422,   424,   414,   416,   418,  426,  412,
-                              4634, 4636,  4638,  4640,  4642,  4192,  5726, 5728, 5730,
-                              5370, 6030,  6032,  6034,  6808,  6810,  6812, 7218, 7220,
-                              7222, 10528, 10530, 10532, 10828, 10830, 10832};
-static std::vector<std::string> g_overlayAggressivenessNames = {
-    "Least obtrusive", "Overlay paint/spatula icons", "Overlay icons & what to break",
-    "Overlay icons & mismatched tiles"};
+static int gmsfNoteIDs[34] = {0,    420,  422,  424,  414,   416,   418,   426,   412,   4634, 4636, 4638,
+                              4640, 4642, 4192, 5726, 5728,  5730,  5370,  6030,  6032,  6034, 6808, 6810,
+                              6812, 7218, 7220, 7222, 10528, 10530, 10532, 10828, 10830, 10832};
+static std::vector<std::string> g_overlayAggressivenessNames = {"Least obtrusive", "Overlay paint/spatula icons",
+                                                                "Overlay icons & what to break",
+                                                                "Overlay icons & mismatched tiles"};
 class Buildomatica : public patch::BasePatch
 {
     void apply() const override
@@ -2045,31 +1974,28 @@ class Buildomatica : public patch::BasePatch
 
         auto& game = game::GameHarness::get();
         // Hooks
-        game.hookFunctionPatternDirect<WorldRendererDrawWorldBackground_t>(
-            pattern::WorldRendererDrawWorldBackground, WorldRendererDrawWorldBackground,
-            &real::WorldRendererDrawWorldBackground);
-        game.hookFunctionPatternDirect<WorldRendererDrawBackgroundTiles_t>(
-            pattern::WorldRendererDrawBackgroundTiles, WorldRendererDrawBackgroundTiles,
-            &real::WorldRendererDrawBackgroundTiles);
-        game.hookFunctionPatternDirect<WorldRendererDrawWater_t>(
-            pattern::WorldRendererDrawWater, WorldRendererDrawWater, &real::WorldRendererDrawWater);
+        game.hookFunctionPatternDirect<WorldRendererDrawWorldBackground_t>(pattern::WorldRendererDrawWorldBackground,
+                                                                           WorldRendererDrawWorldBackground,
+                                                                           &real::WorldRendererDrawWorldBackground);
+        game.hookFunctionPatternDirect<WorldRendererDrawBackgroundTiles_t>(pattern::WorldRendererDrawBackgroundTiles,
+                                                                           WorldRendererDrawBackgroundTiles,
+                                                                           &real::WorldRendererDrawBackgroundTiles);
+        game.hookFunctionPatternDirect<WorldRendererDrawWater_t>(pattern::WorldRendererDrawWater,
+                                                                 WorldRendererDrawWater, &real::WorldRendererDrawWater);
         game.hookFunctionPatternDirect<WorldTileMapChooseVisual_SmartEdge_t>(
             pattern::WorldTileMapChooseVisual_SmartEdge, WorldTileMapChooseVisual_SmartEdge,
             &real::WorldTileMapChooseVisual_SmartEdge);
-        game.hookFunctionPatternDirect<WorldTileMapGetTileSafe_t>(pattern::WorldTileMapGetTileSafe,
-                                                                  WorldTileMapGetTileSafe,
-                                                                  &real::WorldTileMapGetTileSafe);
+        game.hookFunctionPatternDirect<WorldTileMapGetTileSafe_t>(
+            pattern::WorldTileMapGetTileSafe, WorldTileMapGetTileSafe, &real::WorldTileMapGetTileSafe);
         real::WorldTileMapChooseVisual =
             game.findMemoryPattern<WorldTileMapChooseVisual_t>(pattern::WorldTileMapChooseVisual);
         real::WorldTileMapChooseVisual_Flag =
-            game.findMemoryPattern<WorldTileMapChooseVisual_Flag_t>(
-                pattern::WorldTileMapChooseVisual_Flag);
+            game.findMemoryPattern<WorldTileMapChooseVisual_Flag_t>(pattern::WorldTileMapChooseVisual_Flag);
 
         real::DrawTile = game.findMemoryPattern<DrawTile_t>(pattern::DrawTile);
         real::WorldToScreen = game.findMemoryPattern<WorldToScreen_t>(pattern::WorldToScreen);
 
-        real::g_fireBatcher =
-            utils::resolveLeaCall<void*>(game.findMemoryPattern<uint8_t*>(pattern::g_fireBatcher));
+        real::g_fireBatcher = utils::resolveLeaCall<void*>(game.findMemoryPattern<uint8_t*>(pattern::g_fireBatcher));
 
         // We will reset our fake tilemap on map load
         auto& events = game::EventsAPI::get();
@@ -2094,10 +2020,8 @@ class Buildomatica : public patch::BasePatch
 
         auto& optionsMgr = game::OptionsManager::get();
         optionsMgr.addCheckboxOption("qol", "Buildomatica", "osgt_qol_buildomatica_toggle",
-                                     "Render schematic if one exists for this world",
-                                     &OnBuildomaticaToggle);
-        optionsMgr.addMultiChoiceOption("qol", "Buildomatica",
-                                        "osgt_qol_buildomatica_overlay_obtrusiveness",
+                                     "Render schematic if one exists for this world", &OnBuildomaticaToggle);
+        optionsMgr.addMultiChoiceOption("qol", "Buildomatica", "osgt_qol_buildomatica_overlay_obtrusiveness",
                                         "Overlay Obtrusiveness", g_overlayAggressivenessNames,
                                         &OnBuildomaticaOverlayObtrusivity, 80.0f);
     }
@@ -2171,18 +2095,16 @@ class Buildomatica : public patch::BasePatch
             {
                 if (StatusCode != 1)
                 {
-                    real::LogToConsole(
-                        std::string("`![Buildomatica]`` Failed to load schematic - error code: 0-" +
-                                    std::to_string(StatusCode))
-                            .c_str());
+                    real::LogToConsole(std::string("`![Buildomatica]`` Failed to load schematic - error code: 0-" +
+                                                   std::to_string(StatusCode))
+                                           .c_str());
                     return;
                 }
                 StatusCode = LoadFromCernPlannerFile("schematics/" + m_name + ".gtworld");
                 if (StatusCode > 2)
-                    real::LogToConsole(
-                        std::string("`![Buildomatica]`` Failed to load schematic - error code: 1-" +
-                                    std::to_string(StatusCode))
-                            .c_str());
+                    real::LogToConsole(std::string("`![Buildomatica]`` Failed to load schematic - error code: 1-" +
+                                                   std::to_string(StatusCode))
+                                           .c_str());
             }
             if (StatusCode == 0)
                 real::LogToConsole("`![Buildomatica]`` Loaded in schematic overlay.");
@@ -2191,10 +2113,9 @@ class Buildomatica : public patch::BasePatch
             if (MusicStatusCode == 0)
                 real::LogToConsole("`![Buildomatica]`` Loaded in schematic overlay for music.");
             else if (MusicStatusCode != 1)
-                real::LogToConsole(
-                    std::string("`![Buildomatica]`` Failed to load music schematic - error code: " +
-                                std::to_string(MusicStatusCode))
-                        .c_str());
+                real::LogToConsole(std::string("`![Buildomatica]`` Failed to load music schematic - error code: " +
+                                               std::to_string(MusicStatusCode))
+                                       .c_str());
 
             if (StatusCode != 0 && MusicStatusCode != 0)
                 return;
@@ -2233,12 +2154,10 @@ class Buildomatica : public patch::BasePatch
     {
         m_cameraTiles.clear();
         WorldRenderer* pRender = (WorldRenderer*)real::GetApp()->GetGameLogic()->m_pWorldRenderer;
-        Rectf m_viewableRect = {pRender->m_camera.m_vCamWorldPosUpperLeft.x - 32.f,
-                                pRender->m_camera.m_vCamWorldPosUpperLeft.y - 32.f,
-                                pRender->m_camera.m_vWorldSizeViewableInScreen.x +
-                                    pRender->m_camera.m_vCamWorldPosUpperLeft.x + 32.f,
-                                pRender->m_camera.m_vWorldSizeViewableInScreen.y +
-                                    pRender->m_camera.m_vCamWorldPosUpperLeft.y + 32.f};
+        Rectf m_viewableRect = {
+            pRender->m_camera.m_vCamWorldPosUpperLeft.x - 32.f, pRender->m_camera.m_vCamWorldPosUpperLeft.y - 32.f,
+            pRender->m_camera.m_vWorldSizeViewableInScreen.x + pRender->m_camera.m_vCamWorldPosUpperLeft.x + 32.f,
+            pRender->m_camera.m_vWorldSizeViewableInScreen.y + pRender->m_camera.m_vCamWorldPosUpperLeft.y + 32.f};
 
         // This will reserve either the exact amount or slightly higher amount for vec.
         int x = (int)((m_viewableRect.right - m_viewableRect.left) / 32.0f);
@@ -2246,10 +2165,8 @@ class Buildomatica : public patch::BasePatch
         m_cameraTiles.reserve(x * y);
         for (auto& t : m_fakeTilemap.m_tiles)
         {
-            if (t.m_worldRect.left >= m_viewableRect.left &&
-                t.m_worldRect.right <= m_viewableRect.right &&
-                t.m_worldRect.top >= m_viewableRect.top &&
-                t.m_worldRect.bottom <= m_viewableRect.bottom)
+            if (t.m_worldRect.left >= m_viewableRect.left && t.m_worldRect.right <= m_viewableRect.right &&
+                t.m_worldRect.top >= m_viewableRect.top && t.m_worldRect.bottom <= m_viewableRect.bottom)
                 m_cameraTiles.push_back(&t);
         }
     }
@@ -2291,16 +2208,15 @@ class Buildomatica : public patch::BasePatch
 
     static int GetMuxedColorForTile(WorldRenderer* pRenderer, Tile* pTile, bool bFG)
     {
-        ItemInfo* pItemInfo = real::GetApp()->GetItemInfoManager()->GetItemByIDSafe(
-            bFG ? pTile->m_itemID : pTile->m_itemBGID);
+        ItemInfo* pItemInfo =
+            real::GetApp()->GetItemInfoManager()->GetItemByIDSafe(bFG ? pTile->m_itemID : pTile->m_itemBGID);
         bool bPainted = pTile->currentColor != 0xe8ffb0aa;
         if (pItemInfo->m_visualEffect == 25)
         {
             // VISUAL_EFFECT_RAINBOW_SHIFT
             // (Shifty Blocks)
             int r, g, b = 0;
-            float Hue =
-                (float)(pTile->x + (pTile->x * 4) + pRenderer->m_rainbowCycle + (pTile->y << 3));
+            float Hue = (float)(pTile->x + (pTile->x * 4) + pRenderer->m_rainbowCycle + (pTile->y << 3));
             while (360.f <= Hue)
                 Hue -= 360.f;
             HSVToRGB(Hue, 1.0, 1.0, &r, &g, &b);
@@ -2311,8 +2227,7 @@ class Buildomatica : public patch::BasePatch
             // VISUAL_EFFECT_DISCOLOR
             // (Copper Plumbing)
             if (!(pItemInfo->m_itemID & 1))
-                pItemInfo =
-                    real::GetApp()->GetItemInfoManager()->GetItemByIDSafe(pItemInfo->m_itemID + 1);
+                pItemInfo = real::GetApp()->GetItemInfoManager()->GetItemByIDSafe(pItemInfo->m_itemID + 1);
             return ColorCombine(pItemInfo->m_growInfo.m_overlayColor, 0xe8ffb0aa, 0.66f);
         }
         return pTile->currentColor;
@@ -2322,8 +2237,7 @@ class Buildomatica : public patch::BasePatch
     static int WorldTileMapChooseVisual_SmartEdge(WorldTileMap* pTilemap, Tile* p2, int p3)
     {
         // Used for steam block borders
-        return real::WorldTileMapChooseVisual_SmartEdge(
-            m_bDrawingHologram ? &m_fakeTilemap : pTilemap, p2, p3);
+        return real::WorldTileMapChooseVisual_SmartEdge(m_bDrawingHologram ? &m_fakeTilemap : pTilemap, p2, p3);
     }
 
     static Tile* WorldTileMapGetTileSafe(WorldTileMap* pTilemap, int x, int y)
@@ -2357,13 +2271,12 @@ class Buildomatica : public patch::BasePatch
             CL_Vec2f tilePos(t->x * 32.f, t->y * 32.f);
             real::WorldToScreen(&this_->m_camera, &camera, &tilePos);
             if (t->m_itemBGID != 0)
-                real::DrawTile(this_, t->m_itemBGID, t->m_visualBG, &camera,
-                               GetMuxedColorForTile(this_, t, false), t, 1, 0);
+                real::DrawTile(this_, t->m_itemBGID, t->m_visualBG, &camera, GetMuxedColorForTile(this_, t, false), t,
+                               1, 0);
         }
     }
 
-    static void __fastcall WorldRendererDrawBackgroundTiles(WorldRenderer* this_,
-                                                            std::vector<Tile*>* tiles)
+    static void __fastcall WorldRendererDrawBackgroundTiles(WorldRenderer* this_, std::vector<Tile*>* tiles)
     {
         real::WorldRendererDrawBackgroundTiles(this_, tiles);
         if (!m_bModEnabled || m_bDrawNotesOnly)
@@ -2387,22 +2300,21 @@ class Buildomatica : public patch::BasePatch
             // it, but converter tools may leave residue.
             if (t->m_itemID != 0 && !(t->m_itemID & 1))
             {
-                ItemInfo* pInfo =
-                    real::GetApp()->GetItemInfoManager()->GetItemByIDSafe(t->m_itemID);
+                ItemInfo* pInfo = real::GetApp()->GetItemInfoManager()->GetItemByIDSafe(t->m_itemID);
                 if (pInfo->m_flags & 0x40)
                 {
                     // Hack in workaround for NOSHADOW. Game expects alpha 0xFF, but that kinda
                     // ruins the overlay. One could nop out DrawTile+0x368 to avoid doing this, but
                     // it has unknown consequences.
                     pInfo->m_flags &= ~0x40;
-                    real::DrawTile(this_, t->m_itemID, t->m_visual, &camera,
-                                   GetMuxedColorForTile(this_, t, true), t, 0, 0);
+                    real::DrawTile(this_, t->m_itemID, t->m_visual, &camera, GetMuxedColorForTile(this_, t, true), t, 0,
+                                   0);
                     pInfo->m_flags |= 0x40;
                 }
                 else
                 {
-                    real::DrawTile(this_, t->m_itemID, t->m_visual, &camera,
-                                   GetMuxedColorForTile(this_, t, true), t, 0, 0);
+                    real::DrawTile(this_, t->m_itemID, t->m_visual, &camera, GetMuxedColorForTile(this_, t, true), t, 0,
+                                   0);
                 }
             }
         }
@@ -2433,33 +2345,30 @@ class Buildomatica : public patch::BasePatch
             {
                 int visual = real::WorldTileMapChooseVisual_Flag(&m_fakeTilemap, t->x, t->y, 0x400);
                 this_->m_waterImg->BlitScaledAnim(tilePos.x, tilePos.y, visual % 8, visual >> 3,
-                                                  &this_->m_camera.m_vScale, 0, 0xE8FFB050, 0,
-                                                  rotation, false, false, real::g_globalBatcher);
+                                                  &this_->m_camera.m_vScale, 0, 0xE8FFB050, 0, rotation, false, false,
+                                                  real::g_globalBatcher);
             }
             else if (m_pRef->m_flags & TILE_PROPERTY_WATER)
             {
                 // Tint it purplish red by using green water as base surface and tinting it red.
-                int visual = real::WorldTileMapChooseVisual_Flag(&this_->m_pWorld->m_tiles, t->x,
-                                                                 t->y, 0x400);
-                this_->m_greenWaterImg->BlitScaledAnim(
-                    tilePos.x, tilePos.y, visual % 8, visual >> 3, &this_->m_camera.m_vScale, 0,
-                    0xFF90, 0, rotation, false, false, real::g_globalBatcher);
+                int visual = real::WorldTileMapChooseVisual_Flag(&this_->m_pWorld->m_tiles, t->x, t->y, 0x400);
+                this_->m_greenWaterImg->BlitScaledAnim(tilePos.x, tilePos.y, visual % 8, visual >> 3,
+                                                       &this_->m_camera.m_vScale, 0, 0xFF90, 0, rotation, false, false,
+                                                       real::g_globalBatcher);
             }
             else if (t->m_flags & TILE_PROPERTY_FIRE)
             {
-                int visual =
-                    real::WorldTileMapChooseVisual_Flag(&m_fakeTilemap, t->x, t->y, 0x1000);
+                int visual = real::WorldTileMapChooseVisual_Flag(&m_fakeTilemap, t->x, t->y, 0x1000);
                 this_->m_fireImg->BlitScaledAnim(tilePos.x, tilePos.y, visual % 8, visual >> 3,
-                                                 &this_->m_camera.m_vScale, 0, 0xE8FFB0A0, 0,
-                                                 rotation, false, false, real::g_fireBatcher);
+                                                 &this_->m_camera.m_vScale, 0, 0xE8FFB0A0, 0, rotation, false, false,
+                                                 real::g_fireBatcher);
             }
             else if (m_pRef->m_flags & TILE_PROPERTY_FIRE)
             {
-                int visual = real::WorldTileMapChooseVisual_Flag(&this_->m_pWorld->m_tiles, t->x,
-                                                                 t->y, 0x1000);
+                int visual = real::WorldTileMapChooseVisual_Flag(&this_->m_pWorld->m_tiles, t->x, t->y, 0x1000);
                 this_->m_fireImg->BlitScaledAnim(tilePos.x, tilePos.y, visual % 8, visual >> 3,
-                                                 &this_->m_camera.m_vScale, 0, 0xFFA0, 0, rotation,
-                                                 false, false, real::g_fireBatcher);
+                                                 &this_->m_camera.m_vScale, 0, 0xFFA0, 0, rotation, false, false,
+                                                 real::g_fireBatcher);
             }
         }
         real::RenderBatcherFlush(real::g_globalBatcher, 0, -1);
@@ -2488,16 +2397,13 @@ class Buildomatica : public patch::BasePatch
             // Blit an icon if some of the properties mismatch.
             if (bMatchingItem && !m_bDrawNotesOnly)
             {
-                ItemInfo* pItemInfo =
-                    real::GetApp()->GetItemInfoManager()->GetItemByIDSafe(t->m_itemID);
-                if ((pItemInfo->m_flags & 1) && (t->m_flags & TILE_PROPERTY_FACING_LEFT) !=
-                                                    (m_pRef->m_flags & TILE_PROPERTY_FACING_LEFT))
+                ItemInfo* pItemInfo = real::GetApp()->GetItemInfoManager()->GetItemByIDSafe(t->m_itemID);
+                if ((pItemInfo->m_flags & 1) &&
+                    (t->m_flags & TILE_PROPERTY_FACING_LEFT) != (m_pRef->m_flags & TILE_PROPERTY_FACING_LEFT))
                     overlayIcon = 2966; // Enchanted Spatula
-                else if ((t->m_flags & TILE_PROPERTY_GLUE) !=
-                         (m_pRef->m_flags & TILE_PROPERTY_GLUE))
+                else if ((t->m_flags & TILE_PROPERTY_GLUE) != (m_pRef->m_flags & TILE_PROPERTY_GLUE))
                     overlayIcon = 1866; // Block Glue
-                else if ((t->m_flags & TILE_PROPERTY_PAINT_BLACK) !=
-                         (m_pRef->m_flags & TILE_PROPERTY_PAINT_BLACK))
+                else if ((t->m_flags & TILE_PROPERTY_PAINT_BLACK) != (m_pRef->m_flags & TILE_PROPERTY_PAINT_BLACK))
                 {
                     // Overlay a paint bucket icon if we're mismatching a paint.
                     int Flags = t->m_flags & TILE_PROPERTY_PAINT_BLACK;
@@ -2524,12 +2430,11 @@ class Buildomatica : public patch::BasePatch
                 continue;
             CL_Vec2f tilePos(t->x * 32.f, t->y * 32.f);
             real::WorldToScreen(&this_->m_camera, &camera, &tilePos);
-            if (m_overlayObtrusiveness >= 2 && !bMatchingBG &&
-                (m_pRef->m_itemBGID != 0 || m_pRef->m_itemID != 0))
+            if (m_overlayObtrusiveness >= 2 && !bMatchingBG && (m_pRef->m_itemBGID != 0 || m_pRef->m_itemID != 0))
             {
                 // Draw a vaporizer ray if we've placed a matching FG tile, but BG is wrong.
-                if (m_overlayObtrusiveness >= 3 && t->m_itemBGID == 0 && bMatchingItem &&
-                    m_pRef->m_itemID != 0 && !m_bDrawNotesOnly)
+                if (m_overlayObtrusiveness >= 3 && t->m_itemBGID == 0 && bMatchingItem && m_pRef->m_itemID != 0 &&
+                    !m_bDrawNotesOnly)
                 {
                     overlayIcon = 3156;
                     iconTint = 0x3C3CFFAA;
@@ -2548,41 +2453,34 @@ class Buildomatica : public patch::BasePatch
                             // confusing.
                             if (m_pRef->m_itemBGID == 0)
                                 col = 0xFFFF80;
-                            real::DrawTile(this_, t->m_itemBGID, t->m_visualBG, &camera, col, t, 1,
-                                           0);
+                            real::DrawTile(this_, t->m_itemBGID, t->m_visualBG, &camera, col, t, 1, 0);
                         }
                     }
                     else if (t->m_itemBGID == 0 && m_pRef->m_itemID == 0 && !m_bDrawNotesOnly)
-                        real::DrawTile(this_, m_pRef->m_itemBGID, m_pRef->m_visualBG, &camera,
-                                       0xFF80, m_pRef, 1, 0);
+                        real::DrawTile(this_, m_pRef->m_itemBGID, m_pRef->m_visualBG, &camera, 0xFF80, m_pRef, 1, 0);
                 }
             }
-            if (m_overlayObtrusiveness >= 2 && !bMatchingItem && m_pRef->m_itemID != 0 &&
-                !(m_pRef->m_itemID & 1))
+            if (m_overlayObtrusiveness >= 2 && !bMatchingItem && m_pRef->m_itemID != 0 && !(m_pRef->m_itemID & 1))
             {
                 // Draw a red overlay on tiles we need to break and overlay intended tile ontop if
                 // there is one.
                 if (!m_bDrawNotesOnly || (m_bDrawNotesOnly && t->m_itemBGID != 0))
                 {
-                    real::DrawTile(this_, m_pRef->m_itemID, m_pRef->m_visual, &camera, 0xFF40,
-                                   m_pRef, 0, 0);
+                    real::DrawTile(this_, m_pRef->m_itemID, m_pRef->m_visual, &camera, 0xFF40, m_pRef, 0, 0);
                     if (t->m_itemID != 0)
                     {
                         m_bDrawingHologram = true;
-                        ItemInfo* pInfo =
-                            real::GetApp()->GetItemInfoManager()->GetItemByIDSafe(t->m_itemID);
+                        ItemInfo* pInfo = real::GetApp()->GetItemInfoManager()->GetItemByIDSafe(t->m_itemID);
                         if (pInfo->m_flags & 0x40)
                         {
                             // Hack in workaround for NOSHADOW here as well.
                             pInfo->m_flags &= ~0x40;
-                            real::DrawTile(this_, t->m_itemID, t->m_visual, &camera, 0xFF80, t, 0,
-                                           0);
+                            real::DrawTile(this_, t->m_itemID, t->m_visual, &camera, 0xFF80, t, 0, 0);
                             pInfo->m_flags |= 0x40;
                         }
                         else
                         {
-                            real::DrawTile(this_, t->m_itemID, t->m_visual, &camera, 0xFF80, t, 0,
-                                           0);
+                            real::DrawTile(this_, t->m_itemID, t->m_visual, &camera, 0xFF80, t, 0, 0);
                         }
                         m_bDrawingHologram = false;
                     }
@@ -2612,8 +2510,7 @@ class Buildomatica : public patch::BasePatch
             return 1;
         // Load the file in as a wstring, we need to decompress it using lzstring library and it
         // requires a wstring.
-        std::wstring m_saveData{std::istreambuf_iterator<char>(world),
-                                std::istreambuf_iterator<char>()};
+        std::wstring m_saveData{std::istreambuf_iterator<char>(world), std::istreambuf_iterator<char>()};
         world.close();
 
         m_saveData = lzstring::decompressFromBase64(m_saveData);
@@ -2678,8 +2575,7 @@ class Buildomatica : public patch::BasePatch
             {
                 m_fakeTilemap.m_tiles[i].m_itemID = itemID;
                 m_fakeTilemap.m_tiles[i].m_collisionType = pItem->m_collisionType;
-                m_fakeTilemap.m_tiles[i].m_collidable =
-                    pItem->m_collisionType != 0 && pItem->m_collisionType != 5;
+                m_fakeTilemap.m_tiles[i].m_collidable = pItem->m_collisionType != 0 && pItem->m_collisionType != 5;
             }
             ptr += 4;
         }
@@ -2729,12 +2625,10 @@ class Buildomatica : public patch::BasePatch
                 m_fakeTilemap.m_tiles[i].m_flags |= TILE_PROPERTY_PAINT_AQUA;
             if (m_fakeTilemap.m_tiles[i].m_flags & TILE_PROPERTY_PAINT_BLACK)
             {
-                if (m_fakeTilemap.m_tiles[i].m_itemID == 0 &&
-                    m_fakeTilemap.m_tiles[i].m_itemBGID == 0)
+                if (m_fakeTilemap.m_tiles[i].m_itemID == 0 && m_fakeTilemap.m_tiles[i].m_itemBGID == 0)
                     m_fakeTilemap.m_tiles[i].m_flags &= ~TILE_PROPERTY_PAINT_BLACK;
                 else
-                    m_fakeTilemap.m_tiles[i].currentColor =
-                        CalculatePaintColor(&m_fakeTilemap.m_tiles[i]);
+                    m_fakeTilemap.m_tiles[i].currentColor = CalculatePaintColor(&m_fakeTilemap.m_tiles[i]);
             }
         }
         delete[] pMem;
@@ -2749,8 +2643,7 @@ class Buildomatica : public patch::BasePatch
         std::ifstream world(Path);
         if (!world)
             return 2;
-        std::string m_saveData{std::istreambuf_iterator<char>(world),
-                               std::istreambuf_iterator<char>()};
+        std::string m_saveData{std::istreambuf_iterator<char>(world), std::istreambuf_iterator<char>()};
         world.close();
         if (m_saveData.substr(0, 18) != "%cernworldplanner;")
             return 3;
@@ -2772,13 +2665,10 @@ class Buildomatica : public patch::BasePatch
         std::vector<int> water, glue;
         // Sections are walled off by "section=", so we can use them as guiderails for how much to
         // scan.
-        if (m_saveData.find("fg=") != std::string::npos &&
-            m_saveData.find("bg=") != std::string::npos)
+        if (m_saveData.find("fg=") != std::string::npos && m_saveData.find("bg=") != std::string::npos)
         {
             std::vector<std::string> m_layers = StringTokenize(
-                m_saveData
-                    .substr(m_saveData.find("fg="), m_saveData.find("bg=") - m_saveData.find("fg="))
-                    .substr(3),
+                m_saveData.substr(m_saveData.find("fg="), m_saveData.find("bg=") - m_saveData.find("fg=")).substr(3),
                 "\n");
             for (int i = 0; i != m_layers.size(); i++)
             {
@@ -2787,15 +2677,11 @@ class Buildomatica : public patch::BasePatch
                     foreground.emplace_back(tiles[j]);
             }
         }
-        if (m_saveData.find("bg=") != std::string::npos &&
-            m_saveData.find("water=") != std::string::npos)
+        if (m_saveData.find("bg=") != std::string::npos && m_saveData.find("water=") != std::string::npos)
         {
-            std::vector<std::string> m_layers =
-                StringTokenize(m_saveData
-                                   .substr(m_saveData.find("bg="),
-                                           m_saveData.find("water=") - m_saveData.find("bg="))
-                                   .substr(3),
-                               "\n");
+            std::vector<std::string> m_layers = StringTokenize(
+                m_saveData.substr(m_saveData.find("bg="), m_saveData.find("water=") - m_saveData.find("bg=")).substr(3),
+                "\n");
             for (int i = 0; i != m_layers.size(); i++)
             {
                 std::vector<std::string> tiles = StringTokenize(m_layers[i], ",");
@@ -2803,15 +2689,12 @@ class Buildomatica : public patch::BasePatch
                     background.emplace_back(tiles[j]);
             }
         }
-        if (m_saveData.find("water=") != std::string::npos &&
-            m_saveData.find("glue=") != std::string::npos)
+        if (m_saveData.find("water=") != std::string::npos && m_saveData.find("glue=") != std::string::npos)
         {
-            std::vector<std::string> m_layers =
-                StringTokenize(m_saveData
-                                   .substr(m_saveData.find("water="),
-                                           m_saveData.find("glue=") - m_saveData.find("water="))
-                                   .substr(6),
-                               "\n");
+            std::vector<std::string> m_layers = StringTokenize(
+                m_saveData.substr(m_saveData.find("water="), m_saveData.find("glue=") - m_saveData.find("water="))
+                    .substr(6),
+                "\n");
             for (int i = 0; i != m_layers.size(); i++)
             {
                 std::vector<std::string> tiles = StringTokenize(m_layers[i], ",");
@@ -2819,8 +2702,7 @@ class Buildomatica : public patch::BasePatch
                     water.emplace_back(tiles[j] == "Water" ? 1 : tiles[j] == "Fire" ? 2 : 0);
             }
         }
-        if (m_saveData.find("water=") != std::string::npos &&
-            m_saveData.find("glue=") != std::string::npos)
+        if (m_saveData.find("water=") != std::string::npos && m_saveData.find("glue=") != std::string::npos)
         {
             std::vector<std::string> m_layers =
                 StringTokenize(m_saveData.substr(m_saveData.find("glue=")).substr(5), "\n");
@@ -2869,8 +2751,7 @@ class Buildomatica : public patch::BasePatch
                         m_fakeTilemap.m_tiles[i].m_flags |= TILE_PROPERTY_PAINT_BLACK;
                         break;
                     }
-                    m_fakeTilemap.m_tiles[i].currentColor =
-                        CalculatePaintColor(&m_fakeTilemap.m_tiles[i]);
+                    m_fakeTilemap.m_tiles[i].currentColor = CalculatePaintColor(&m_fakeTilemap.m_tiles[i]);
                     foreground[i] = foreground[i].substr(3);
                 }
                 if (StringFromEndMatches(foreground[i], "_FL"))
@@ -2884,8 +2765,7 @@ class Buildomatica : public patch::BasePatch
             {
                 (&m_fakeTilemap.m_tiles[i])->m_itemID = info->m_itemID;
                 (&m_fakeTilemap.m_tiles[i])->m_collisionType = info->m_collisionType;
-                (&m_fakeTilemap.m_tiles[i])->m_collidable =
-                    info->m_collisionType != 0 && info->m_collisionType != 5;
+                (&m_fakeTilemap.m_tiles[i])->m_collidable = info->m_collisionType != 0 && info->m_collisionType != 5;
             }
         }
         for (int i = 0; i < background.size(); i++)
@@ -2938,8 +2818,7 @@ class Buildomatica : public patch::BasePatch
             return 4;
         short m_rows = *((short*)(pMem + 8));
 
-        short m_maxRows =
-            (short)(m_fakeTilemap.m_sizeX * floor((float)m_fakeTilemap.m_sizeY / 14.0f));
+        short m_maxRows = (short)(m_fakeTilemap.m_sizeX * floor((float)m_fakeTilemap.m_sizeY / 14.0f));
 
         if (m_maxRows < m_rows)
             return 5;
@@ -2972,8 +2851,8 @@ class Buildomatica : public patch::BasePatch
                     return 7;
                 int baseY = (int)floor(i / m_fakeTilemap.m_sizeX) * 14;
                 int noteID = *((int8_t*)(pMem + ptr++));
-                Tile* pTarget = &m_fakeTilemap.m_tiles[(i % m_fakeTilemap.m_sizeX) +
-                                                       ((baseY + y) * m_fakeTilemap.m_sizeX)];
+                Tile* pTarget =
+                    &m_fakeTilemap.m_tiles[(i % m_fakeTilemap.m_sizeX) + ((baseY + y) * m_fakeTilemap.m_sizeX)];
                 if (noteID == 15)
                 {
                     // Audio Rack, skip parsing it, since we don't playback or show its data.
@@ -3030,11 +2909,9 @@ class Buildomatica : public patch::BasePatch
     static void AddCustomKeybinds()
     {
         // CTRL+B
-        real::AddKeyBinding(real::GetArcadeComponent(), "chatkey_buildomatic_toggle", 66,
-                            m_toggleKey, 1, 1);
+        real::AddKeyBinding(real::GetArcadeComponent(), "chatkey_buildomatic_toggle", 66, m_toggleKey, 1, 1);
         // CTRL+R
-        real::AddKeyBinding(real::GetArcadeComponent(), "chatkey_buildomatic_reload", 82,
-                            m_reloadKey, 1, 1);
+        real::AddKeyBinding(real::GetArcadeComponent(), "chatkey_buildomatic_reload", 82, m_reloadKey, 1, 1);
     }
 
   private:

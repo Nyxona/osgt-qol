@@ -27,8 +27,7 @@ Background_Default::Background_Default()
     m_pHills[1].LoadFile("game/hills2.rttex");
     m_pHills[2].LoadFile("game/hills1.rttex");
 
-    m_pClouds = new Background_Clouds((Background*)this, "game/cloud.rttex", CLOUD_MOVE_DRIFT,
-                                      CLOUD_TINT_BLUE);
+    m_pClouds = new Background_Clouds((Background*)this, "game/cloud.rttex", CLOUD_MOVE_DRIFT, CLOUD_TINT_BLUE);
 
     m_springInstead = false;
 }

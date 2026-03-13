@@ -3,10 +3,9 @@
 #include "signatures.hpp"
 #include "struct/world/worldrenderer.hpp"
 
-REGISTER_GAME_FUNCTION(
-    WorldRendererForceBackground,
-    "40 55 56 57 48 8B EC 48 83 EC 40 48 C7 45 E0 FE FF FF FF 48 89 5C 24 70 8B F2 48 8B F9 33",
-    __thiscall, void, uint8_t*, int, void*, void*);
+REGISTER_GAME_FUNCTION(WorldRendererForceBackground,
+                       "40 55 56 57 48 8B EC 48 83 EC 40 48 C7 45 E0 FE FF FF FF 48 89 5C 24 70 8B F2 48 8B F9 33",
+                       __thiscall, void, uint8_t*, int, void*, void*);
 
 namespace game
 {
@@ -23,8 +22,7 @@ void game::WeatherManager::initialize()
 
     // Hook.
     game.hookFunctionPatternDirect<WorldRendererForceBackground_t>(
-        pattern::WorldRendererForceBackground, WorldRendererForceBackground,
-        &real::WorldRendererForceBackground);
+        pattern::WorldRendererForceBackground, WorldRendererForceBackground, &real::WorldRendererForceBackground);
 
     auto& events = game::EventsAPI::get();
     events.m_sig_loadFromMem.connect(&game::WeatherManager::refreshItemDB);
@@ -56,8 +54,7 @@ void game::WeatherManager::refreshItemDB()
     }
 }
 
-void game::WeatherManager::registerWeather(std::string prettyName, WeatherCallback pCallback,
-                                           int weatherID)
+void game::WeatherManager::registerWeather(std::string prettyName, WeatherCallback pCallback, int weatherID)
 {
     CustomWeather weather;
     weather.mappedID = weatherID;
@@ -72,8 +69,8 @@ void game::WeatherManager::registerWeather(std::string prettyName, WeatherCallba
     delete evt;
 }
 
-void __thiscall game::WeatherManager::WorldRendererForceBackground(uint8_t* this_, int WeatherID,
-                                                                   void* unk3, void* unk4)
+void __thiscall game::WeatherManager::WorldRendererForceBackground(uint8_t* this_, int WeatherID, void* unk3,
+                                                                   void* unk4)
 {
     auto& weatherMgr = game::WeatherManager::get();
 

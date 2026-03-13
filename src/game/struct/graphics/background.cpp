@@ -8,10 +8,8 @@
 
 Background::Background()
 {
-    real::GetApp()->m_sig_enterforeground.connect(
-        1, boost::bind(&Background::OnEnterForeground, this, _1));
-    real::GetApp()->m_sig_enterbackground.connect(
-        1, boost::bind(&Background::OnEnterBackground, this, _1));
+    real::GetApp()->m_sig_enterforeground.connect(1, boost::bind(&Background::OnEnterForeground, this, _1));
+    real::GetApp()->m_sig_enterbackground.connect(1, boost::bind(&Background::OnEnterBackground, this, _1));
 }
 
 Background::~Background() {}

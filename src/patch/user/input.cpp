@@ -10,8 +10,8 @@
 // ToolSelectComponent::OnTouchStart
 // Params: this
 REGISTER_GAME_FUNCTION(ToolSelectComponentOnTouchStart,
-                       "48 89 5C 24 10 48 89 6C 24 20 56 48 81 EC A0 00 00 00 F3 0F 2C 05 FE 6D 35",
-                       __fastcall, void, void*);
+                       "48 89 5C 24 10 48 89 6C 24 20 56 48 81 EC A0 00 00 00 F3 0F 2C 05 FE 6D 35", __fastcall, void,
+                       void*);
 
 REGISTER_GAME_FUNCTION(AddSpacebarBinding,
                        "48 83 EC 58 48 83 3D ? ? ? ? ? F3 0F 10 ? ? ? ? ? F3 0F 58 ? ? ? ? ? F3 0F "
@@ -50,8 +50,7 @@ class QuickbarHotkeys : public patch::BasePatch
         auto& game = game::GameHarness::get();
         // Resolve functions we need.
         real::ToolSelectComponentOnTouchStart =
-            game.findMemoryPattern<ToolSelectComponentOnTouchStart_t>(
-                pattern::ToolSelectComponentOnTouchStart);
+            game.findMemoryPattern<ToolSelectComponentOnTouchStart_t>(pattern::ToolSelectComponentOnTouchStart);
         game.hookFunctionPatternDirect<OnConsoleInput_t>(pattern::OnConsoleInput, OnConsoleInput,
                                                          &real::OnConsoleInput);
 
@@ -62,10 +61,9 @@ class QuickbarHotkeys : public patch::BasePatch
         m_bStartFrom0 = pVariant->GetUINT32();
 
         auto& optionsMgr = game::OptionsManager::get();
-        optionsMgr.addCheckboxOption(
-            "qol", "Input", "osgt_qol_toggle_hotbar_0",
-            "Hotbar hotkeys: Start counting from Fist/Wrench instead of first useable item",
-            &ToggleHotkeyPreference);
+        optionsMgr.addCheckboxOption("qol", "Input", "osgt_qol_toggle_hotbar_0",
+                                     "Hotbar hotkeys: Start counting from Fist/Wrench instead of first useable item",
+                                     &ToggleHotkeyPreference);
     }
 
     static void ToggleHotkeyPreference(VariantList* pVariant)
@@ -94,8 +92,7 @@ class QuickbarHotkeys : public patch::BasePatch
                 pGUI->GetEntityByName("OptionsPage"))
                 return;
             // GUI -> WorldSpecificGUI always exists. GameMenu only does when in a world.
-            Entity* pGameMenu =
-                pGUI->GetEntityByName("WorldSpecificGUI")->GetEntityByName("GameMenu");
+            Entity* pGameMenu = pGUI->GetEntityByName("WorldSpecificGUI")->GetEntityByName("GameMenu");
             if (pGameMenu != nullptr)
             {
                 // When GameMenu is constructed, so is the inventory.
@@ -128,8 +125,7 @@ class QuickToggleSpaceToPunch : public patch::BasePatch
         auto& game = game::GameHarness::get();
 
         // Resolve functions we need.
-        real::AddSpacebarBinding =
-            game.findMemoryPattern<AddSpacebarBinding_t>(pattern::AddSpacebarBinding);
+        real::AddSpacebarBinding = game.findMemoryPattern<AddSpacebarBinding_t>(pattern::AddSpacebarBinding);
 
         auto& events = game::EventsAPI::get();
         events.m_sig_netControllerInput.connect(&NetControllerLocalOnArcadeInput);
@@ -149,8 +145,8 @@ class QuickToggleSpaceToPunch : public patch::BasePatch
             {
                 Entity* pGUI = real::GetApp()->m_pEntityRoot->GetEntityByName("GUI");
                 // We don't want the key presses to happen when we're still in settings.
-                if (pGUI->GetEntityByName("OptionsMenu") ||
-                    pGUI->GetEntityByName("ResolutionMenu") || pGUI->GetEntityByName("OptionsPage"))
+                if (pGUI->GetEntityByName("OptionsMenu") || pGUI->GetEntityByName("ResolutionMenu") ||
+                    pGUI->GetEntityByName("OptionsPage"))
                     return;
             }
 
@@ -163,8 +159,7 @@ class QuickToggleSpaceToPunch : public patch::BasePatch
     static void AddCustomKeybinds()
     {
         // CTRL+P
-        real::AddKeyBinding(real::GetArcadeComponent(), "chatkey_togglestp", 80, m_stpKeycode, 1,
-                            1);
+        real::AddKeyBinding(real::GetArcadeComponent(), "chatkey_togglestp", 80, m_stpKeycode, 1, 1);
     }
 
   private:
@@ -182,8 +177,7 @@ class FixURLButtons : public patch::BasePatch
         // (uninitialised), you can't open any URL buttons in dialogs.
         auto& game = game::GameHarness::get();
         game.hookFunctionPatternDirect<GenericDialogMenuOnSelect_t>(
-            pattern::GenericDialogMenuOnSelect, GenericDialogMenuOnSelect,
-            &real::GenericDialogMenuOnSelect);
+            pattern::GenericDialogMenuOnSelect, GenericDialogMenuOnSelect, &real::GenericDialogMenuOnSelect);
     }
 
     static void __fastcall GenericDialogMenuOnSelect(VariantList* pVL)
@@ -216,8 +210,8 @@ class ToggleCtrlJump : public patch::BasePatch
             pVariant->Set(0U);
 
         auto& optionsMgr = game::OptionsManager::get();
-        optionsMgr.addCheckboxOption("qol", "Input", "osgt_qol_toggle_ctrl_jump",
-                                     "Disable CTRL key to Jump", &HideUIScrollHandlesCallback);
+        optionsMgr.addCheckboxOption("qol", "Input", "osgt_qol_toggle_ctrl_jump", "Disable CTRL key to Jump",
+                                     &HideUIScrollHandlesCallback);
 
         auto& events = game::EventsAPI::get();
         events.m_sig_addWasdKeys.connect(&AddCustomKeybinds);
@@ -260,13 +254,11 @@ class QuickDropPatch : public patch::BasePatch
         events.m_sig_addWasdKeys.connect(&AddCustomKeybinds);
         m_keycode = events.acquireKeycode();
 
-        real::OpenDropOptions =
-            game::GameHarness::get().findMemoryPattern<OpenDropOptions_t>(pattern::OpenDropOptions);
+        real::OpenDropOptions = game::GameHarness::get().findMemoryPattern<OpenDropOptions_t>(pattern::OpenDropOptions);
 
         auto& optionsMgr = game::OptionsManager::get();
         optionsMgr.addCheckboxOption("qol", "Input", "osgt_qol_quick_drop",
-                                     "Enable Q key to open drop current item dialog",
-                                     &OnQuickDropToggledCallback);
+                                     "Enable Q key to open drop current item dialog", &OnQuickDropToggledCallback);
         m_isEnabled = real::GetApp()->GetVar("osgt_qol_quick_drop")->GetUINT32() == 1;
     }
 
@@ -287,8 +279,8 @@ class QuickDropPatch : public patch::BasePatch
             if (bKeyFired)
             {
                 Entity* pGUI = real::GetApp()->m_pEntityRoot->GetEntityByName("GUI");
-                if (pGUI->GetEntityByName("OptionsMenu") ||
-                    pGUI->GetEntityByName("ResolutionMenu") || pGUI->GetEntityByName("OptionsPage"))
+                if (pGUI->GetEntityByName("OptionsMenu") || pGUI->GetEntityByName("ResolutionMenu") ||
+                    pGUI->GetEntityByName("OptionsPage"))
                 {
                     return;
                 }

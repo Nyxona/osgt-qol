@@ -11,8 +11,7 @@ REGISTER_GAME_FUNCTION(SetFPSLimit,
                        __fastcall, void, void*, float);
 
 // PetRenderData::Update
-REGISTER_GAME_FUNCTION(PetRenderDataUpdate,
-                       "48 8B C4 48 89 58 10 48 89 68 18 56 57 41 56 48 81 EC A0 00 00 00 0F B7",
+REGISTER_GAME_FUNCTION(PetRenderDataUpdate, "48 8B C4 48 89 58 10 48 89 68 18 56 57 41 56 48 81 EC A0 00 00 00 0F B7",
                        __fastcall, void, PetRenderData*, AvatarRenderData*, float);
 
 class FramerateUnlockPatch : public patch::BasePatch
@@ -22,8 +21,7 @@ class FramerateUnlockPatch : public patch::BasePatch
     {
         auto& game = game::GameHarness::get();
         // Hook SetFPSLimit.
-        game.hookFunctionPatternDirect<SetFPSLimit_t>(pattern::SetFPSLimit, SetFPSLimit,
-                                                      &real::SetFPSLimit);
+        game.hookFunctionPatternDirect<SetFPSLimit_t>(pattern::SetFPSLimit, SetFPSLimit, &real::SetFPSLimit);
         SetFPSLimit(nullptr, 60.0f);
 
         // Users may have a reason to want a bit more generous fps limit.
@@ -37,21 +35,19 @@ class FramerateUnlockPatch : public patch::BasePatch
             if (dm.dmDisplayFrequency < 90)
             {
                 auto& optionsMgr = game::OptionsManager::get();
-                optionsMgr.addCheckboxOption(
-                    "qol", "Performance", "osgt_qol_fps_min90",
-                    "Set FPS Limit minimum value to 90 (may get V-Synced)\n",
-                    &OnFPSMinimumCallback);
+                optionsMgr.addCheckboxOption("qol", "Performance", "osgt_qol_fps_min90",
+                                             "Set FPS Limit minimum value to 90 (may get V-Synced)\n",
+                                             &OnFPSMinimumCallback);
             }
         }
 
         auto& optionsMgr = game::OptionsManager::get();
         optionsMgr.addCheckboxOption("qol", "Performance", "osgt_qol_fps_temp_killswitch",
-                                     "Limit FPS back down to 60 (Power Saving)\n",
-                                     &OnFPSPowerSaveCallback);
+                                     "Limit FPS back down to 60 (Power Saving)\n", &OnFPSPowerSaveCallback);
 
         // Fix crazy pet movement.
-        game.hookFunctionPatternDirect<PetRenderDataUpdate_t>(
-            pattern::PetRenderDataUpdate, PetRenderDataUpdate, &real::PetRenderDataUpdate);
+        game.hookFunctionPatternDirect<PetRenderDataUpdate_t>(pattern::PetRenderDataUpdate, PetRenderDataUpdate,
+                                                              &real::PetRenderDataUpdate);
     }
 
     static void OnFPSPowerSaveCallback(VariantList* pVariant)
@@ -105,8 +101,7 @@ class FramerateUnlockPatch : public patch::BasePatch
             real::SetFPSLimit(app, 60.f);
     }
 
-    static void __fastcall PetRenderDataUpdate(PetRenderData* this_, AvatarRenderData* avData,
-                                               float elapsed)
+    static void __fastcall PetRenderDataUpdate(PetRenderData* this_, AvatarRenderData* avData, float elapsed)
     {
         // The game relies on using this for pet movement correction during fps fluctuations.
         // However, this logic only works properly until 60 FPS. So for our high-fps mod, we patch

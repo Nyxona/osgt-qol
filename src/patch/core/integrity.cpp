@@ -4,9 +4,8 @@
 #include "game/struct/net/gameupdatepacket.hpp"
 
 // DownloadFileComponent::Init
-REGISTER_GAME_FUNCTION(DownloadFileComponentInit,
-                       "40 55 53 56 57 41 54 41 55 41 56 41 57 48 8D AC 24 28 FE FF FF", __fastcall,
-                       void, void*, std::string, void*, void*)
+REGISTER_GAME_FUNCTION(DownloadFileComponentInit, "40 55 53 56 57 41 54 41 55 41 56 41 57 48 8D AC 24 28 FE FF FF",
+                       __fastcall, void, void*, std::string, void*, void*)
 
 // GameLogicComponent::HandleBattleEvent
 REGISTER_GAME_FUNCTION(GameLogicComponentHandleBattleEvent,
@@ -21,12 +20,10 @@ class SecureItemManager : public patch::BasePatch
     {
         auto& game = game::GameHarness::get();
         game.hookFunctionPatternDirect<DownloadFileComponentInit_t>(
-            pattern::DownloadFileComponentInit, DownloadFileComponentInit,
-            &real::DownloadFileComponentInit);
+            pattern::DownloadFileComponentInit, DownloadFileComponentInit, &real::DownloadFileComponentInit);
     }
 
-    static void __fastcall DownloadFileComponentInit(void* this_, std::string filePath, void* unk3,
-                                                     void* unk4)
+    static void __fastcall DownloadFileComponentInit(void* this_, std::string filePath, void* unk3, void* unk4)
     {
         // Prevent path traversal by strictly disallowing usage of ".." in file paths.
         // We do not need to sanitize for / \ : characters as absolute cache path already gets
@@ -35,10 +32,9 @@ class SecureItemManager : public patch::BasePatch
         // end-user's computer.
         if (filePath.find("..") != std::string::npos)
         {
-            std::string msg =
-                "The server you were connecting to contained a malicious item definitions file. "
-                "Shutting down game to prevent further damages. Offending filename: " +
-                filePath;
+            std::string msg = "The server you were connecting to contained a malicious item definitions file. "
+                              "Shutting down game to prevent further damages. Offending filename: " +
+                              filePath;
             // Hide the game window as sometimes the error may get stuck behind it.
             auto& game = game::GameHarness::get();
             game.setWindowVisible(false);
@@ -69,8 +65,7 @@ class SecureBattleEvent : public patch::BasePatch
             &real::GameLogicComponentHandleBattleEvent);
     }
 
-    static void __fastcall GameLogicComponentHandleBattleEvent(void* this_,
-                                                               GameUpdatePacket* packet)
+    static void __fastcall GameLogicComponentHandleBattleEvent(void* this_, GameUpdatePacket* packet)
     {
         // Battle Events are made rather poorly by the game and leaves space for exploitation.
         // For one, event subtype 0 does no proper bounds checking and allows to read past packet
@@ -94,8 +89,7 @@ class SecureBattleEvent : public patch::BasePatch
                 {
                     auto& game = game::GameHarness::get();
                     game.setWindowVisible(false);
-                    MessageBoxA(nullptr, (g_battleEventErrorMessage + "0").c_str(), "Error",
-                                MB_ICONERROR | MB_OK);
+                    MessageBoxA(nullptr, (g_battleEventErrorMessage + "0").c_str(), "Error", MB_ICONERROR | MB_OK);
                     ExitProcess(EXIT_FAILURE);
                 }
                 // Calculate packet length
@@ -104,8 +98,7 @@ class SecureBattleEvent : public patch::BasePatch
                 {
                     auto& game = game::GameHarness::get();
                     game.setWindowVisible(false);
-                    MessageBoxA(nullptr, (g_battleEventErrorMessage + "1").c_str(), "Error",
-                                MB_ICONERROR | MB_OK);
+                    MessageBoxA(nullptr, (g_battleEventErrorMessage + "1").c_str(), "Error", MB_ICONERROR | MB_OK);
                     ExitProcess(EXIT_FAILURE);
                 }
             }
@@ -118,8 +111,7 @@ class SecureBattleEvent : public patch::BasePatch
             {
                 auto& game = game::GameHarness::get();
                 game.setWindowVisible(false);
-                MessageBoxA(nullptr, (g_battleEventErrorMessage + "2").c_str(), "Error",
-                            MB_ICONERROR | MB_OK);
+                MessageBoxA(nullptr, (g_battleEventErrorMessage + "2").c_str(), "Error", MB_ICONERROR | MB_OK);
                 ExitProcess(EXIT_FAILURE);
             }
         }

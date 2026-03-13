@@ -2,8 +2,7 @@
 
 #include <stdint.h>
 
-#define MAKE_RGBA(r, g, b, a)                                                                      \
-    (((uint32_t)(r) << 8) + ((uint32_t)(g) << 16) + ((uint32_t)(b) << 24) + ((uint32_t)(a)))
+#define MAKE_RGBA(r, g, b, a) (((uint32_t)(r) << 8) + ((uint32_t)(g) << 16) + ((uint32_t)(b) << 24) + ((uint32_t)(a)))
 #define GET_BLUE(p) ((p) >> 24)
 #define GET_GREEN(p) (((p) & 0x00FF0000) >> 16)
 #define GET_RED(p) (((p) & 0x0000FF00) >> 8)

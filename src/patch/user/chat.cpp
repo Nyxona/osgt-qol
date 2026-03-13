@@ -21,28 +21,22 @@ REGISTER_GAME_FUNCTION(TabComponentAddTabButton,
                        __fastcall, __int64, void*, void*, float*, void*, void*, void*)
 
 // LogToConsoleSafe
-REGISTER_GAME_FUNCTION(
-    LogToConsoleSafe,
-    "4C 8B DC 57 48 83 EC 60 49 C7 43 B8 FE FF FF FF 49 89 5B 10 49 89 6B 18 49 89 73 20 48 8B ? ? "
-    "? ? ? 48 33 C4 48 89 44 24 50 48 8B E9 49 89 4B C0 49 C7 43 E0 0F 00 00 00",
-    __fastcall, void, std::string);
+REGISTER_GAME_FUNCTION(LogToConsoleSafe,
+                       "4C 8B DC 57 48 83 EC 60 49 C7 43 B8 FE FF FF FF 49 89 5B 10 49 89 6B 18 49 89 73 20 48 8B ? ? "
+                       "? ? ? 48 33 C4 48 89 44 24 50 48 8B E9 49 89 4B C0 49 C7 43 E0 0F 00 00 00",
+                       __fastcall, void, std::string);
 
-REGISTER_GAME_FUNCTION(AddMainMenuControls,
-                       "48 8B C4 55 41 54 41 55 41 56 41 57 48 8D A8 18 FA FF FF", __fastcall, void,
-                       Entity*);
+REGISTER_GAME_FUNCTION(AddMainMenuControls, "48 8B C4 55 41 54 41 55 41 56 41 57 48 8D A8 18 FA FF FF", __fastcall,
+                       void, Entity*);
 
-REGISTER_GAME_FUNCTION(
-    OpenLogConsole,
-    "48 8B C4 55 57 41 56 48 8D 68 A1 48 81 EC D0 00 00 00 48 C7 45 D7 FE FF FF FF 48 89 58 10",
-    __fastcall, void, VariantList*);
-REGISTER_GAME_FUNCTION(OnLogGrabEnd,
-                       "48 8B C4 55 48 8B EC 48 83 EC 70 48 C7 45 C0 FE FF FF FF 48 89 58 08",
+REGISTER_GAME_FUNCTION(OpenLogConsole,
+                       "48 8B C4 55 57 41 56 48 8D 68 A1 48 81 EC D0 00 00 00 48 C7 45 D7 FE FF FF FF 48 89 58 10",
                        __fastcall, void, VariantList*);
-REGISTER_GAME_FUNCTION(OnLogGrabMove,
-                       "40 53 48 83 EC 30 48 8D 59 48 C6 05 ? ? ? ? ? 83 3B 00 75 1D", __fastcall,
+REGISTER_GAME_FUNCTION(OnLogGrabEnd, "48 8B C4 55 48 8B EC 48 83 EC 70 48 C7 45 C0 FE FF FF FF 48 89 58 08", __fastcall,
                        void, VariantList*);
-REGISTER_GAME_FUNCTION(OnInventoryTapToggle,
-                       "48 8B C4 55 48 8D 68 A1 48 81 EC A0 00 00 00 48 C7 45 07 FE FF FF FF",
+REGISTER_GAME_FUNCTION(OnLogGrabMove, "40 53 48 83 EC 30 48 8D 59 48 C6 05 ? ? ? ? ? 83 3B 00 75 1D", __fastcall, void,
+                       VariantList*);
+REGISTER_GAME_FUNCTION(OnInventoryTapToggle, "48 8B C4 55 48 8D 68 A1 48 81 EC A0 00 00 00 48 C7 45 07 FE FF FF FF",
                        __fastcall, void, VariantList*);
 REGISTER_GAME_FUNCTION(OnInventoryGrabMove,
                        "48 8B C4 55 48 8B EC 48 81 EC 80 00 00 00 48 C7 45 B0 FE FF FF FF 48 89 58 "
@@ -68,13 +62,11 @@ class LegacyChatPatch : public patch::BasePatch
     {
         auto& game = game::GameHarness::get();
         // Hook CreateLogOverlay.
-        game.hookFunctionPatternDirect(pattern::CreateLogOverlay, CreateLogOverlay,
-                                       &real::CreateLogOverlay);
+        game.hookFunctionPatternDirect(pattern::CreateLogOverlay, CreateLogOverlay, &real::CreateLogOverlay);
         // Hook TabComponent::AddTabButton.
         game.hookFunctionPatternDirect(pattern::TabComponentAddTabButton, TabComponentAddTabButton,
                                        &real::TabComponentAddTabButton);
-        game.hookFunctionPatternDirect(pattern::LogToConsoleSafe, LogToConsoleSafe,
-                                       &real::LogToConsoleSafe);
+        game.hookFunctionPatternDirect(pattern::LogToConsoleSafe, LogToConsoleSafe, &real::LogToConsoleSafe);
 
         // Patch out various iPadMapX(...) calls.
         // These patches primarily focus on the iPadMapX call and prepending MOVSS instructions.
@@ -96,8 +88,7 @@ class LegacyChatPatch : public patch::BasePatch
         // MOVSS instruction and subsequent call to iPadMapX. The game originally then tries
         // to copy XMM0 register into XMM6, causing text at random chance to appear way off-
         // screen. We need XMM6 to start at 0.0, so we replace the MOVSS with a XORPS.
-        auto addr = game.findMemoryPattern<uint8_t*>(
-            "48 8D 4D 38 E8 ? ? ? ? F3 0F 10 ? ? ? ? ? E8 ? ? ? ? 0F 28 F0");
+        auto addr = game.findMemoryPattern<uint8_t*>("48 8D 4D 38 E8 ? ? ? ? F3 0F 10 ? ? ? ? ? E8 ? ? ? ? 0F 28 F0");
         utils::nopMemory(addr + 9, 16);
         utils::writeMemoryPattern(addr + 22, "0F 57 F6");
 
@@ -161,8 +152,8 @@ class LegacyChatPatch : public patch::BasePatch
         pLogDisplayComp->GetShared()->CallFunctionIfExists("AddLine", &vl);
     }
 
-    static __int64 __fastcall TabComponentAddTabButton(void* this_, void* entity, float* xCoord,
-                                                       void* unk4, void* unk5, void* unk6)
+    static __int64 __fastcall TabComponentAddTabButton(void* this_, void* entity, float* xCoord, void* unk4, void* unk5,
+                                                       void* unk6)
     {
         // Tabs pass on xCoord parameter to continiously align themselves after one another.
         // We can force this to always be off-screen, essentially removing them from visible
@@ -181,8 +172,7 @@ class NoGuildIconPatch : public patch::BasePatch
         // Remove the guild/leaderboards icon from MainMenuControls.
         // This patch spoofs the protocol version when there is no active event.
         // As a result, the gem counter is back on its legacy positioning.
-        game.hookFunctionPatternDirect(pattern::AddMainMenuControls, AddMainMenuControls,
-                                       &real::AddMainMenuControls);
+        game.hookFunctionPatternDirect(pattern::AddMainMenuControls, AddMainMenuControls, &real::AddMainMenuControls);
     }
 
     static void __fastcall AddMainMenuControls(Entity* pEnt)
@@ -220,8 +210,8 @@ class ChatLimitExtended : public patch::BasePatch
             pVariant->Set(uint32_t(1));
 
         auto& optionsMgr = game::OptionsManager::get();
-        optionsMgr.addCheckboxOption("qol", "UI", "osgt_qol_extend_console",
-                                     "Extend chat history limit to 500", &OnChatLimitCallback);
+        optionsMgr.addCheckboxOption("qol", "UI", "osgt_qol_extend_console", "Extend chat history limit to 500",
+                                     &OnChatLimitCallback);
         SetConsoleLogLimit();
     }
 
@@ -257,18 +247,15 @@ class FixHandleDrag : public patch::BasePatch
         auto& game = game::GameHarness::get();
 
         // Chat Handles
-        game.hookFunctionPatternDirect(pattern::OpenLogConsole, OpenLogConsole,
-                                       &real::OpenLogConsole);
+        game.hookFunctionPatternDirect(pattern::OpenLogConsole, OpenLogConsole, &real::OpenLogConsole);
         game.hookFunctionPatternDirect(pattern::OnLogGrabMove, OnLogGrabMove, &real::OnLogGrabMove);
         game.hookFunctionPatternDirect(pattern::OnLogGrabEnd, OnLogGrabEnd, &real::OnLogGrabEnd);
 
         // Inventory Handles
         game.hookFunctionPatternDirect(pattern::OnInventoryTapToggle, OnInventoryTapToggle,
                                        &real::OnInventoryTapToggle);
-        game.hookFunctionPatternDirect(pattern::OnInventoryGrabMove, OnInventoryGrabMove,
-                                       &real::OnInventoryGrabMove);
-        game.hookFunctionPatternDirect(pattern::OnInventoryGrabEnd, OnInventoryGrabEnd,
-                                       &real::OnInventoryGrabEnd);
+        game.hookFunctionPatternDirect(pattern::OnInventoryGrabMove, OnInventoryGrabMove, &real::OnInventoryGrabMove);
+        game.hookFunctionPatternDirect(pattern::OnInventoryGrabEnd, OnInventoryGrabEnd, &real::OnInventoryGrabEnd);
     }
 
     // CHAT HANDLES
@@ -303,13 +290,9 @@ class FixHandleDrag : public patch::BasePatch
         {
             // Add a callable function to the handle to release gIsUserDrag and gStartedDrag values.
             if (!pVL->Get(1).GetEntity()->GetShared()->GetFunctionIfExists("OnFlipUserDrag"))
-                pVL->Get(1)
-                    .GetEntity()
-                    ->GetFunction("OnFlipUserDrag")
-                    ->sig_function.connect(OnEndFlipUserDrag);
-            real::MessageManagerCallEntityFunction(real::GetMessageManager(),
-                                                   pVL->Get(1).GetEntity(), 1, "OnFlipUserDrag",
-                                                   nullptr, 0);
+                pVL->Get(1).GetEntity()->GetFunction("OnFlipUserDrag")->sig_function.connect(OnEndFlipUserDrag);
+            real::MessageManagerCallEntityFunction(real::GetMessageManager(), pVL->Get(1).GetEntity(), 1,
+                                                   "OnFlipUserDrag", nullptr, 0);
         }
     }
 
@@ -340,13 +323,9 @@ class FixHandleDrag : public patch::BasePatch
         else
         {
             if (!pVL->Get(1).GetEntity()->GetShared()->GetFunctionIfExists("OnFlipUserDrag"))
-                pVL->Get(1)
-                    .GetEntity()
-                    ->GetFunction("OnFlipUserDrag")
-                    ->sig_function.connect(OnEndFlipUserDrag);
-            real::MessageManagerCallEntityFunction(real::GetMessageManager(),
-                                                   pVL->Get(1).GetEntity(), 1, "OnFlipUserDrag",
-                                                   nullptr, 0);
+                pVL->Get(1).GetEntity()->GetFunction("OnFlipUserDrag")->sig_function.connect(OnEndFlipUserDrag);
+            real::MessageManagerCallEntityFunction(real::GetMessageManager(), pVL->Get(1).GetEntity(), 1,
+                                                   "OnFlipUserDrag", nullptr, 0);
         }
     }
 

@@ -2,9 +2,8 @@
 #include "game/struct/component.hpp"
 #include "game/struct/lockfloat.hpp"
 #include "game/struct/renderdata/avatarrenderdata.hpp"
-#include "game/struct/vec.hpp"
 #include "game/struct/timer.hpp"
-
+#include "game/struct/vec.hpp"
 
 // Namings matched.
 class NetBase

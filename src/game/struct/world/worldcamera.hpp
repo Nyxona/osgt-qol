@@ -9,7 +9,7 @@ class WorldCamera
 {
   public:
     WorldCamera();
-    virtual ~WorldCamera() {};
+    virtual ~WorldCamera(){};
 
     WorldRenderer* m_pWorldRenderer;
     CL_Vec2f m_vCamWorldPosUpperLeft; // Current camera position, what the player actually sees.

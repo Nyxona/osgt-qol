@@ -24,7 +24,8 @@ class GamepadManager
         for (uint32_t i = 0; i < this->m_gamepads.size(); i++)
         {
             // Basically SAFE_DELETE macro
-            if (this->m_gamepads[i]) {
+            if (this->m_gamepads[i])
+            {
                 delete (this->m_gamepads[i]);
                 this->m_gamepads[i] = nullptr;
             }
@@ -38,7 +39,8 @@ class GamepadManager
     {
         for (uint32_t i = 0; i < this->m_gamepads.size(); i++)
         {
-            if (this->m_gamepads[i]) {
+            if (this->m_gamepads[i])
+            {
                 delete (this->m_gamepads[i]);
                 this->m_gamepads[i] = nullptr;
             }

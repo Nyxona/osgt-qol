@@ -15,31 +15,28 @@ REGISTER_GAME_FUNCTION(OptionsMenuAddContent,
 
 // CreateSlider
 // NOTE: Need to investigate the final strings. They're not there originally in Proton SDK.
-REGISTER_GAME_FUNCTION(
-    CreateSlider,
-    "48 8B C4 55 53 56 57 41 54 41 55 41 56 41 57 48 8D A8 78 FE FF FF 48 81 EC 48 02 00 00 48 C7 "
-    "45 30 FE FF FF FF 0F 29 70 A8 0F 29 78 98 44 0F 29 40 88 44 0F 29 88 78 FF FF FF 44 0F 29 A0",
-    __fastcall, EntityComponent*, Entity* pBG, float x, float y, float sizeX,
-    std::string buttonFileName, std::string left, std::string middle, std::string right,
-    std::string, std::string, std::string, std::string);
+REGISTER_GAME_FUNCTION(CreateSlider,
+                       "48 8B C4 55 53 56 57 41 54 41 55 41 56 41 57 48 8D A8 78 FE FF FF 48 81 EC 48 02 00 00 48 C7 "
+                       "45 30 FE FF FF FF 0F 29 70 A8 0F 29 78 98 44 0F 29 40 88 44 0F 29 88 78 FF FF FF 44 0F 29 A0",
+                       __fastcall, EntityComponent*, Entity* pBG, float x, float y, float sizeX,
+                       std::string buttonFileName, std::string left, std::string middle, std::string right, std::string,
+                       std::string, std::string, std::string);
 
 // CreateCheckbox
 // Again with trailing strings that aren't there in Proton.
-REGISTER_GAME_FUNCTION(
-    CreateCheckBox,
-    "48 8B C4 55 53 56 57 41 54 41 55 41 56 41 57 48 8D A8 78 FE FF FF 48 81 EC 48 02 00 00 48 C7 "
-    "45 30 FE FF FF FF 0F 29 70 A8 0F 29 78 98 44 0F 29 40 88 44 0F 29 88 78 FF FF FF 48 8B",
-    __fastcall, Entity*, Entity* pBG, std::string name, std::string text, float x, float y,
-    bool bChecked, uint32_t fontID, float fontScale, bool unclickable, std::string unk10,
-    std::string unk11, std::string unk12)
+REGISTER_GAME_FUNCTION(CreateCheckBox,
+                       "48 8B C4 55 53 56 57 41 54 41 55 41 56 41 57 48 8D A8 78 FE FF FF 48 81 EC 48 02 00 00 48 C7 "
+                       "45 30 FE FF FF FF 0F 29 70 A8 0F 29 78 98 44 0F 29 40 88 44 0F 29 88 78 FF FF FF 48 8B",
+                       __fastcall, Entity*, Entity* pBG, std::string name, std::string text, float x, float y,
+                       bool bChecked, uint32_t fontID, float fontScale, bool unclickable, std::string unk10,
+                       std::string unk11, std::string unk12)
 
 // CreateTextButtonEntity
 REGISTER_GAME_FUNCTION(CreateTextButtonEntity,
                        "48 8B C4 55 53 56 57 41 54 41 55 41 56 41 57 48 8D 68 B8 48 81 EC 08 01 00 "
                        "00 48 C7 45 A0 FE FF FF FF",
-                       __fastcall, Entity*, Entity* pParentEnt, std::string name, float x, float y,
-                       std::string text, bool bUnderline, int unk7 /*=0*/,
-                       std::string controlGroup /*=""*/, bool unk9 /*=false*/,
+                       __fastcall, Entity*, Entity* pParentEnt, std::string name, float x, float y, std::string text,
+                       bool bUnderline, int unk7 /*=0*/, std::string controlGroup /*=""*/, bool unk9 /*=false*/,
                        std::string unk10 /*=""*/, bool unk11 /*=true*/, bool unk12 /*=false*/)
 
 // ResizeScrollBounds
@@ -50,18 +47,16 @@ REGISTER_GAME_FUNCTION(ResizeScrollBounds,
                        __fastcall, void, VariantList* pVList);
 
 // iPadMapX
-REGISTER_GAME_FUNCTION(iPadMapX, "66 0F 6E 0D 9C 76 4B 00 0F 5B C9 F3 0F 59 C8 F3 0F", __fastcall,
-                       float, float);
+REGISTER_GAME_FUNCTION(iPadMapX, "66 0F 6E 0D 9C 76 4B 00 0F 5B C9 F3 0F 59 C8 F3 0F", __fastcall, float, float);
 
 // iPadMapY
-REGISTER_GAME_FUNCTION(
-    iPadMapY,
-    "66 0F 6E 0D 68 76 4B 00 0F 5B C9 F3 0F 59 C8 F3 0F 2C C1 66 0F 6E C0 0F 5B C0 F3 0F 5E",
-    __fastcall, float, float);
+REGISTER_GAME_FUNCTION(iPadMapY,
+                       "66 0F 6E 0D 68 76 4B 00 0F 5B C9 F3 0F 59 C8 F3 0F 2C C1 66 0F 6E C0 0F 5B C0 F3 0F 5E",
+                       __fastcall, float, float);
 
 // iPhoneMapX
-REGISTER_GAME_FUNCTION(iPhoneMapX, "66 0F 6E 0D 7C 75 4B 00 0F 5B C9 F3 0F 59 C8 F3 0F 2C C1",
-                       __fastcall, float, float);
+REGISTER_GAME_FUNCTION(iPhoneMapX, "66 0F 6E 0D 7C 75 4B 00 0F 5B C9 F3 0F 59 C8 F3 0F 2C C1", __fastcall, float,
+                       float);
 
 // iPhoneMapY
 REGISTER_GAME_FUNCTION(iPhoneMapY,
@@ -69,8 +64,7 @@ REGISTER_GAME_FUNCTION(iPhoneMapY,
                        "C0 F3 0F 5E 05 AE 28",
                        __fastcall, float, float);
 
-REGISTER_GAME_FUNCTION(AddFocusIfNeeded,
-                       "40 55 56 57 41 54 41 55 41 56 41 57 48 8D 6C 24 D9 48 81 EC A0 00 00 00",
+REGISTER_GAME_FUNCTION(AddFocusIfNeeded, "40 55 56 57 41 54 41 55 41 56 41 57 48 8D 6C 24 D9 48 81 EC A0 00 00 00",
                        __fastcall, void, Entity*, bool, int);
 
 // SlideScreen
@@ -80,16 +74,14 @@ REGISTER_GAME_FUNCTION(SlideScreen,
                        "48 C7 44 24 50 FE FF FF FF",
                        __fastcall, void, Entity*, bool, int, int);
 
-REGISTER_GAME_FUNCTION(
-    TouchHandlerComponent,
-    "48 89 4C 24 08 53 48 83 EC 50 48 C7 44 24 20 FE FF FF FF 48 8B D9 E8 ? ? ? ? 90 48 8D ? ? ? ? "
-    "? 48 89 03 33 C9 48 89 8B 10 01 00 00 48 89 8B 08 01 00 00 48 C7 44 24 40 0F",
-    __fastcall, EntityComponent*, void*);
-REGISTER_GAME_FUNCTION(
-    TouchHandlerArcadeComponent,
-    "48 89 4C 24 08 53 48 83 EC 50 48 C7 44 24 20 FE FF FF FF 48 8B D9 E8 ? ? ? ? 90 48 8D ? ? ? ? "
-    "? 48 89 03 33 C9 48 89 8B 18 01 00 00 48 89 8B 10 01 00 00",
-    __fastcall, EntityComponent*, void*);
+REGISTER_GAME_FUNCTION(TouchHandlerComponent,
+                       "48 89 4C 24 08 53 48 83 EC 50 48 C7 44 24 20 FE FF FF FF 48 8B D9 E8 ? ? ? ? 90 48 8D ? ? ? ? "
+                       "? 48 89 03 33 C9 48 89 8B 10 01 00 00 48 89 8B 08 01 00 00 48 C7 44 24 40 0F",
+                       __fastcall, EntityComponent*, void*);
+REGISTER_GAME_FUNCTION(TouchHandlerArcadeComponent,
+                       "48 89 4C 24 08 53 48 83 EC 50 48 C7 44 24 20 FE FF FF FF 48 8B D9 E8 ? ? ? ? 90 48 8D ? ? ? ? "
+                       "? 48 89 03 33 C9 48 89 8B 18 01 00 00 48 89 8B 10 01 00 00",
+                       __fastcall, EntityComponent*, void*);
 REGISTER_GAME_FUNCTION(FilterInputComponent,
                        "48 89 4C 24 08 53 48 83 EC 50 48 C7 44 24 20 FE FF FF FF 48 8B D9 E8 ? ? ? "
                        "? 90 48 8D ? ? ? ? ? 48 89 03 33 C9 48 89 8B D8 00 00 00 48 89 8B E0 00 00 "
@@ -97,8 +89,8 @@ REGISTER_GAME_FUNCTION(FilterInputComponent,
                        __fastcall, EntityComponent*, void*);
 
 REGISTER_GAME_FUNCTION(MessageManagerCallEntityFunction,
-                       "E8 ? ? ? ? 90 48 8D 4D B8 E8 ? ? ? ? 48 8B 8E 18 01 00 00 B2 01",
-                       __fastcall, void, void*, Entity*, int, std::string, VariantList*, int);
+                       "E8 ? ? ? ? 90 48 8D 4D B8 E8 ? ? ? ? 48 8B 8E 18 01 00 00 B2 01", __fastcall, void, void*,
+                       Entity*, int, std::string, VariantList*, int);
 
 REGISTER_GAME_FUNCTION(GetMessageManager,
                        "E8 ? ? ? ? 48 8B C8 89 5C 24 28 48 8D 85 00 05 00 00 48 89 44 24 20 4C 8D "
@@ -141,8 +133,7 @@ REGISTER_GAME_FUNCTION(SetScrollProgressEntity,
                        "48 8B C4 55 48 8D A8 78 FE FF FF 48 81 EC 80 02 00 00 48 C7 44 24 20 FE FF "
                        "FF FF 48 89 58 18 48 89 78 20 48 8B",
                        __fastcall, void, Entity*, CL_Vec2f*);
-REGISTER_GAME_FUNCTION(OnMenuButtonPressed,
-                       "40 53 41 56 41 57 48 83 EC 50 48 8B ? ? ? ? ? 48 33 C4 48 89 44 24 40",
+REGISTER_GAME_FUNCTION(OnMenuButtonPressed, "40 53 41 56 41 57 48 83 EC 50 48 8B ? ? ? ? ? 48 33 C4 48 89 44 24 40",
                        __fastcall, void, VariantList*);
 REGISTER_GAME_FUNCTION(OnGemButtonPressed,
                        "40 53 48 83 EC 50 48 C7 44 24 20 FE FF FF FF 48 8B ? ? ? ? ? 48 33 C4 48 "
@@ -164,50 +155,40 @@ void game::OptionsManager::initialize()
     // Resolve our needed functions
     real::CreateSlider = game.findMemoryPattern<CreateSlider_t>(pattern::CreateSlider);
     real::CreateCheckBox = game.findMemoryPattern<CreateCheckBox_t>(pattern::CreateCheckBox);
-    real::CreateTextButtonEntity =
-        game.findMemoryPattern<CreateTextButtonEntity_t>(pattern::CreateTextButtonEntity);
+    real::CreateTextButtonEntity = game.findMemoryPattern<CreateTextButtonEntity_t>(pattern::CreateTextButtonEntity);
     real::iPadMapX = game.findMemoryPattern<iPadMapX_t>(pattern::iPadMapX);
     real::iPadMapY = game.findMemoryPattern<iPadMapY_t>(pattern::iPadMapY);
     real::iPhoneMapX = game.findMemoryPattern<iPhoneMapX_t>(pattern::iPhoneMapX);
     real::iPhoneMapY = game.findMemoryPattern<iPhoneMapY_t>(pattern::iPhoneMapY);
-    real::ResizeScrollBounds =
-        game.findMemoryPattern<ResizeScrollBounds_t>(pattern::ResizeScrollBounds);
+    real::ResizeScrollBounds = game.findMemoryPattern<ResizeScrollBounds_t>(pattern::ResizeScrollBounds);
     real::AddFocusIfNeeded = game.findMemoryPattern<AddFocusIfNeeded_t>(pattern::AddFocusIfNeeded);
     real::SlideScreen = game.findMemoryPattern<SlideScreen_t>(pattern::SlideScreen);
-    real::TouchHandlerComponent =
-        game.findMemoryPattern<TouchHandlerComponent_t>(pattern::TouchHandlerComponent);
+    real::TouchHandlerComponent = game.findMemoryPattern<TouchHandlerComponent_t>(pattern::TouchHandlerComponent);
     real::TouchHandlerArcadeComponent =
         game.findMemoryPattern<TouchHandlerArcadeComponent_t>(pattern::TouchHandlerArcadeComponent);
-    real::FilterInputComponent =
-        game.findMemoryPattern<FilterInputComponent_t>(pattern::FilterInputComponent);
+    real::FilterInputComponent = game.findMemoryPattern<FilterInputComponent_t>(pattern::FilterInputComponent);
     real::ScrollScroll = game.findMemoryPattern<ScrollScroll_t>(pattern::ScrollScroll);
-    real::SetScrollProgressEntity =
-        game.findMemoryPattern<SetScrollProgressEntity_t>(pattern::SetScrollProgressEntity);
-    real::DisableAllButtonsEntity =
-        game.findMemoryPattern<DisableAllButtonsEntity_t>(pattern::DisableAllButtonsEntity);
-    real::OptionsMenuCreate =
-        game.findMemoryPattern<OptionsMenuCreate_t>(pattern::OptionsMenuCreate);
-    real::AddHotkeyToButton =
-        game.findMemoryPattern<AddHotkeyToButton_t>(pattern::AddHotkeyToButton);
+    real::SetScrollProgressEntity = game.findMemoryPattern<SetScrollProgressEntity_t>(pattern::SetScrollProgressEntity);
+    real::DisableAllButtonsEntity = game.findMemoryPattern<DisableAllButtonsEntity_t>(pattern::DisableAllButtonsEntity);
+    real::OptionsMenuCreate = game.findMemoryPattern<OptionsMenuCreate_t>(pattern::OptionsMenuCreate);
+    real::AddHotkeyToButton = game.findMemoryPattern<AddHotkeyToButton_t>(pattern::AddHotkeyToButton);
 
-    real::GetMessageManager = utils::resolveRelativeCall<GetMessageManager_t>(
-        game.findMemoryPattern<uint8_t*>(pattern::GetMessageManager));
-    real::MessageManagerCallEntityFunction =
-        utils::resolveRelativeCall<MessageManagerCallEntityFunction_t>(
-            game.findMemoryPattern<uint8_t*>(pattern::MessageManagerCallEntityFunction));
+    real::GetMessageManager =
+        utils::resolveRelativeCall<GetMessageManager_t>(game.findMemoryPattern<uint8_t*>(pattern::GetMessageManager));
+    real::MessageManagerCallEntityFunction = utils::resolveRelativeCall<MessageManagerCallEntityFunction_t>(
+        game.findMemoryPattern<uint8_t*>(pattern::MessageManagerCallEntityFunction));
     real::SetButtonStyleEntity = utils::resolveRelativeCall<SetButtonStyleEntity_t>(
         game.findMemoryPattern<uint8_t*>(pattern::SetButtonStyleEntity));
     // Hook
-    game.hookFunctionPatternDirect<OptionsMenuAddContent_t>(
-        pattern::OptionsMenuAddContent, OptionsMenuAddContent, &real::OptionsMenuAddContent);
-    game.hookFunctionPatternDirect<OnMenuButtonPressed_t>(
-        pattern::OnMenuButtonPressed, OnMenuButtonPressed, &real::OnMenuButtonPressed);
-    game.hookFunctionPatternDirect<OnGemButtonPressed_t>(
-        pattern::OnGemButtonPressed, OnGemButtonPressed, &real::OnGemButtonPressed);
+    game.hookFunctionPatternDirect<OptionsMenuAddContent_t>(pattern::OptionsMenuAddContent, OptionsMenuAddContent,
+                                                            &real::OptionsMenuAddContent);
+    game.hookFunctionPatternDirect<OnMenuButtonPressed_t>(pattern::OnMenuButtonPressed, OnMenuButtonPressed,
+                                                          &real::OnMenuButtonPressed);
+    game.hookFunctionPatternDirect<OnGemButtonPressed_t>(pattern::OnGemButtonPressed, OnGemButtonPressed,
+                                                         &real::OnGemButtonPressed);
 }
 
-void OptionsManager::renderSlider(OptionsManager::GameOption& optionDef, void* pEntityPtr,
-                                  float vPosX, float& vPosY)
+void OptionsManager::renderSlider(OptionsManager::GameOption& optionDef, void* pEntityPtr, float vPosX, float& vPosY)
 {
     Entity* pEnt = reinterpret_cast<Entity*>(pEntityPtr);
 
@@ -223,17 +204,16 @@ void OptionsManager::renderSlider(OptionsManager::GameOption& optionDef, void* p
 
     // The final 4 string args aren't there in Proton, but they are in client. Currently they don't
     // seem to have much use.
-    EntityComponent* pSliderComp =
-        real::CreateSlider(pEnt, vPosX, vPosY, vSixeX, "interface/slider_button.rttex", "Min",
-                           optionDef.displayName, "Max", "", "", "", "");
+    EntityComponent* pSliderComp = real::CreateSlider(pEnt, vPosX, vPosY, vSixeX, "interface/slider_button.rttex",
+                                                      "Min", optionDef.displayName, "Max", "", "", "", "");
 
     CL_Vec2f vSliderSize = pSliderComp->GetParent()->GetVar("size2d")->GetVector2();
     // If we have a hint string assigned, we'll display it below the slider, helps with centering
     // and width issues.
     if (optionDef.extraInfo.size() > 0)
     {
-        Entity* pTxtEnt = real::CreateTextLabelEntity(
-            pEnt, "txt", vPosX + (vSixeX / 2), vPosY + vSliderSize.y + 25.0f, optionDef.extraInfo);
+        Entity* pTxtEnt = real::CreateTextLabelEntity(pEnt, "txt", vPosX + (vSixeX / 2), vPosY + vSliderSize.y + 25.0f,
+                                                      optionDef.extraInfo);
         real::SetupTextEntity(pTxtEnt, 0, 0);
         pTxtEnt->GetVar("alignment")->Set(5U);
 
@@ -251,8 +231,7 @@ void OptionsManager::renderSlider(OptionsManager::GameOption& optionDef, void* p
     vPosY += vSliderSize.y;
 }
 
-void OptionsManager::renderCheckbox(OptionsManager::GameOption& optionDef, void* pEntityPtr,
-                                    float vPosX, float& vPosY)
+void OptionsManager::renderCheckbox(OptionsManager::GameOption& optionDef, void* pEntityPtr, float vPosX, float& vPosY)
 {
     Entity* pEnt = reinterpret_cast<Entity*>(pEntityPtr);
 
@@ -268,9 +247,8 @@ void OptionsManager::renderCheckbox(OptionsManager::GameOption& optionDef, void*
 
     // The final 4 string args aren't there in Proton, but they are in client. Currently they don't
     // seem to have much use.
-    Entity* pCheckbox =
-        real::CreateCheckBox(pEnt, optionDef.varName, optionDef.displayName, vPosX, vPosY,
-                             pVariant->GetUINT32() == 1, fontID, fontScale, false, "", "", "");
+    Entity* pCheckbox = real::CreateCheckBox(pEnt, optionDef.varName, optionDef.displayName, vPosX, vPosY,
+                                             pVariant->GetUINT32() == 1, fontID, fontScale, false, "", "", "");
 
     if (optionDef.signal != nullptr)
         pCheckbox->GetFunction("OnButtonSelected")
@@ -280,8 +258,8 @@ void OptionsManager::renderCheckbox(OptionsManager::GameOption& optionDef, void*
     vPosY += pCheckbox->GetVar("size2d")->GetVector2().y;
 }
 
-void OptionsManager::renderMultiChoice(OptionsManager::GameOption& optionDef, void* pEntityPtr,
-                                       float vPosX, float& vPosY)
+void OptionsManager::renderMultiChoice(OptionsManager::GameOption& optionDef, void* pEntityPtr, float vPosX,
+                                       float& vPosY)
 {
     if (optionDef.displayOptions->size() == 0)
         return;
@@ -303,8 +281,8 @@ void OptionsManager::renderMultiChoice(OptionsManager::GameOption& optionDef, vo
     real::GetFontAndScaleToFitThisLinesPerScreenY(fontID, fontScale, 28);
 
     // Create the option label
-    Entity* pOptionsLabel = real::CreateTextLabelEntity(pMCEnt, "optLabel", vPosX + (vSizeX / 2),
-                                                        vPosY, optionDef.displayName);
+    Entity* pOptionsLabel =
+        real::CreateTextLabelEntity(pMCEnt, "optLabel", vPosX + (vSizeX / 2), vPosY, optionDef.displayName);
     real::SetupTextEntity(pOptionsLabel, 0, 0);
     pOptionsLabel->GetVar("alignment")->Set(ALIGNMENT_UPPER_CENTER);
 
@@ -327,53 +305,50 @@ void OptionsManager::renderMultiChoice(OptionsManager::GameOption& optionDef, vo
         real::GetFontAndScaleToFitThisLinesPerScreenY(fontID, fontScale, 30);
 
     // They added some wack trailing args we don't care about to end of TextButtonEntity.
-    Entity* pBackButton = real::CreateTextButtonEntity(pMCEnt, "back", vPosX, vPosY, " <<  ", false,
-                                                       0, "", 0, "", 1, 0);
+    Entity* pBackButton =
+        real::CreateTextButtonEntity(pMCEnt, "back", vPosX, vPosY, " <<  ", false, 0, "", 0, "", 1, 0);
     real::SetupTextEntity(pBackButton, fontID, fontScale);
-    real::AddBMPRectAroundEntity(pBackButton, 0xccb887ff, 0xccb887ff, real::iPadMapY(5.0), true,
-                                 fontScale, fontID, false);
+    real::AddBMPRectAroundEntity(pBackButton, 0xccb887ff, 0xccb887ff, real::iPadMapY(5.0), true, fontScale, fontID,
+                                 false);
     SetTextShadowColor(pBackButton, 150);
 
     if (optionDef.type == OPTION_MULTICHOICE_DUALBUTTONS)
     {
         Entity* pBackButtonLower = real::CreateTextButtonEntity(
-            pMCEnt, "back_lower",
-            vPosX + pBackButton->GetVar("size2d")->GetVector2().x + real::iPadMapY(10.0), vPosY,
+            pMCEnt, "back_lower", vPosX + pBackButton->GetVar("size2d")->GetVector2().x + real::iPadMapY(10.0), vPosY,
             " <  ", false, 0, "", 0, "", 1, 0);
         real::SetupTextEntity(pBackButtonLower, fontID, fontScale);
-        real::AddBMPRectAroundEntity(pBackButtonLower, 0xccb887ff, 0xccb887ff, real::iPadMapY(5.0),
-                                     true, fontScale, fontID, false);
+        real::AddBMPRectAroundEntity(pBackButtonLower, 0xccb887ff, 0xccb887ff, real::iPadMapY(5.0), true, fontScale,
+                                     fontID, false);
         SetTextShadowColor(pBackButtonLower, 150);
         if (optionDef.signal != nullptr)
             pBackButtonLower->GetFunction("OnButtonSelected")
                 ->sig_function.connect(reinterpret_cast<VariantListCallback>(optionDef.signal));
     }
 
-    Entity* pTextLabel =
-        real::CreateTextLabelEntity(pMCEnt, "txt", vPosX + (vSizeX / 2),
-                                    vPosY + (pBackButton->GetVar("size2d")->GetVector2().y / 2),
-                                    (*optionDef.displayOptions)[idx]);
+    Entity* pTextLabel = real::CreateTextLabelEntity(pMCEnt, "txt", vPosX + (vSizeX / 2),
+                                                     vPosY + (pBackButton->GetVar("size2d")->GetVector2().y / 2),
+                                                     (*optionDef.displayOptions)[idx]);
     real::SetupTextEntity(pTextLabel, 0, 0);
     pTextLabel->GetVar("alignment")->Set(ALIGNMENT_CENTER);
 
-    Entity* pNextButton = real::CreateTextButtonEntity(pMCEnt, "next", vPosX + vSizeX, vPosY,
-                                                       " >> ", false, 0, "", 0, "", 1, 0);
+    Entity* pNextButton =
+        real::CreateTextButtonEntity(pMCEnt, "next", vPosX + vSizeX, vPosY, " >> ", false, 0, "", 0, "", 1, 0);
     pNextButton->GetVar("alignment")->Set(ALIGNMENT_UPPER_RIGHT);
     real::SetupTextEntity(pNextButton, fontID, fontScale);
-    real::AddBMPRectAroundEntity(pNextButton, 0xccb887ff, 0xccb887ff, real::iPadMapY(5.0), true,
-                                 fontScale, fontID, false);
+    real::AddBMPRectAroundEntity(pNextButton, 0xccb887ff, 0xccb887ff, real::iPadMapY(5.0), true, fontScale, fontID,
+                                 false);
     SetTextShadowColor(pNextButton, 150);
 
     if (optionDef.type == OPTION_MULTICHOICE_DUALBUTTONS)
     {
         Entity* pNextButtonLower = real::CreateTextButtonEntity(
-            pMCEnt, "next_lower",
-            vPosX + vSizeX - pNextButton->GetVar("size2d")->GetVector2().x - real::iPadMapY(10.0),
+            pMCEnt, "next_lower", vPosX + vSizeX - pNextButton->GetVar("size2d")->GetVector2().x - real::iPadMapY(10.0),
             vPosY, " >  ", false, 0, "", 0, "", 1, 0);
         pNextButtonLower->GetVar("alignment")->Set(ALIGNMENT_UPPER_RIGHT);
         real::SetupTextEntity(pNextButtonLower, fontID, fontScale);
-        real::AddBMPRectAroundEntity(pNextButtonLower, 0xccb887ff, 0xccb887ff, real::iPadMapY(5.0),
-                                     true, fontScale, fontID, false);
+        real::AddBMPRectAroundEntity(pNextButtonLower, 0xccb887ff, 0xccb887ff, real::iPadMapY(5.0), true, fontScale,
+                                     fontID, false);
         SetTextShadowColor(pNextButtonLower, 150);
         if (optionDef.signal != nullptr)
             pNextButtonLower->GetFunction("OnButtonSelected")
@@ -393,8 +368,8 @@ void OptionsManager::renderMultiChoice(OptionsManager::GameOption& optionDef, vo
     // and width issues.
     if (optionDef.extraInfo.size() > 0)
     {
-        Entity* pTxtEnt = real::CreateTextLabelEntity(
-            pEnt, "txt", vPosX + (vSizeX / 2), vPosY + vButtonSize.y + 25.0f, optionDef.extraInfo);
+        Entity* pTxtEnt = real::CreateTextLabelEntity(pEnt, "txt", vPosX + (vSizeX / 2), vPosY + vButtonSize.y + 25.0f,
+                                                      optionDef.extraInfo);
         real::SetupTextEntity(pTxtEnt, 0, 0);
         pTxtEnt->GetVar("alignment")->Set(ALIGNMENT_UPPER_CENTER);
 
@@ -415,8 +390,7 @@ void OptionPageOnSelect(VariantList* pVL)
         // Kill rest of the menu and recreate original options.
         Entity* pParentEnt = pVL->Get(1).GetEntity()->GetParent();
         real::SlideScreen(pParentEnt, 0, 500, 0);
-        real::MessageManagerCallEntityFunction(real::GetMessageManager(), pParentEnt, 500,
-                                               "OnDelete", 0, 1);
+        real::MessageManagerCallEntityFunction(real::GetMessageManager(), pParentEnt, 500, "OnDelete", 0, 1);
         real::OptionsMenuCreate(real::GetApp()->m_pEntityRoot->GetEntityByName("GUI"),
                                 pParentEnt->GetVar("FromMainMenu")->GetUINT32() == 1);
         return;
@@ -435,17 +409,15 @@ void OptionsManager::HandleOptionPageButton(VariantList* pVL)
 
     real::DisableAllButtonsEntity(pParentEnt, true);
     real::SlideScreen(pParentEnt, 0, 500, 0);
-    real::MessageManagerCallEntityFunction(real::GetMessageManager(), pParentEnt, 500, "OnDelete",
-                                           0, 1);
+    real::MessageManagerCallEntityFunction(real::GetMessageManager(), pParentEnt, 500, "OnDelete", 0, 1);
 
     // Construct our own OptionsPage Entity
     Entity* pClickedEnt = pVL->Get(1).GetEntity();
     auto& optionsMgr = game::OptionsManager::get();
     if (optionsMgr.optionPages.find(pClickedEnt->GetName()) == optionsMgr.optionPages.end())
         return;
-    Entity* pOverEnt =
-        real::CreateOverlayEntity(real::GetApp()->m_pEntityRoot->GetEntityByName("GUI"),
-                                  "OptionsPage", "interface/large/generic_menu.rttex", 0, 0);
+    Entity* pOverEnt = real::CreateOverlayEntity(real::GetApp()->m_pEntityRoot->GetEntityByName("GUI"), "OptionsPage",
+                                                 "interface/large/generic_menu.rttex", 0, 0);
     real::AddFocusIfNeeded(pOverEnt, true, 500);
 
     // This is necessary for Options mainly to know when we re-create it later.
@@ -461,8 +433,7 @@ void OptionsManager::HandleOptionPageButton(VariantList* pVL)
     CL_Vec2f vTextAreaPos = CL_Vec2f((float)(int)real::iPhoneMapX(2), real::iPhoneMapY(10));
     float offsetFromBottom = real::iPhoneMapY(48);
     float offsetFromRight = real::iPhoneMapY(0);
-    CL_Vec2f vTextAreaBounds =
-        (vScreenSize - CL_Vec2f(offsetFromRight, offsetFromBottom)) - vTextAreaPos;
+    CL_Vec2f vTextAreaBounds = (vScreenSize - CL_Vec2f(offsetFromRight, offsetFromBottom)) - vTextAreaPos;
 
     // Create scroll itself - using vanilla Proton components won't work as Growtopia modified them
     // heavily. They will function, but you can't use sliders properly with vanilla ones.
@@ -483,15 +454,13 @@ void OptionsManager::HandleOptionPageButton(VariantList* pVL)
 
     // Blit the page title
     Entity* pPageLabel = real::CreateTextLabelEntity(
-        pScrollChild, "title", vPosX, vPosY,
-        page.fancyName.size() == 0 ? pClickedEnt->GetName() : page.fancyName);
+        pScrollChild, "title", vPosX, vPosY, page.fancyName.size() == 0 ? pClickedEnt->GetName() : page.fancyName);
     real::SetupTextEntity(pPageLabel, fontID, 0);
     vPosY += pPageLabel->GetVar("size2d")->GetVector2().y;
 
     for (auto& section : optionsMgr.optionPages[pClickedEnt->GetName()].sections)
     {
-        Entity* pSectionLabel =
-            real::CreateTextLabelEntity(pScrollChild, "section", vPosX, vPosY, section.first);
+        Entity* pSectionLabel = real::CreateTextLabelEntity(pScrollChild, "section", vPosX, vPosY, section.first);
         real::SetupTextEntity(pSectionLabel, fontID, 0);
         vPosY += pSectionLabel->GetVar("size2d")->GetVector2().y;
         for (auto& option : section.second)
@@ -527,13 +496,13 @@ void OptionsManager::HandleOptionPageButton(VariantList* pVL)
 
     // and blit a Back button.
     real::GetFontAndScaleToFitThisLinesPerScreenY(fontID, fontScale, 13);
-    Entity* pBackButton = real::CreateTextButtonEntity(pOverEnt, "Back", real::iPhoneMapX(25.0),
-                                                       screenRect.bottom - real::iPhoneMapY(40.0),
-                                                       "Back", false, 0, "", 0, "", 1, 0);
+    Entity* pBackButton =
+        real::CreateTextButtonEntity(pOverEnt, "Back", real::iPhoneMapX(25.0),
+                                     screenRect.bottom - real::iPhoneMapY(40.0), "Back", false, 0, "", 0, "", 1, 0);
     pBackButton->GetFunction("OnButtonSelected")->sig_function.connect(&OptionPageOnSelect);
     real::SetupTextEntity(pBackButton, fontID, fontScale);
-    real::AddBMPRectAroundEntity(pBackButton, 0xccb887ff, 0xccb887ff, real::iPadMapY(20.0), true,
-                                 fontScale, fontID, false);
+    real::AddBMPRectAroundEntity(pBackButton, 0xccb887ff, 0xccb887ff, real::iPadMapY(20.0), true, fontScale, fontID,
+                                 false);
     SetTextShadowColor(pBackButton, 150);
     real::AddHotkeyToButton(pBackButton, 500000);
     real::SetButtonStyleEntity(pBackButton, 1);
@@ -594,16 +563,16 @@ void OptionsManager::OptionsMenuAddContent(void* pEnt, void* unk2, void* unk3, v
         pScrollChild, "JumpButton", vPosX + vParentalSize.x + real::iPadMapX(40.0f),
         vParentalPos.y + real::iPadMapY(10.0f), "Jump to Bottom", false, 0, "", 0, "", 1, 0);
     real::SetupTextEntity(pButtonEnt, fontID, fontScale);
-    real::AddBMPRectAroundEntity(pButtonEnt, 0xfbe3a5ff, 0xfbe3a5ff, real::iPadMapX(5.0), true,
-                                 fontScale, fontID, false);
+    real::AddBMPRectAroundEntity(pButtonEnt, 0xfbe3a5ff, 0xfbe3a5ff, real::iPadMapX(5.0), true, fontScale, fontID,
+                                 false);
     SetTextShadowColor(pButtonEnt, 150);
     pButtonEnt->GetFunction("OnButtonSelected")->sig_function.connect(HandleOptionPageScrollButton);
 
     // Create our very own label for modded options.
     // 11 lines on desktop, 9 on mobile platforms.
     real::GetFontAndScaleToFitThisLinesPerScreenY(fontID, fontScale, 11);
-    Entity* pOptionsLabel = real::CreateTextLabelEntity(pScrollChild, "osgt_qol_options", vPosX,
-                                                        vPosY, "Modded Options:");
+    Entity* pOptionsLabel =
+        real::CreateTextLabelEntity(pScrollChild, "osgt_qol_options", vPosX, vPosY, "Modded Options:");
     // Set scaling for label.
     real::SetupTextEntity(pOptionsLabel, fontID, 0);
 
@@ -618,11 +587,10 @@ void OptionsManager::OptionsMenuAddContent(void* pEnt, void* unk2, void* unk3, v
     {
         Entity* pButtonEnt = real::CreateTextButtonEntity(
             pScrollChild, page.first, vPosX, vPosY,
-            page.second.fancyName.size() > 0 ? page.second.fancyName : page.first, false, 0, "", 0,
-            "", 1, 0);
+            page.second.fancyName.size() > 0 ? page.second.fancyName : page.first, false, 0, "", 0, "", 1, 0);
         real::SetupTextEntity(pButtonEnt, fontID, fontScale);
-        real::AddBMPRectAroundEntity(pButtonEnt, 0xccb887ff, 0xccb887ff, real::iPadMapY(20.0), true,
-                                     fontScale, fontID, false);
+        real::AddBMPRectAroundEntity(pButtonEnt, 0xccb887ff, 0xccb887ff, real::iPadMapY(20.0), true, fontScale, fontID,
+                                     false);
         SetTextShadowColor(pButtonEnt, 150);
         CL_Vec2f pos2d = pButtonEnt->GetVar("pos2d")->GetVector2();
         pos2d.x += real::iPadMapY(10.0f);
