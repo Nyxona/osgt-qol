@@ -3,6 +3,7 @@
 #include "game/struct/lockfloat.hpp"
 #include "game/struct/renderdata/avatarrenderdata.hpp"
 #include "game/struct/vec.hpp"
+#include "game/struct/timer.hpp"
 
 
 // Namings matched.
@@ -47,14 +48,6 @@ struct GuildClientModel
     int worldID;
     int guildEmblem;
     GuildRole role;
-};
-struct Timer
-{
-    bool mIsActive;
-    unsigned int mMilliseconds;
-    unsigned int mFinishTime;
-    bool mIsLooping;
-    std::function<bool(void)> mTimerCallback;
 };
 
 class SurfaceAnim;

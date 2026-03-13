@@ -2,8 +2,7 @@
 #include <string>
 
 // We don't need full-fat CL_Vec classes, use more lean structs.
-template<typename Type>
-class Vec2
+template <typename Type> class Vec2
 {
   public:
     Vec2()
@@ -33,9 +32,24 @@ class Vec2
         x -= value;
         y -= value;
     }
+
+    void operator*=(const Vec2& vector)
+    {
+        x *= vector.x;
+        y *= vector.y;
+    }
+    void operator+=(const Vec2& vector)
+    {
+        x += vector.x;
+        y += vector.y;
+    }
+
     Vec2 operator-(const Vec2& vector) const { return Vec2(x - vector.x, y - vector.y); }
     Vec2 operator-(Type value) const { return Vec2(x - value, y - value); }
     Vec2 operator-() const { return Vec2(-x, -y); }
+
+    Type length() const { return (Type)floor(sqrt(float(x * x + y * y)) + 0.5f); }
+
     std::string Print()
     {
         // Borrowed from Proton.
@@ -95,8 +109,14 @@ class Rectf
         this->bottom = ceilf(this->bottom);
     }
 
-    bool operator==(const Rectf& rhs) const { return left == rhs.left && top == rhs.top && right == rhs.right && bottom == rhs.bottom; }
-    bool operator!=(const Rectf& rhs) const { return left != rhs.left || top != rhs.top || right != rhs.right || bottom != rhs.bottom; }
+    bool operator==(const Rectf& rhs) const
+    {
+        return left == rhs.left && top == rhs.top && right == rhs.right && bottom == rhs.bottom;
+    }
+    bool operator!=(const Rectf& rhs) const
+    {
+        return left != rhs.left || top != rhs.top || right != rhs.right || bottom != rhs.bottom;
+    }
 
     float left, top, right, bottom;
     std::string Print()
